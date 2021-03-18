@@ -9,7 +9,7 @@ https://rapids.ai/start.html
 
 We will now assume that an Anaconda virtual environment called `rapids-0.18` exists in your system (you can call it something else).
 
-Run `conda install -n rapids-0.18 flask`
+Run `conda install -n rapids-0.18 flask flask_cors`
 
 Your virtual environment should have all the required packages given that default anaconda environments come with many of the libraries we need pre-installed. If you notice that something is missing please use conda install to add the missing package to the venv.
 ### Running
