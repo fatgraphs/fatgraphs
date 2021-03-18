@@ -15,13 +15,8 @@ cd be/tile_server && export FLASK_APP=server.py
 flask run &
 pids+=("$!")
 
-echo $cwd
-echo "$pids"
-
 # run client
 cd $cwd
 cd fe/map_client && npm i
 npm run start
 pids+=("$!")
-
-echo "$pids"

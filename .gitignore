@@ -44,3 +44,11 @@ gradle-app.setting
 
 ### Gradle Patch ###
 **/build/
+
+# IDE files
+**/.idea/*
+
+# Don't upload images to the repo as it would consume space
+*.png
+
+**/node_modules/*
