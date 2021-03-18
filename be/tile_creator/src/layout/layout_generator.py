@@ -1,8 +1,5 @@
 import cugraph
 
-from be.tile_creator.src.layout.layout import Layout
-
-
 class LayoutGenerator:
 
     def __init__(self):
@@ -23,6 +20,6 @@ class LayoutGenerator:
         # layout: x y vertex
         layout = cugraph.layout.force_atlas2(gpu_graph, **self.default_force_atlas_2_options)
         layout = layout.to_pandas()
-        return Layout(layout)
+        return layout
 
 
