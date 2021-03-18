@@ -40,7 +40,7 @@ class Mymap extends React.Component {
         const layer = L.tileLayer('http://127.0.0.1:5000/base_url/tms/1.0.0/test-graph/{z}/{x}/{y}.png', {
             maxZoom: MAX_ZOOM_IN,
             attribution: 'tokengallery 2.0',
-            tileSize: 2000
+            tileSize: 2048 // TODO: create global constant: this value is the same as the size of the output in the graph_draw function
         }).addTo(myMap);
 
         L.marker([-256, 256]).addTo(myMap);
