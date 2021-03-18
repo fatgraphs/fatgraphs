@@ -13,7 +13,7 @@ class GenericGraphTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         # cls.graphs = [TokenGraph("../data/large.csv", {'dtype': {'amount': object}})]
-        cls.graphs.append(TokenGraph("../data/medium.csv", {'dtype': {'amount': object}}))
+        cls.graphs.append(TokenGraph("../../data/medium.csv", {'dtype': {'amount': object}}))
         # cls.graphs.append(TokenGraph("../data/small.csv", {'dtype': {'amount': object}}))
 
     def test_graphs(self):
