@@ -35,7 +35,7 @@ The tile_server is a flask server responding to requests for tiles.
 The fronted is a simple react JS application that has a leaflet map.
 The map has a tile layer that is instructed to fetch tiles from our tile_server running on localhost.
 You can specify how many zooms levels are available on the map by modifying the appropriate 
-variable in `fe/map_client/src/components/mymap/constants.js`.
+variable in `fe/map_client/src/components/mymap/configurations.js`.
 If you do that remember to update the tile_creator to generate tiles for all the zoom levels.
 
 # Experimetns
