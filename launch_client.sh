@@ -2,28 +2,22 @@
 
 # to store spwned processes IDs
 declare -a pids
-cwd=$(pwd)
 
 # on exit kill the spwned processes
 cleanup() {
-  echo "Killing server and client"
+  echo "Killing"
     for pid in "${pids[@]}"; do
         kill -9 "$pid"
     done
 }
-trap "cleanup" SIGINT SIGTERM
+trap "cleanup" SIGINT SIGTERM SIGQUIT
 
 #generate tiles
 PYTHONPATH=$(pwd) python be/tile_creator/src/main.py
 
-# run server
-cd $cwd
-cd be/tile_server && export FLASK_APP=server.py
-flask run &
+cd fe/map_client
+# npm i
+npm run webpack
+npm run start &
 pids+=("$!")
-
-# run client
-cd $cwd
-cd fe/map_client && npm i
-npm run start
-pids+=("$!")
+wait # if we dont wait the trap wont work
