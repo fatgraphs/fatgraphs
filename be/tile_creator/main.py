@@ -6,5 +6,8 @@ from be.tile_creator.src.render.renderer import GraphRenderer
 medium_graph = TokenGraph(MEDIUM_GRAPH_RAW_PATH, {'dtype': {'amount': object}})
 gt_graph = GraphToolTokenGraph(medium_graph)
 renderer = GraphRenderer(gt_graph)
-renderer.render_tiles(3)
+renderer.render_tiles(2)
+
+# post graph info to server
+
 

@@ -13,7 +13,7 @@ cleanup() {
 trap "cleanup" SIGINT SIGTERM SIGQUIT
 
 #generate tiles
-PYTHONPATH=$(pwd) python be/tile_creator/src/main.py
+PYTHONPATH=$(pwd) python be/tile_creator/main.py
 
 cd fe/map_client
 # npm i
