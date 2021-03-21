@@ -1,4 +1,6 @@
-import './App.css';
+//import './App.css';
+///import Mymap from "./components/mymap/Mymap";
+import React from 'react';
 import Mymap from "./components/mymap/Mymap";
 
 function App() {
