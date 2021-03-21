@@ -3,7 +3,7 @@ import os
 
 from graph_tool.draw import graph_draw
 
-from be.configuration import TILE_SOURCE
+from be.configuration import TILE_SOURCE, BG_COLOR
 from be.tile_creator.src.graph.gt_token_graph import GraphToolTokenGraph
 from be.tile_creator.src.render.transparency_calculator import TransparencyCalculator
 
@@ -50,13 +50,13 @@ class GraphRenderer:
     def _render(self, fit, file_name, edge_colors):
         graph_draw(self.graph.g,
                    pos=self.graph.vertex_positions,
-                   bg_color='grey',
+                   bg_color=BG_COLOR,
                    vertex_size=self.graph.degree,
                    vertex_fill_color=[1, 0, 0, 0.8],
                    edge_color=edge_colors,
                    output_size=[2048, 2048],
                    output=file_name,
                    fit_view=fit,
-                   edge_pen_width=self.graph.edge_weight,
+                   # edge_pen_width=self.graph.edge_weight,
                    adjust_aspect=False,
                    fit_view_ink=True)
