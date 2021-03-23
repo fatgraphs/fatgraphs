@@ -5,15 +5,12 @@ declare -a pids
 
 # on exit kill the spwned processes
 cleanup() {
-  echo "Killing"
+  echo "Killing the client process"
     for pid in "${pids[@]}"; do
         kill -9 "$pid"
     done
 }
 trap "cleanup" SIGINT SIGTERM SIGQUIT
-
-#generate tiles
-PYTHONPATH=$(pwd) python be/tile_creator/main.py
 
 cd fe/map_client
 # npm i

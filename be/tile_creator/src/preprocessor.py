@@ -9,5 +9,6 @@ class DataPreprocessor:
         pass
 
     def preprocess(self, data_frame):
-        pass
+        # data_frame.loc[data_frame['source'] == data_frame['target']]
+        return data_frame
         # TODO remove parallel edges
