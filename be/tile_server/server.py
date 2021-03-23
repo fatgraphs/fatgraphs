@@ -18,7 +18,7 @@ app.url_map.converters['signed_int'] = SignedIntConverter
 
 #TODO: define URLs in a JSON file global to BE and FE and read it
 
-@app.route(CONFIGURATIONS['endpoints']['tile'] + '<signed_int:z>/<signed_int:x>/<signed_int:y>.png')
+@app.route(CONFIGURATIONS['endpoints']['tile'] + '/<signed_int:z>/<signed_int:x>/<signed_int:y>.png')
 def hello_world(z, x, y):
     # print("recevied: " + str(z) + " " + str(x) + " " + str(y))
 
@@ -30,7 +30,7 @@ def hello_world(z, x, y):
         return 'Not present'
 
 
-@app.route('/base_url/tms/1.0.0/test-graph/interest')
+@app.route(CONFIGURATIONS['endpoints']['interest_points'])
 def get_interest_points():
     # TODO: hardcoded for now
     return {'exchanges': [(-2, -2), (2, 2), (0, 0)],
