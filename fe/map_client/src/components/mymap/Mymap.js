@@ -36,17 +36,17 @@ class Mymap extends React.Component {
             crs: L.CRS.Simple,
             center: L.latLng(50.0, 50.0),
 
-        }).setView([-1000, 1000], INITIAL_ZOOM);
+        }).setView([configs['tile_size'] / -2, configs['tile_size'] / 2], INITIAL_ZOOM);
 
         this.setState({myMap: myMap})
 
         const layer = L.tileLayer(configs['endpoints']['base'] + configs['endpoints']['tile'] + '/{z}/{x}/{y}.png', {
-            maxZoom: MAX_ZOOM_IN,
+            maxZoom: configs['zoom_levels'] - 1,
             attribution: 'tokengallery 2.0',
-            tileSize: 2048 // TODO: create global constant: this value is the same as the size of the output in the graph_draw function
+            tileSize: configs['tile_size']
         }).addTo(myMap);
 
-        fetch("http://127.0.0.1:5000/base_url/tms/1.0.0/test-graph/interest")
+        fetch(configs['endpoints']['base'] + configs['endpoints']['interest_points'])
             .then(response =>
                 response.json())
             .then(data => console.log(data));
