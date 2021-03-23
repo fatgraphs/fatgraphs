@@ -1,5 +1,5 @@
 from be.tile_creator.src.render.renderer import GraphRenderer
-from be.tile_creator.test.generic_graph_test import GenericGraphTest
+from be.tile_creator.test.unit.generic_graph_test import GenericGraphTest
 
 
 class GraphRendererTest(GenericGraphTest):
