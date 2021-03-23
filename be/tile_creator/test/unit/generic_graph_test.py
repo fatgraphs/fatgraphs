@@ -1,5 +1,6 @@
 import unittest
 
+from be.configuration import MEDIUM_GRAPH_RAW_PATH
 from be.tile_creator.src.graph.token_graph import TokenGraph
 
 
@@ -13,7 +14,7 @@ class GenericGraphTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         # cls.graphs = [TokenGraph("../data/large.csv", {'dtype': {'amount': object}})]
-        cls.graphs.append(TokenGraph("../../data/medium.csv", {'dtype': {'amount': object}}))
+        cls.graphs.append(TokenGraph(MEDIUM_GRAPH_RAW_PATH, {'dtype': {'amount': object}}))
         # cls.graphs.append(TokenGraph("../data/small.csv", {'dtype': {'amount': object}}))
 
     def test_graphs(self):
