@@ -1,10 +1,9 @@
 import React from 'react';
 import './Mymap.css';
 import L from 'leaflet';
-import { INITIAL_ZOOM, MAX_ZOOM_IN }  from '../../configurations'
+import { INITIAL_ZOOM }  from '../../configurations'
 
 let configs = require('configurations');
-console.log(configs['endpoints']['base'] + configs['endpoints']['tile'] + '/{z}/{x}/{y}.png')
 
 class Mymap extends React.Component {
 
@@ -18,24 +17,24 @@ class Mymap extends React.Component {
     }
 
     render() {
-        return <div className="Mymap" class={'center'} >
+        return <div className="center">
             <div>Zoom level: {this.state.zoom}</div>
-            <div id="mapid"></div>
+            <div id="mapid"/>
 
         </div>;
     }
 
     componentDidMount() {
 
-        let corner1 = L.latLng(50, -50);
-        let corner2 = L.latLng(5.1, -5.1);
+        let corner1 = L.latLng(0, 0);
+        let corner2 = L.latLng(- configs['tile_size'], configs['tile_size']);
         let bounds = L.latLngBounds(corner1, corner2); // stops panning (scrolling around)  maxBounds: bounds
 
         const myMap = L.map('mapid' , {
             noWrap: true,
             crs: L.CRS.Simple,
-            center: L.latLng(50.0, 50.0),
-
+            maxBounds: bounds,
+            maxBoundsViscosity: 0.9
         }).setView([configs['tile_size'] / -2, configs['tile_size'] / 2], INITIAL_ZOOM);
 
         this.setState({myMap: myMap})
@@ -51,8 +50,8 @@ class Mymap extends React.Component {
                 response.json())
             .then(data => console.log(data));
 
-        L.marker([-2048, 2048]).addTo(myMap);
-        L.marker([0, 0]).addTo(myMap);
+        // L.marker([0, 500]).addTo(myMap);
+        // L.marker([0, 0]).addTo(myMap);
 
         myMap.on('zoom', function () {
             console.log("on zoom callback")
