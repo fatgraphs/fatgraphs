@@ -4,12 +4,12 @@ class TransparencyCalculator:
 
     def __init__(self, min_length, max_length, zoom_levels):
         self._do_args_check(max_length, min_length, zoom_levels)
-        self.min_length = min_length
+        self.min_length = max(1, min_length)
         self.max_length = max_length
         self.zoom_levels = zoom_levels
         self.intervals = []
         self._calculate_intervals()
-        self.max_std = 30 / 3
+        self.max_std = 30
 
     def _do_args_check(self, max_length, min_length, zoom_levels):
         if min_length < 0:
@@ -40,13 +40,13 @@ class TransparencyCalculator:
         '''
         std = self.max_std * (2 / self.zoom_levels)
         if zoom_level == 0:
-            return self.gauss(edge_length, self.max_length, std)
+            return self._gauss(edge_length, self.max_length, std)
         if zoom_level == self.zoom_levels - 1:
-            return self.gauss(edge_length, self.min_length, std)
+            return self._gauss(edge_length, self.min_length, std)
 
         zooms_left_plus_one = self.zoom_levels - 2 + 1
-        step = (self.max_length - self.min_length) / (zooms_left_plus_one)
-        return self.gauss(edge_length, step * (zooms_left_plus_one - zoom_level), std)
+        step = (self.max_length - self.min_length) / zooms_left_plus_one
+        return self._gauss(edge_length, step * (zooms_left_plus_one - zoom_level), std)
 
 
     def platou_and_linear_decrease(self, edge_length, zoom_level):
