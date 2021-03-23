@@ -2,12 +2,17 @@ import cudf
 import cugraph
 import pandas as pd
 from be.tile_creator.src.layout.layout_generator import LayoutGenerator
+from be.tile_creator.src.preprocessor import DataPreprocessor
 
 
 class TokenGraph:
 
     def __init__(self, path, options):
-        self.raw_data = pd.read_csv(path, **options)
+        # TODO: implement preprocessor
+        raw = pd.read_csv(path, **options)
+        preprocessor = DataPreprocessor()
+        preprocessed = preprocessor.preprocess(raw)
+        self.raw_data = preprocessed
         self.addresses_to_ids = self._map_addresses_to_ids()
         self.gpu_frame = self._make_graph_gpu_frame(self.addresses_to_ids)
         lg = LayoutGenerator()
