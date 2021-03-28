@@ -7,16 +7,35 @@ from be.tile_creator.src.preprocessor import DataPreprocessor
 
 class TokenGraph:
 
-    def __init__(self, path, options):
+    def __init__(self, path, options, labels=None):
+        '''
+
+        :param path: path of the csv file
+        :param options: dictionary of args to pass to the pandas read_csv fiunction
+        :param labels: path of the file that contains labels for the nodes in the graph
+            (eg labels indicating exchanges)
+        '''
         # TODO: implement preprocessor
         raw = pd.read_csv(path, **options)
         preprocessor = DataPreprocessor()
         preprocessed = preprocessor.preprocess(raw)
         self.raw_data = preprocessed
         self.addresses_to_ids = self._map_addresses_to_ids()
+        self._make_layout()
+        if labels is not None:
+            raw_labels = pd.read_csv(labels)
+            address_to_label = raw_labels[['address', 'label']]
+
+            # make metadata
+            self.nodes_metadata = address_to_label.merge(self.addresses_to_positions)
+
+    def _make_layout(self):
         self.gpu_frame = self._make_graph_gpu_frame(self.addresses_to_ids)
         lg = LayoutGenerator()
-        self.layout = lg.make_layout(self.gpu_frame)
+        self.ids_to_positions = lg.make_layout(self.gpu_frame)
+
+        self.addresses_to_positions = \
+            self.addresses_to_ids.merge(self.ids_to_positions, how='left', on='vertex').drop(columns=['vertex'])
 
     def _map_addresses_to_ids(self):
         data = self.raw_data
