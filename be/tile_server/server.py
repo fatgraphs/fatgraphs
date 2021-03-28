@@ -1,9 +1,9 @@
 import os
-
+import pandas as pd
 from flask import Flask, send_file
 from werkzeug.routing import IntegerConverter
 from flask_cors import CORS, cross_origin
-from be.configuration import TILE_SOURCE, CONFIGURATIONS
+from be.configuration import TILE_SOURCE, CONFIGURATIONS, METADATA_PATH
 
 
 class SignedIntConverter(IntegerConverter):
@@ -14,9 +14,6 @@ class SignedIntConverter(IntegerConverter):
 app = Flask(__name__)
 cors = CORS(app)
 app.url_map.converters['signed_int'] = SignedIntConverter
-
-
-#TODO: define URLs in a JSON file global to BE and FE and read it
 
 @app.route(CONFIGURATIONS['endpoints']['tile'] + '/<signed_int:z>/<signed_int:x>/<signed_int:y>.png')
 def hello_world(z, x, y):
@@ -32,6 +29,21 @@ def hello_world(z, x, y):
 
 @app.route(CONFIGURATIONS['endpoints']['interest_points'])
 def get_interest_points():
+    if os.path.exists(METADATA_PATH):
+        csv = pd.read_csv(METADATA_PATH)
+    else:
+        raise Exception("Create the metadata.csv file by running experiments/create_graph_metadata.py and moving "
+                        "the generated file to the data folder")
+    csv['pos'] = csv.apply(lambda row: (round(row['x'], 2), round(row['y'], 2)), axis=1)
+    csv = csv.drop(columns=['x', 'y'])
+    response = {}
+    for i, r in csv.iterrows():
+        response[str(r['pos'])] = [str(r['label']), str(r['address'])]
+    return response
+
+
+@app.route(CONFIGURATIONS['endpoints']['graph_summary'])
+def get_graph_summary():
     # TODO: hardcoded for now
-    return {'exchanges': [(-2, -2), (2, 2), (0, 0)],
-            'half_graph_side' : 9999} # TODO
+    return {"nodes": 456,
+            "edges": 300}
