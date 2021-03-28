@@ -1,7 +1,7 @@
 import React from 'react';
 import './Mymap.css';
 import L from 'leaflet';
-import { INITIAL_ZOOM }  from '../../configurations'
+import { INITIAL_ZOOM }  from '../../../configurations'
 
 let configs = require('configurations');
 
@@ -17,7 +17,7 @@ class Mymap extends React.Component {
     }
 
     render() {
-        return <div className="center">
+        return <div className={'border flex-1'}>
             <div>Zoom level: {this.state.zoom}</div>
             <div id="mapid"/>
 

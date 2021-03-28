@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.border {
+    border: 2px solid #000;
+    padding: 5px;
+    @apply ml-2
+}
