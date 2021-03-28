@@ -27,7 +27,7 @@ class GraphToolTokenGraph:
         self.edge_length = self.g.new_edge_property("float")
 
         # populate vertex positions with the positions specified i nt he layout
-        for i, row in enumerate(token_graph.layout.sort_values("vertex")[["x", "y"]].values):
+        for i, row in enumerate(token_graph.ids_to_positions.sort_values("vertex")[["x", "y"]].values):
             self.vertex_positions[i] = row
 
         data = token_graph.edge_ids_amounts.rename(columns={'source_id': 'source', 'target_id': 'target'})
@@ -38,14 +38,14 @@ class GraphToolTokenGraph:
             hashed=False,
             eprops=[self.edge_weight])
 
-        self.edge_weight.a = list(map(lambda x: (math.log10(x + 1.0) + 1.0), list(self.edge_weight.a)))
+        self.edge_weight.a = list(map(lambda x: (math.log10(x + 1.0) + 1.0) * 0.8, list(self.edge_weight.a)))
 
         # TODO: loop edges have weigth zero, define a minimum
-        edge_lengths = self._calculate_edge_lengths(data, token_graph.layout)
+        edge_lengths = self._calculate_edge_lengths(data, token_graph.ids_to_positions)
 
         self.edge_length.a = edge_lengths.values
 
-        self._square_out(token_graph.layout)
+        self._square_out(token_graph.ids_to_positions)
 
         self.degree = self.g.degree_property_map("in")
         self.degree.a = 4 * (np.sqrt(self.degree.a) * 0.5 + 0.4)
