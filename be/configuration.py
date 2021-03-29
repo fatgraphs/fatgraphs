@@ -10,6 +10,9 @@ SMALL_GRAPH_RAW_PATH = os.path.join(data_folder, 'small.csv')
 MOCK_LABELLED_RAW_PATH = os.path.join(data_folder, 'mock_net_labelled.csv')
 LABELS_PATH = os.path.join(data_folder, 'etherscanLabels20200529.csv')
 METADATA_PATH = os.path.join(data_folder, 'metadata.csv')
+MIN_MAX_PATH = os.path.join(data_folder, 'min_max.csv')
+
+# move in global config
 BG_COLOR = 'black'
 
 

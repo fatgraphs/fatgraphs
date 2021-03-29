@@ -4,6 +4,7 @@ import numpy as np
 from graph_tool import Graph
 import pandas as pd
 
+from be.configuration import MIN_MAX_PATH
 from be.tile_creator.src.graph.token_graph import TokenGraph
 
 
@@ -92,3 +93,7 @@ class GraphToolTokenGraph:
         self.min_x = min_coordinate_value
         self.min_y = min_coordinate_value
         self.side = max_coordinate_value - min_coordinate_value
+        # save min and max coordinate value for later using it to place markers on the map
+        d = {'min': [min_coordinate_value], 'max': [max_coordinate_value]}
+        df = pd.DataFrame(data=d)
+        df.to_csv(MIN_MAX_PATH, index=False)

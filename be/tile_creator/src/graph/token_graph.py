@@ -27,7 +27,7 @@ class TokenGraph:
             address_to_label = raw_labels[['address', 'label']]
 
             # make metadata
-            self.nodes_metadata = address_to_label.merge(self.addresses_to_positions)
+            self.nodes_metadata = address_to_label.merge(self.addresses_to_positions, on="address")
 
     def _make_layout(self):
         self.gpu_frame = self._make_graph_gpu_frame(self.addresses_to_ids)

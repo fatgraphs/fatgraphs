@@ -2,8 +2,9 @@
   "endpoints": {
     "base": "http://127.0.0.1:5000",
     "tile": "/tokengallery/tile",
-    "interest_points" : "/tokengallery/interest-points"
+    "interest_points": "/tokengallery/interest-points",
+    "graph_summary": "/tokengallery/graph-summary"
   },
-  "tile_size": 512,
-  "zoom_levels": 4
+  "tile_size": 4096,
+  "zoom_levels": 2
 }
