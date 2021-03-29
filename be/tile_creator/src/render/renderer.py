@@ -16,7 +16,7 @@ class GraphRenderer:
         self.graph = graph
 
     def render_tiles(self, zoom_levels):
-        tc = TransparencyCalculator(min(self.graph.edge_length.a), max(self.graph.edge_length.a),  zoom_levels)
+        tc = TransparencyCalculator(min(self.graph.edge_length.a), max(self.graph.edge_length.a))
 
         for zoom_level in range(0, zoom_levels):
             number_of_images = 4 ** zoom_level

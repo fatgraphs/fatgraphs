@@ -1,5 +1,3 @@
-import cudf
-import cugraph
 import pandas as pd
 
 
@@ -9,6 +7,9 @@ class DataPreprocessor:
         pass
 
     def preprocess(self, data_frame):
-        # data_frame.loc[data_frame['source'] == data_frame['target']]
+        return self._remove_parallel_edges(data_frame)
+
+    def _remove_parallel_edges(self, data_frame):
+        data_frame['amount'] = pd.to_numeric(data_frame['amount'])
+        data_frame = data_frame.groupby(['source', 'target'], as_index=False).sum()
         return data_frame
-        # TODO remove parallel edges
