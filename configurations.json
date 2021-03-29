@@ -6,10 +6,11 @@
     "graph_summary": "/tokengallery/graph-summary"
   },
   "tile_size": 2048,
-  "zoom_levels": 4,
+  "zoom_levels": 2,
   "min_transparency": 0.01,
   "max_transparency": 0.1,
   "std_transparency_as_percentage": 0.5,
   "max_edge_thickness": 8,
-  "min_edge_thickness": 1
+  "min_edge_thickness": 1,
+  "bg_color": "black"
 }

@@ -12,10 +12,6 @@ LABELS_PATH = os.path.join(data_folder, 'etherscanLabels20200529.csv')
 METADATA_PATH = os.path.join(data_folder, 'metadata.csv')
 MIN_MAX_PATH = os.path.join(data_folder, 'min_max.csv')
 
-# move in global config
-BG_COLOR = 'black'
-
-
 def _load_configurations():
     join = os.path.join(this_file_dir, "../configurations.json")
     configs = open(join, "r")
