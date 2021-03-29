@@ -4,7 +4,7 @@ import numpy as np
 from graph_tool import Graph
 import pandas as pd
 
-from be.configuration import MIN_MAX_PATH
+from be.configuration import MIN_MAX_PATH, CONFIGURATIONS
 from be.tile_creator.src.graph.token_graph import TokenGraph
 
 
@@ -39,7 +39,13 @@ class GraphToolTokenGraph:
             hashed=False,
             eprops=[self.edge_weight])
 
-        self.edge_weight.a = list(map(lambda x: (math.log10(x + 1.0) + 1.0) * 0.8, list(self.edge_weight.a)))
+        max_amount = float(self.edge_weight.a.max())
+        self.edge_weight.a = list(
+            map(
+                lambda x: self._convert_amount_to_edge_width(x, max_amount),
+                list(self.edge_weight.a)
+                )
+        )
 
         # TODO: loop edges have weigth zero, define a minimum
         edge_lengths = self._calculate_edge_lengths(data, token_graph.ids_to_positions)
@@ -50,6 +56,14 @@ class GraphToolTokenGraph:
 
         self.degree = self.g.degree_property_map("in")
         self.degree.a = 4 * (np.sqrt(self.degree.a) * 0.5 + 0.4)
+
+    def _convert_amount_to_edge_width(self, x, max_amount):
+        # TODO: optimise
+        zero_amount_become_one = x + 1.0
+        log_amount = math.log10(zero_amount_become_one)
+        thickness = (log_amount / math.log10(max_amount) * (CONFIGURATIONS['max_edge_thickness'] - CONFIGURATIONS['min_edge_thickness'])) + \
+                    CONFIGURATIONS['min_edge_thickness']
+        return thickness
 
     def _calculate_edge_lengths(self, data, layout):
         data = data.merge(layout.rename(columns={"vertex": "target"}), on='target', how='left') \

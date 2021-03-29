@@ -1,15 +1,14 @@
 import numpy as np
 
+from be.configuration import CONFIGURATIONS
+
+
 class TransparencyCalculator:
 
-    def __init__(self, min_length, max_length, zoom_levels):
-        self._do_args_check(max_length, min_length, zoom_levels)
+    def __init__(self, min_length, max_length):
+        self._do_args_check(max_length, min_length, CONFIGURATIONS['zoom_levels'])
         self.min_length = max(1, min_length)
         self.max_length = max_length
-        self.zoom_levels = zoom_levels
-        self.intervals = []
-        self._calculate_intervals()
-        self.max_std = 30
 
     def _do_args_check(self, max_length, min_length, zoom_levels):
         if min_length < 0:
@@ -19,18 +18,13 @@ class TransparencyCalculator:
         if zoom_levels < 2:
             raise Exception("The minimum zoom level should be 2")
 
-    def _calculate_intervals(self):
-
-        step = (self.max_length - self.min_length) / self.zoom_levels
-        for i in range(0, self.zoom_levels):
-            interval = (self.min_length + (i * step),
-                        self.min_length + ((i + 1) * step))
-            self.intervals.append(interval)
-        self.intervals.reverse()
-
     def get_transparency(self, edge_length, zoom_level):
-        if not zoom_level < self.zoom_levels and zoom_level > 0:
-            raise Exception("zoom level needs to be between 0 and the max zoom leve ({0})".format(self.zoom_levels))
+        if not zoom_level < CONFIGURATIONS['zoom_levels'] and zoom_level > 0:
+            raise Exception(
+                "zoom level needs to be between 0 and the max zoom leve ({0})".format(CONFIGURATIONS['zoom_levels']))
+        if edge_length > self.max_length:
+            raise Exception(
+                "You passed an edge length longer than the maximum")
 
         return self.gaussian_bumps(edge_length, zoom_level)
 
@@ -38,42 +32,17 @@ class TransparencyCalculator:
         '''
         A strategy to calculate transparency.
         '''
-        std = self.max_std * (2 / self.zoom_levels)
-        if zoom_level == 0:
-            return self._gauss(edge_length, self.max_length, std)
-        if zoom_level == self.zoom_levels - 1:
-            return self._gauss(edge_length, self.min_length, std)
 
-        zooms_left_plus_one = self.zoom_levels - 2 + 1
-        step = (self.max_length - self.min_length) / zooms_left_plus_one
-        return self._gauss(edge_length, step * (zooms_left_plus_one - zoom_level), std)
+        step = (self.max_length - self.min_length) / (CONFIGURATIONS['zoom_levels'] + 1)
+        mean = step * (CONFIGURATIONS['zoom_levels'] - zoom_level)
+        std = CONFIGURATIONS['std_transparency_as_percentage'] * (self.max_length - self.min_length)
 
+        return self._gauss(edge_length, mean, std)
 
-    def platou_and_linear_decrease(self, edge_length, zoom_level):
+    def _gauss(self, x, mu, std):
         '''
-        A strategy to calculate transparency.
-        Given the zoom level, all edges withing a certain length range have
-        transparency = 1 (fully opaque). Edges with a length that is outside such range have linearly decreasing transparency.
+        Compute gaussian function, the min outout is min_transparency, the max_output is max_transparency
         '''
-        interval = self.intervals[zoom_level]
-        # print("interval: ", interval)
-        length_equal_min = self.I(interval[0], self.min_length)
-        result_left_equation = (edge_length - self.min_length + length_equal_min) / \
-                               (interval[0] - self.min_length + length_equal_min)
-        length_equal_max = self.I(interval[1], self.max_length)
-        result_right_equation = (self.max_length - edge_length + length_equal_max) / \
-                                (self.max_length - interval[1] + length_equal_max)
-        return min(1, result_left_equation, result_right_equation)
-
-    def _I(self, a, b):
-        '''
-        Identity function
-        '''
-        return 1 if a == b else 0
-
-    def _gauss(self, x, mu, sig):
-        '''
-        Compute gaussian function
-        '''
-        return np.exp(-np.power(x - mu, 2.) / (2 * np.power(sig, 2.)))
-
+        min_output = CONFIGURATIONS['min_transparency']
+        max_output = CONFIGURATIONS['max_transparency']
+        return (max_output - min_output) * np.exp(-np.power(x - mu, 2.) / (2 * np.power(std, 2.))) + min_output
