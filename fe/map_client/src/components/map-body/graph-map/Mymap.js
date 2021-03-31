@@ -45,8 +45,6 @@ class Mymap extends React.Component {
         const myMap = L.map('mapid' , {
             noWrap: true,
             crs: L.CRS.Simple,
-            maxBounds: bounds,
-            maxBoundsViscosity: 0.9
         }).setView([configs['tile_size'] / -2, configs['tile_size'] / 2], INITIAL_ZOOM);
 
         this.setState({myMap: myMap})
