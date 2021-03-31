@@ -10,10 +10,14 @@ from be.tile_creator.src.render.transparency_calculator import TransparencyCalcu
 
 class GraphRenderer:
 
-    def __init__(self, graph):
+    # TODO consider passing the configuration object to
+    # the GraphRenderer constructor so it's more flexible
+    # (rn is relying on the global config)
+    def __init__(self, graph, tile_size=None):
         if not isinstance(graph, GraphToolTokenGraph):
             raise TypeError("graph renderer needs an instance of GraphToolTokenGraph as argument")
         self.graph = graph
+        self.tile_size = tile_size
 
     def render_tiles(self, zoom_levels):
         tc = TransparencyCalculator(min(self.graph.edge_length.a), max(self.graph.edge_length.a))
@@ -49,13 +53,17 @@ class GraphRenderer:
                 self._render(fit, file_name, edge_colors)
 
     def _render(self, fit, file_name, edge_colors):
+        if self.tile_size is not None:
+            output_size = [self.tile_size, self.tile_size]
+        else:
+            output_size = [CONFIGURATIONS['tile_size'], CONFIGURATIONS['tile_size']]
         graph_draw(self.graph.g,
                    pos=self.graph.vertex_positions,
                    bg_color=CONFIGURATIONS['bg_color'],
                    vertex_size=self.graph.degree,
                    vertex_fill_color=[1, 0, 0, 0.8],
                    edge_color=edge_colors,
-                   output_size=[CONFIGURATIONS['tile_size'], CONFIGURATIONS['tile_size']],
+                   output_size=output_size,
                    output=file_name,
                    fit_view=fit,
                    edge_pen_width=self.graph.edge_weight,
