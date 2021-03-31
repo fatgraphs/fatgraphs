@@ -6,7 +6,7 @@
     "graph_summary": "/tokengallery/graph-summary"
   },
   "tile_size": 2048,
-  "zoom_levels": 2,
+  "zoom_levels": 3,
   "min_transparency": 0.01,
   "max_transparency": 0.1,
   "std_transparency_as_percentage": 0.5,

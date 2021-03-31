@@ -51,6 +51,9 @@ class GraphRenderer:
                 file_name = os.path.join(TILE_SOURCE, tile_name)
 
                 self._render(fit, file_name, edge_colors)
+            # This ensures that vertices maintain the same apparent size when zooming.
+            # Without it you would notice that the vertices shrink when zooming.
+            self.graph.degree.a = self.graph.degree.a * 2
 
     def _render(self, fit, file_name, edge_colors):
         if self.tile_size is not None:
