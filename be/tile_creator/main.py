@@ -15,8 +15,8 @@ def main(csv_path, configuration_dictionary, labels_path=None):
         metadata.to_csv(METADATA_PATH, index=False)
 
     gt_graph = GraphToolTokenGraph(graph)
-    renderer = GraphRenderer(gt_graph)
-    renderer.render_tiles(configuration_dictionary['zoom_levels'])
+    renderer = GraphRenderer(gt_graph, configuration_dictionary)
+    renderer.render_tiles()
 
     # post graph info to server
 

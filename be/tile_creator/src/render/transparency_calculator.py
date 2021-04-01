@@ -1,14 +1,12 @@
 import numpy as np
 
-from be.configuration import CONFIGURATIONS
-
-
 class TransparencyCalculator:
 
-    def __init__(self, min_length, max_length):
-        self._do_args_check(max_length, min_length, CONFIGURATIONS['zoom_levels'])
+    def __init__(self, min_length, max_length, configurations):
+        self.configurations = configurations
         self.min_length = max(1, min_length)
         self.max_length = max_length
+        self._do_args_check(max_length, min_length, self.configurations['zoom_levels'])
 
     def _do_args_check(self, max_length, min_length, zoom_levels):
         if min_length < 0:
@@ -19,9 +17,9 @@ class TransparencyCalculator:
             raise Exception("The minimum zoom level should be 2")
 
     def get_transparency(self, edge_length, zoom_level):
-        if not zoom_level < CONFIGURATIONS['zoom_levels'] and zoom_level > 0:
+        if not zoom_level < self.configurations['zoom_levels'] and zoom_level > 0:
             raise Exception(
-                "zoom level needs to be between 0 and the max zoom leve ({0})".format(CONFIGURATIONS['zoom_levels']))
+                "zoom level needs to be between 0 and the max zoom leve ({0})".format(self.configurations['zoom_levels']))
         if edge_length > self.max_length:
             raise Exception(
                 "You passed an edge length longer than the maximum")
@@ -33,9 +31,9 @@ class TransparencyCalculator:
         A strategy to calculate transparency.
         '''
 
-        step = (self.max_length - self.min_length) / (CONFIGURATIONS['zoom_levels'] + 1)
-        mean = step * (CONFIGURATIONS['zoom_levels'] - zoom_level)
-        std = CONFIGURATIONS['std_transparency_as_percentage'] * (self.max_length - self.min_length)
+        step = (self.max_length - self.min_length) / (self.configurations['zoom_levels'] + 1)
+        mean = step * (self.configurations['zoom_levels'] - zoom_level)
+        std = self.configurations['std_transparency_as_percentage'] * (self.max_length - self.min_length)
 
         return self._gauss(edge_length, mean, std)
 
@@ -43,6 +41,6 @@ class TransparencyCalculator:
         '''
         Compute gaussian function, the min outout is min_transparency, the max_output is max_transparency
         '''
-        min_output = CONFIGURATIONS['min_transparency']
-        max_output = CONFIGURATIONS['max_transparency']
+        min_output = self.configurations['min_transparency']
+        max_output = self.configurations['max_transparency']
         return (max_output - min_output) * np.exp(-np.power(x - mu, 2.) / (2 * np.power(std, 2.))) + min_output

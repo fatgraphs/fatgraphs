@@ -3,7 +3,6 @@ import os
 import numpy as np
 from graph_tool.draw import graph_draw
 
-from be.configuration import TILE_SOURCE, CONFIGURATIONS
 from be.tile_creator.src.graph.gt_token_graph import GraphToolTokenGraph
 from be.tile_creator.src.render.transparency_calculator import TransparencyCalculator
 
@@ -13,16 +12,16 @@ class GraphRenderer:
     # TODO consider passing the configuration object to
     # the GraphRenderer constructor so it's more flexible
     # (rn is relying on the global config)
-    def __init__(self, graph, tile_size=None):
+    def __init__(self, graph, configurations):
         if not isinstance(graph, GraphToolTokenGraph):
             raise TypeError("graph renderer needs an instance of GraphToolTokenGraph as argument")
         self.graph = graph
-        self.tile_size = tile_size
+        self.configurations = configurations
 
-    def render_tiles(self, zoom_levels):
-        tc = TransparencyCalculator(min(self.graph.edge_length.a), max(self.graph.edge_length.a))
+    def render_tiles(self):
+        tc = TransparencyCalculator(min(self.graph.edge_length.a), max(self.graph.edge_length.a), self.configurations)
 
-        for zoom_level in range(0, zoom_levels):
+        for zoom_level in range(0, self.configurations['zoom_levels']):
             number_of_images = 4 ** zoom_level
             divide_by = int(math.sqrt(number_of_images))
             tuples = []
@@ -48,7 +47,7 @@ class GraphRenderer:
                 print(fit)
 
                 tile_name = "z_" + str(zoom_level) + "x_" + str(t[0]) + "y_" + str(t[1]) + ".png"
-                file_name = os.path.join(TILE_SOURCE, tile_name)
+                file_name = os.path.join(self.configurations['output_folder'], tile_name)
 
                 self._render(fit, file_name, edge_colors)
             # This ensures that vertices and edges maintain the same apparent size when zooming.
@@ -57,17 +56,14 @@ class GraphRenderer:
             self.graph.edge_weight.a = self.graph.edge_weight.a * 2
 
     def _render(self, fit, file_name, edge_colors):
-        if self.tile_size is not None:
-            output_size = [self.tile_size, self.tile_size]
-        else:
-            output_size = [CONFIGURATIONS['tile_size'], CONFIGURATIONS['tile_size']]
+
         graph_draw(self.graph.g,
                    pos=self.graph.vertex_positions,
-                   bg_color=CONFIGURATIONS['bg_color'],
+                   bg_color=self.configurations['bg_color'],
                    vertex_size=self.graph.degree,
                    vertex_fill_color=[1, 0, 0, 0.8],
                    edge_color=edge_colors,
-                   output_size=output_size,
+                   output_size=[self.configurations['tile_size'], self.configurations['tile_size']],
                    output=file_name,
                    fit_view=fit,
                    edge_pen_width=self.graph.edge_weight,
