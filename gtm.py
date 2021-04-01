@@ -46,17 +46,19 @@ def mkdir_for_this_graph():
     path = os.path.join(get_cwd(), "graph-maps")
     path = os.path.join(path, args["-n"])
     result_in_directory_existing(path)
+    return path
 
 
 args = extract_arguments()
 ensure_container_directory_exists()
-mkdir_for_this_graph()
+graph_path = mkdir_for_this_graph()
 
 # default value as second arg og 'get'
 # TODO find a way of ensuring that htis dict keys are the same as defined in configuration.json
 configurations = {
+    "output_folder": graph_path,
     "tile_size": args.get('-ts', 512),
-    "zoom_levels": args.get('-z', 2),
+    "zoom_levels": int(args.get('-z', 2)),
     "min_transparency": args.get('-min_t', 0.01),
     "max_transparency": args.get('-max_t', 0.1),
     "std_transparency_as_percentage": args.get("-std", 0.5),
