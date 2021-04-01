@@ -4,16 +4,22 @@ from be.tile_creator.src.graph.gt_token_graph import GraphToolTokenGraph
 from be.tile_creator.src.graph.token_graph import TokenGraph
 from be.tile_creator.src.render.renderer import GraphRenderer
 
-medium_graph = TokenGraph(MEDIUM_GRAPH_RAW_PATH, {'dtype': {'amount': object}}, LABELS_PATH)
 
-# regenerate metadata because positions may have changed
-metadata = medium_graph.nodes_metadata.drop_duplicates()
-metadata.to_csv(METADATA_PATH, index=False)
+def main(csv_path, configuration_dictionary, labels_path=None):
+    graph = TokenGraph(csv_path, {'dtype': {'amount': object}}, labels_path)
 
-gt_graph = GraphToolTokenGraph(medium_graph)
-renderer = GraphRenderer(gt_graph)
-renderer.render_tiles(CONFIGURATIONS['zoom_levels'])
+    # TODO add support for lables
+    # regenerate metadata because positions may have changed
+    if labels_path is not None:
+        metadata = graph.nodes_metadata.drop_duplicates()
+        metadata.to_csv(METADATA_PATH, index=False)
 
-# post graph info to server
+    gt_graph = GraphToolTokenGraph(graph)
+    renderer = GraphRenderer(gt_graph)
+    renderer.render_tiles(configuration_dictionary['zoom_levels'])
+
+    # post graph info to server
 
 
+if __name__ == '__main__':
+    main(MEDIUM_GRAPH_RAW_PATH, CONFIGURATIONS)
