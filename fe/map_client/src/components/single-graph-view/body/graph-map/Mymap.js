@@ -1,42 +1,43 @@
 import React from 'react';
 import './Mymap.css';
 import L from 'leaflet';
-import { INITIAL_ZOOM }  from '../../../configurations'
+import { INITIAL_ZOOM }  from '../../../../configurations'
 
-let configs = require('configurations');
+let configs = require('../../../../../../../configurations');
 
 class Mymap extends React.Component {
 
     constructor (props) {
         super(props);
         this.state={
-            zoom:INITIAL_ZOOM,
+            zoom:0,
             center:'world',
             myMap: null,
-            graph_summary: null
+            graph_metadata: props.graph_metadata,
+            vertices_metadata: props.vertices_metadata,
+            is_marker_visible: true
         }
+        this.draw_markers = this.draw_markers.bind(this)
+        this.toggle_markers = this.toggle_markers.bind(this)
+        console.log("my map constructor")
     }
 
     render() {
-        return <div className={'border flex-1'}>
-            <div>Zoom level: {this.state.zoom}</div>
-            <div id="mapid"/>
 
-        </div>;
+        return <div className={'border flex-1'}>
+            <div >
+                <div>Zoom level: {this.state.zoom}</div>
+                <div id="mapid"/>
+            </div>;
+
+            <ToggleBar className={'border flex-6'}
+                call_back={this.toggle_markers}
+            />
+
+            </div>
     }
 
     componentDidMount() {
-
-        // TODO: this call is repeated in map header, create container component and move up in the hierarchy so it's shared
-        fetch(configs['endpoints']['base'] + configs['endpoints']['graph_summary'])
-            .then(response =>
-                response.json())
-            .then(data => {
-                console.log(data)
-                this.setState({"graph_summary": data})
-            })
-        // TODO: do it properly
-        setTimeout(() => {  console.log("World!"); }, 2000);
 
         let corner1 = L.latLng(0, 0);
         let corner2 = L.latLng(- configs['tile_size'], configs['tile_size']);
@@ -58,22 +59,23 @@ class Mymap extends React.Component {
         let popup = L.popup()
             .setContent('<p>Hello world!<br />This is a nice popup.</p>')
 
-        fetch(configs['endpoints']['base'] + configs['endpoints']['interest_points'])
-            .then(response =>
-                response.json())
-            .then(data => {
-                for (let p in data) {
-                    let pos = convert_graph_coordinate_to_map(parseTuple(p),
-                        this.state.graph_summary['min_coordinate'], this.state.graph_summary['max_coordinate']);
+        console.log("rendering the map")
+        console.log(this.state.is_marker_visible)
+        if(this.state.is_marker_visible){
+            this.draw_markers(popup, myMap);
+        }
 
-                    let myIcon = L.divIcon({className: 'my-div-icon'});
-                    L.marker(pos, {icon: myIcon})
-                        .bindPopup(popup).openPopup()
-                        .addTo(myMap);
-                }
+        // not used, keep for reference
+        myMap.on('zoom', function () {
+            // console.log("on zoom callback")
+            this.setState({zoom: myMap.getZoom()})
+        }.bind(this))
+    }
 
-                let pos = convert_graph_coordinate_to_map(parseTuple("(-209.191757, 78.224487)"),
-                    this.state.graph_summary['min_coordinate'], this.state.graph_summary['max_coordinate']);
+    draw_markers(popup, myMap) {
+        for (let p in this.state.vertices_metadata) {
+            let pos = convert_graph_coordinate_to_map(parseTuple(p),
+                this.state.graph_metadata['min_coordinate'], this.state.graph_metadata['max_coordinate']);
 
                 let myIcon = L.divIcon({className: 'my-div-icon'});
                 L.marker(pos, {icon: myIcon})

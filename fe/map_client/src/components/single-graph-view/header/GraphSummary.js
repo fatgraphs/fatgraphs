@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import DescriptionTable from "../../description-table/DescriptionTable";
+import DescriptionTable from "../body/description-table/DescriptionTable";
 
 class GraphSummary extends Component {
     constructor(props) {
