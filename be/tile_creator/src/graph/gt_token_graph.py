@@ -52,7 +52,7 @@ class GraphToolTokenGraph:
 
         self.edge_length.a = edge_lengths.values
 
-        self._square_out(token_graph.ids_to_positions)
+        self._square_out(token_graph)
 
         self.degree = self.g.degree_property_map("in")
         self.degree.a = 4 * (np.sqrt(self.degree.a) * 0.5 + 0.4)
@@ -78,17 +78,14 @@ class GraphToolTokenGraph:
         ssy___ = ssx_ssy ** 0.5
         return ssy___
 
-    def _square_out(self, values):
+    def _square_out(self, token_graph):
         # add two vertices that ensure that the layout is a square
-        temp_max_x = values['x'].max()
-        temp_max_y = values['y'].max()
-        temp_min_x = values['x'].min()
-        temp_min_y = values['y'].min()
+
 
         top_left = self.g.add_vertex()
         bottom_right = self.g.add_vertex()
-        min_coordinate_value = min(temp_min_x, temp_min_y)
-        max_coordinate_value = max(temp_max_x, temp_max_y)
+        min_coordinate_value = token_graph.graph_metadata['min'][0]
+        max_coordinate_value = token_graph.graph_metadata['max'][0]
 
         self.vertex_positions[top_left] = (min_coordinate_value, min_coordinate_value)
         self.vertex_positions[bottom_right] = (max_coordinate_value, max_coordinate_value)
@@ -107,7 +104,3 @@ class GraphToolTokenGraph:
         self.min_x = min_coordinate_value
         self.min_y = min_coordinate_value
         self.side = max_coordinate_value - min_coordinate_value
-        # save min and max coordinate value for later using it to place markers on the map
-        d = {'min': [min_coordinate_value], 'max': [max_coordinate_value]}
-        df = pd.DataFrame(data=d)
-        df.to_csv(MIN_MAX_PATH, index=False)

@@ -15,19 +15,30 @@ class TokenGraph:
         :param labels: path of the file that contains labels for the nodes in the graph
             (eg labels indicating exchanges)
         '''
-        # TODO: implement preprocessor
         raw = pd.read_csv(path, **options)
         preprocessor = DataPreprocessor()
         preprocessed = preprocessor.preprocess(raw)
         self.raw_data = preprocessed
         self.addresses_to_ids = self._map_addresses_to_ids()
         self._make_layout()
+        self.vertices_metadata = pd.DataFrame(columns=['address', 'label', 'x', 'y'])
         if labels is not None:
             raw_labels = pd.read_csv(labels)
             address_to_label = raw_labels[['address', 'label']]
-
-            # make metadata
-            self.nodes_metadata = address_to_label.merge(self.addresses_to_positions, on="address")
+            self.vertices_metadata = address_to_label.merge(self.addresses_to_positions, on="address")
+            self.vertices_metadata = self.vertices_metadata.drop_duplicates()
+        temp_max_x = self.ids_to_positions['x'].max()
+        temp_max_y = self.ids_to_positions['y'].max()
+        temp_min_x = self.ids_to_positions['x'].min()
+        temp_min_y = self.ids_to_positions['y'].min()
+        min_coordinate_value = min(temp_min_x, temp_min_y)
+        max_coordinate_value = max(temp_max_x, temp_max_y)
+        # save min and max coordinate value for later using it to place markers on the map
+        # (needed to convert from graph coordinate space to map coordinate space)
+        self.graph_metadata = pd.DataFrame(data={'min': [min_coordinate_value],
+                                                 'max': [max_coordinate_value],
+                                                 'nodes': [self.addresses_to_ids.shape[0]],
+                                                 'edges': [self.edge_ids_amounts.shape[0]]})
 
     def _make_layout(self):
         self.gpu_frame = self._make_graph_gpu_frame(self.addresses_to_ids)
