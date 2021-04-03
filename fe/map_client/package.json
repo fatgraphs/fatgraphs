@@ -7,7 +7,7 @@
     "webpack": "webpack",
     "start": "webpack serve",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build-css": "tailwindcss build src/styles.css -o build/styles.css"
+    "build-css": "tailwind build src/assets/tailwindcss.css -o src/assets/main.css"
   },
   "keywords": [],
   "author": "carlo segat",
