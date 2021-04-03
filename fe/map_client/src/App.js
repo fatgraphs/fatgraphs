@@ -1,11 +1,6 @@
-//import './App.css';
-///import Mymap from "./components/graph-map/Mymap";
 import React from 'react';
-import Mymap from "./components/map-body/graph-map/Mymap";
-import '../build/styles.css'
-import GraphMapHeader from "./components/map-header/GraphMapHeader";
-import GraphMapBody from "./components/map-body/GraphMapBody";
-import GraphMapFooter from "./components/GraphMapFooter";
+import './assets/main.css';
+import Gallery from "./components/gallery/gallery";
 
 function App() {
     return (
@@ -18,9 +13,7 @@ function App() {
                         integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
                         crossOrigin=""></script>
             </header>
-            <GraphMapHeader graph_name={'test medium graph'}/>
-            <GraphMapBody/>
-            <GraphMapFooter/>
+            <Gallery/>
         </div>
     );
 }
