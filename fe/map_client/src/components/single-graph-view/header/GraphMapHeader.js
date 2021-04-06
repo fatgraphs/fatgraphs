@@ -1,14 +1,16 @@
 import React, {Component} from 'react';
-import DescriptionTable from "../body/description-table/DescriptionTable";
+import DescriptionTable from "../../description-table/DescriptionTable";
 
-class GraphSummary extends Component {
+class GraphMapHeader extends Component {
+
     constructor(props) {
         super(props);
         this.state = {
-            nodes: props.nodes,
-            edges: props.edges
+            nodes: props.graph_metadata.vertices,
+            edges: props.graph_metadata.edges
         }
     }
+
     render() {
         return (
             <div>
@@ -19,8 +21,7 @@ class GraphSummary extends Component {
                 </DescriptionTable>
             </div>
         );
-
     }
 }
 
-export default GraphSummary;
+export default GraphMapHeader;

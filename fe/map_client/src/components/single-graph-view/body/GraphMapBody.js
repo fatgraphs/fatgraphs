@@ -1,7 +1,5 @@
 import React from "react";
 import Mymap from "./graph-map/Mymap";
-import InfoPanel from "./info-panel/InfoPanel";
-import ToggleBar from "./toggle-bar/ToggleBar";
 
 class GraphMapBody extends React.Component {
 
@@ -16,12 +14,12 @@ class GraphMapBody extends React.Component {
     }
     render() {
         console.log(this.state.is_marker_visible)
-        return <div className={'flex justify-between'}>
+        return <div>
             <Mymap graph_metadata={this.state.graph_metadata}
                    vertices_metadata={this.state.vertices_metadata}
                    is_marker_visible={this.state.is_marker_visible}
-            />
-            <InfoPanel/>
+                   graph_name={this.props.graph_name}/>
+            {/*<InfoPanel/>*/}
         </div>
     }
 }

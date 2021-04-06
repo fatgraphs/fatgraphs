@@ -1,7 +1,6 @@
 import React from 'react';
 import './Mymap.css';
 import L from 'leaflet';
-import { INITIAL_ZOOM }  from '../../../../configurations'
 
 let configs = require('../../../../../../../configurations');
 
@@ -15,11 +14,10 @@ class Mymap extends React.Component {
             myMap: null,
             graph_metadata: props.graph_metadata,
             vertices_metadata: props.vertices_metadata,
-            is_marker_visible: true
+            is_marker_visible: true,
+            graph_name: this.props.graph_name
         }
         this.draw_markers = this.draw_markers.bind(this)
-        this.toggle_markers = this.toggle_markers.bind(this)
-        console.log("my map constructor")
     }
 
     render() {
@@ -28,11 +26,11 @@ class Mymap extends React.Component {
             <div >
                 <div>Zoom level: {this.state.zoom}</div>
                 <div id="mapid"/>
-            </div>;
+            </div>
 
-            <ToggleBar className={'border flex-6'}
-                call_back={this.toggle_markers}
-            />
+            {/*<ToggleBar className={'border flex-6'}*/}
+            {/*    call_back={this.toggle_markers}*/}
+            {/*/>*/}
 
             </div>
     }
@@ -46,14 +44,17 @@ class Mymap extends React.Component {
         const myMap = L.map('mapid' , {
             noWrap: true,
             crs: L.CRS.Simple,
-        }).setView([configs['tile_size'] / -2, configs['tile_size'] / 2], INITIAL_ZOOM);
+        }).setView([configs['tile_size'] / -2, configs['tile_size'] / 2], 0);
+        // TODO: insert initial zoom constant
 
         this.setState({myMap: myMap})
 
-        const layer = L.tileLayer(configs['endpoints']['base'] + configs['endpoints']['tile'] + '/{z}/{x}/{y}.png', {
+        // TODO: create API file for all calls to server and add the tile call
+        const layer = L.tileLayer(configs['endpoints']['base'] +  configs['endpoints']['tile'] + "/" + this.state.graph_name + '/{z}/{x}/{y}.png', {
             maxZoom: configs['zoom_levels'] - 1,
             attribution: 'tokengallery 2.0',
-            tileSize: configs['tile_size']
+            tileSize: configs['tile_size'] / 2,
+            detectRetina: true
         }).addTo(myMap);
 
         let popup = L.popup()
@@ -82,7 +83,7 @@ class Mymap extends React.Component {
                     .bindPopup(popup).openPopup()
                     .addTo(myMap);
 
-            });
+            };
 
         myMap.on('zoom', function () {
             // console.log("on zoom callback")
