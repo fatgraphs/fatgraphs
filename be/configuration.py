@@ -19,4 +19,3 @@ def _load_configurations():
 
 
 CONFIGURATIONS = _load_configurations()
-GRAPHS_HOME = os.path.join(this_file_dir, "graph-maps")

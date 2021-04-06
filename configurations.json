@@ -6,6 +6,7 @@
     "vertices_metadata": "/tokengallery/vertices-metadata",
     "graph_metadata": "/tokengallery/graph-metadata"
   },
+  "graphs_home": "be/graph-maps",
   "vertices_metadata_file_name": "vertices_metadata",
   "graph_metadata_file_name": "graph_metadata",
   "tile_size": 2048,
