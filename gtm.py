@@ -59,13 +59,13 @@ graph_path = mkdir_for_this_graph()
 # TODO find a way of ensuring that htis dict keys are the same as defined in configuration.json
 configurations = {
     "output_folder": graph_path,
-    "tile_size": args.get('-ts', 512),
+    "tile_size": int(args.get('--ts', 512)),
     "zoom_levels": int(args.get('-z', 2)),
-    "min_transparency": args.get('-min_t', 0.01),
-    "max_transparency": args.get('-max_t', 0.1),
-    "std_transparency_as_percentage": args.get("-std", 0.5),
-    "max_edge_thickness": args.get('-min_thick', 1),
-    "min_edge_thickness": args.get('-max_thick', 8),
+    "min_transparency": float(args.get('--min_t', 0.01)),
+    "max_transparency": float(args.get('--max_t', 0.1)),
+    "std_transparency_as_percentage": float(args.get("--std", 0.5)),
+    "max_edge_thickness": float(args.get('--min_thick', 4)),
+    "min_edge_thickness": float(args.get('--max_thick', 1)),
     "bg_color": "black"
 }
 
