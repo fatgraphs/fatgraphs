@@ -13,10 +13,10 @@ cleanup() {
 trap "cleanup" INT SIGTERM SIGQUIT
 
 #generate tiles
-PYTHONPATH=$(pwd) python be/tile_creator/main.py
+# PYTHONPATH=$(pwd) python be/tile_creator/main.py
 
 # run server
-cd be/tile_server && export FLASK_APP=server.py
+export FLASK_APP=be/server/server.py
 flask run &
 pids+=("$!")
 echo $pids
