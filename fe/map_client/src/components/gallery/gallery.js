@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import GalleryHeader from "./header/GalleryHeader";
 import GalleryBody from "./body/GalleryBody";
-import Modal from "./ModalMap";
 
 const configs = require("configurations")
 

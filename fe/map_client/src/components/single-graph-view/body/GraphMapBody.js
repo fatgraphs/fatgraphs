@@ -14,12 +14,11 @@ class GraphMapBody extends React.Component {
     }
     render() {
         console.log(this.state.is_marker_visible)
-        return <div>
+        return <div className={'border-2'}>
             <Mymap graph_metadata={this.state.graph_metadata}
                    vertices_metadata={this.state.vertices_metadata}
                    is_marker_visible={this.state.is_marker_visible}
                    graph_name={this.props.graph_name}/>
-            {/*<InfoPanel/>*/}
         </div>
     }
 }

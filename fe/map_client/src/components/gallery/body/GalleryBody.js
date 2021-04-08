@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import GraphThumbnail from "./graph-thumbnail/GraphThumbnail";
-import Modal from "../ModalMap";
 import {Route, Switch, withRouter} from "react-router-dom";
 import SingleGraphView from "../../single-graph-view/SingleGraphView";
 
