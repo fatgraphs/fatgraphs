@@ -6,7 +6,8 @@ from be.tile_creator.src.render.renderer import GraphRenderer
 import os
 
 def main(csv_path, configuration_dictionary, labels_path=None):
-    graph = TokenGraph(csv_path, {'dtype': {'amount': object}}, labels_path)
+
+    graph = TokenGraph(csv_path, {'dtype': {'amount': float}}, labels_path)
     gt_graph = GraphToolTokenGraph(graph)
 
     _generate_metadata_files(configuration_dictionary, graph)
