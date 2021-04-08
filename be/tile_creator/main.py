@@ -20,7 +20,9 @@ def _generate_metadata_files(configuration_dictionary, graph):
     output_folder = configuration_dictionary['output_folder']
     graph.vertices_metadata.to_csv(os.path.join(output_folder, CONFIGURATIONS['vertices_metadata_file_name']),
                                    index=False)
-    graph.graph_metadata.to_csv(os.path.join(output_folder, CONFIGURATIONS['graph_metadata_file_name']), index=False)
+    graph_metadata = graph.graph_metadata
+    graph_metadata['zoom_levels'] = configuration_dictionary['zoom_levels']
+    graph_metadata.to_csv(os.path.join(output_folder, CONFIGURATIONS['graph_metadata_file_name']), index=False)
 
 
 if __name__ == '__main__':
