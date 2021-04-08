@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import GraphThumbnail from "./graph-thumbnail/GraphThumbnail";
 import Modal from "../ModalMap";
+import {Route, Switch, withRouter} from "react-router-dom";
+import SingleGraphView from "../../single-graph-view/SingleGraphView";
 
 class GalleryBody extends Component {
 
@@ -9,25 +11,24 @@ class GalleryBody extends Component {
         this.state = {
             available_graphs: props.available_graphs,
         }
+        this.openGraph = this.openGraph.bind(this);
     }
 
-    componentDidMount() {
-
+    openGraph(name){
+        const { match, location, history } = this.props;
+        history.push("/graph/" + name);
     }
 
     render() {
-        return (
-            <>
-                <div className={'flex'}>
-                    {this.state.available_graphs.map((value, index) => {
-                        return <GraphThumbnail name={value} key={index}
-                                               open_modal={this.openModal}
-                                                close_modal={this.closeModal}/>
-                    })}
-                </div>
-            </>
-        );
+        return <div className={'flex'}>
+                {this.state.available_graphs.map((value, index) => {
+                    return <GraphThumbnail name={value}
+                                           key={index}
+                                           open={this.openGraph}/>
+                })}
+            </div>
+
     }
 }
 
-export default GalleryBody;
+export default withRouter(GalleryBody);

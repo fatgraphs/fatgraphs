@@ -38,6 +38,7 @@
     "json-loader": "^0.5.7",
     "leaflet": "^1.7.1",
     "react": "^17.0.1",
-    "react-dom": "^17.0.1"
+    "react-dom": "^17.0.1",
+    "react-router-dom": "^5.2.0"
   }
 }

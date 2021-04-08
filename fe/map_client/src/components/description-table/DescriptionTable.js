@@ -12,11 +12,11 @@ class DescriptionTable extends Component {
     render() {
         return (
             <div>
-                <dl>
+                <dl className={'flex flex-row'}>
                     {this.state.keys.map((value, index) => {
-                    return <div key={index} className={'flex'}>
+                    return <div key={index} className={'flex flex-row mr-4'}>
                         <dt>{value}</dt>
-                        <dd className={'ml-2'}>{this.state.values[index]}</dd>
+                        <dd className={'ml-1'}>{this.state.values[index]}</dd>
                     </div>;
                 })}
                 </dl>

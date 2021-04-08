@@ -1,32 +1,33 @@
 import React, {Component} from 'react';
 import UrlComposer from "../../UrlComposer";
-import GraphMapFooter from "./footer/GraphMapFooter";
 import GraphMapHeader from "./header/GraphMapHeader";
 import GraphMapBody from "./body/GraphMapBody";
+import {withRouter} from "react-router-dom";
+import InfoPanel from "./body/info-panel/InfoPanel";
 
 class SingleGraphView extends Component {
 
     constructor(props) {
         super(props);
+        const graph_name = this.props.match.params.graph_name;
         this.state = {
-            graph_name: props.graph_name,
+            graph_name: graph_name,
             vertices_metadata: undefined,
             graph_metadata: undefined
         }
     }
 
     render() {
-        console.log(this.state)
         if (this.state.vertices_metadata === undefined || this.state.graph_metadata === undefined) {
             return <div>Loading . . . </div>
         } else {
             return (
-                <div className={'flex flex-row'}>
+                <div className={'flex flex-col lg:flex-row lg:flex-wrap p-2'}>
                     <GraphMapHeader graph_metadata={this.state.graph_metadata}/>
                     <GraphMapBody graph_metadata={this.state.graph_metadata}
                                   vertices_metadata={this.state.vertices_metadata}
                                   graph_name={this.state.graph_name}/>
-                    {/*<GraphMapFooter/>*/}
+                    {/*<InfoPanel/>*/}
                 </div>
             );
         }
@@ -49,4 +50,4 @@ class SingleGraphView extends Component {
     }
 }
 
-export default SingleGraphView;
+export default withRouter(SingleGraphView);

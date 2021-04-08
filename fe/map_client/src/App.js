@@ -2,20 +2,38 @@ import React from 'react';
 import './assets/main.css';
 import Gallery from "./components/gallery/gallery";
 
-function App() {
-    return (
-        <div className="App">
-            <header className="App-header">
-                <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
-                      integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
-                      crossOrigin=""/>
-                <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
-                        integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
-                        crossOrigin=""></script>
-            </header>
-            <Gallery/>
-        </div>
-    );
-}
+import {
+    BrowserRouter as Router,
+    Switch,
+    Route,
+    Link
+} from "react-router-dom";
+import About from "./components/about/About";
+import NavigationBar from "./components/navigationBar/NavigationBar";
+import SingleGraphView from "./components/single-graph-view/SingleGraphView";
+import GraphThumbnail from "./components/gallery/body/graph-thumbnail/GraphThumbnail";
 
-export default App;
+export default function App() {
+
+    return (<Router>
+
+        <NavigationBar></NavigationBar>
+
+
+        <Switch>
+
+            <Route path="/about" component={About}>
+            </Route>
+
+            <Route path="/graph/:graph_name">
+                <SingleGraphView/>
+            </Route>
+
+            <Route path="/" component={Gallery}>
+            </Route>
+
+
+        </Switch>
+
+    </Router>);
+}
