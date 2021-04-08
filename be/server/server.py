@@ -63,4 +63,7 @@ def get_graph_metadata(graph_name):
     return {"vertices": int(csv['nodes'][0]),
             "edges": int(csv['edges'][0]),
             "min_coordinate": csv['min'][0],
-            "max_coordinate": csv['max'][0]}
+            "max_coordinate": csv['max'][0],
+            "zoom_levels": int(csv['zoom_levels'][0]),
+            "median_distance": float(csv["median_distance"][0])
+            }

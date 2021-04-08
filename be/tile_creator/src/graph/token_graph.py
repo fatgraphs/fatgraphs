@@ -38,12 +38,14 @@ class TokenGraph:
         self.graph_metadata = pd.DataFrame(data={'min': [min_coordinate_value],
                                                  'max': [max_coordinate_value],
                                                  'nodes': [self.addresses_to_ids.shape[0]],
-                                                 'edges': [self.edge_ids_amounts.shape[0]]})
+                                                 'edges': [self.edge_ids_amounts.shape[0]],
+                                                 'median_distance': self.median_distance})
 
     def _make_layout(self):
         self.gpu_frame = self._make_graph_gpu_frame(self.addresses_to_ids)
         lg = LayoutGenerator()
         self.ids_to_positions = lg.make_layout(self.gpu_frame)
+        self.median_distance = lg.median_distance
 
         self.addresses_to_positions = \
             self.addresses_to_ids.merge(self.ids_to_positions, how='left', on='vertex').drop(columns=['vertex'])

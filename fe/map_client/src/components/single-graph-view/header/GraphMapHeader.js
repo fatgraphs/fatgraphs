@@ -7,17 +7,18 @@ class GraphMapHeader extends Component {
         super(props);
         this.state = {
             nodes: props.graph_metadata.vertices,
-            edges: props.graph_metadata.edges
+            edges: props.graph_metadata.edges,
+            median_distance: props.graph_metadata.median_distance
         }
     }
 
     render() {
         return (
-            <div>
+            <div className={'border-2 lg:flex-1'}>
                 <h3 className={'text-2xl'}>Graph summary:</h3>
                 <DescriptionTable
-                    keys={['nodes', 'edges']}
-                    values={[this.state.nodes, this.state.edges]}>
+                    keys={['nodes', 'edges', 'median_distance']}
+                    values={[this.state.nodes, this.state.edges, this.state.median_distance]}>
                 </DescriptionTable>
             </div>
         );
