@@ -22,7 +22,7 @@ class Mymap extends React.Component {
 
     render() {
 
-        return <div className={'border flex-1'}>
+        return <div>
             <div >
                 <div>Zoom level: {this.state.zoom}</div>
                 <div id="mapid"/>
@@ -44,16 +44,16 @@ class Mymap extends React.Component {
         const myMap = L.map('mapid' , {
             noWrap: true,
             crs: L.CRS.Simple,
-        }).setView([configs['tile_size'] / -2, configs['tile_size'] / 2], 0);
+        }).setView([configs['tile_size'] / -4.0, configs['tile_size'] / 4.0], 0);
         // TODO: insert initial zoom constant
 
         this.setState({myMap: myMap})
 
         // TODO: create API file for all calls to server and add the tile call
         const layer = L.tileLayer(configs['endpoints']['base'] +  configs['endpoints']['tile'] + "/" + this.state.graph_name + '/{z}/{x}/{y}.png', {
-            maxZoom: configs['zoom_levels'] - 1,
+            maxZoom: this.state.graph_metadata['zoom_levels'] - 1,
             attribution: 'tokengallery 2.0',
-            tileSize: configs['tile_size'] / 2,
+            tileSize: configs['tile_size'] / 2.0,
             detectRetina: true
         }).addTo(myMap);
 
