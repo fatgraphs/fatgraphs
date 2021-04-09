@@ -14,7 +14,6 @@ class Mymap extends React.Component {
             myMap: null,
             graph_metadata: props.graph_metadata,
             vertices_metadata: props.vertices_metadata,
-            is_marker_visible: false,
             graph_name: this.props.graph_name,
             markers: []
         }
@@ -39,11 +38,11 @@ class Mymap extends React.Component {
     componentDidUpdate() {
         console.log(this.state.markers)
 
-        if(this.state.is_marker_visible && this.state.markers.length === 0){
+        if(this.props.is_marker_visible && this.state.markers.length === 0){
             this.draw_markers(this.state.myMap);
         }
 
-        if(! this.state.is_marker_visible && this.state.markers.length > 0){
+        if(! this.props.is_marker_visible && this.state.markers.length > 0){
             for (const i in this.state.markers) {
                 this.state.myMap.removeLayer(this.state.markers[i])
             }
@@ -73,9 +72,6 @@ class Mymap extends React.Component {
             tileSize: configs['tile_size'] / 2.0,
             detectRetina: true
         }).addTo(myMap);
-
-        console.log("rendering the map")
-        console.log(this.state.is_marker_visible)
 
         myMap.on('zoom', function () {
             this.setState({zoom: myMap.getZoom()})

@@ -1,20 +1,20 @@
 import React, {Component} from 'react';
 import UrlComposer from "../../UrlComposer";
 import GraphMapHeader from "./header/GraphMapHeader";
-import GraphMapBody from "./body/GraphMapBody";
 import {withRouter} from "react-router-dom";
 import InfoPanel from "./body/info-panel/InfoPanel";
+import Mymap from "./body/graph-map/Mymap";
 
 class SingleGraphView extends Component {
 
     constructor(props) {
         super(props);
-        const graph_name = this.props.match.params.graph_name;
         this.state = {
-            graph_name: graph_name,
             vertices_metadata: undefined,
-            graph_metadata: undefined
+            graph_metadata: undefined,
+            is_marker_visible: false
         }
+        this.toggle_markers = this.toggle_markers.bind(this)
     }
 
     render() {
@@ -25,10 +25,11 @@ class SingleGraphView extends Component {
                 <div className={'flex flex-col p-2'}>
                     <GraphMapHeader graph_metadata={this.state.graph_metadata}/>
                     <div className={'flex flex-col lg:flex-row'}>
-                        <GraphMapBody graph_metadata={this.state.graph_metadata}
-                                      vertices_metadata={this.state.vertices_metadata}
-                                      graph_name={this.state.graph_name}/>
-                        <InfoPanel/>
+                        <Mymap graph_metadata={this.state.graph_metadata}
+                               vertices_metadata={this.state.vertices_metadata}
+                               graph_name={this.props.match.params.graph_name}
+                               is_marker_visible={this.state.is_marker_visible}/>
+                        <InfoPanel toggle={[this.toggle_markers]}/>
                     </div>
                 </div>
             );
@@ -36,19 +37,24 @@ class SingleGraphView extends Component {
     }
 
     componentDidMount() {
-        fetch(UrlComposer.verticesMetadata(this.state.graph_name))
+        fetch(UrlComposer.verticesMetadata(this.props.match.params.graph_name))
             .then(response =>
                 response.json())
             .then(data => {
                 this.setState({"vertices_metadata": data})
             })
 
-        fetch(UrlComposer.graphMetadata(this.state.graph_name))
+        fetch(UrlComposer.graphMetadata(this.props.match.params.graph_name))
             .then(response =>
                 response.json())
             .then(data => {
                 this.setState({"graph_metadata": data})
             })
+    }
+
+    toggle_markers() {
+        this.setState({is_marker_visible: !this.state['is_marker_visible']})
+        console.log(this.state)
     }
 }
 

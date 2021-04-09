@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import SingleToggle from "./SingleToggle";
 
 class ToggleBar extends Component {
 
@@ -9,18 +10,13 @@ class ToggleBar extends Component {
             call_back: props.call_back
         }
     }
+
     render() {
-        return (
-            <div className={'border flex-6'}>
-               <label>
-                  <input
-                    type="checkbox"
-                    checked={this.state.checked}
-                    onChange={this.state.call_back}
-                  />
-                </label>
-            </div>
-        );
+        return <div>
+            {React.Children.map(this.props.children || null, (child, i) => {
+                return <SingleToggle text={child.props.children} toggle={child.props.toggle}/>;
+            })}
+        </div>
     }
 }
 
