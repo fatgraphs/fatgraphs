@@ -14,7 +14,7 @@ class GraphMapHeader extends Component {
 
     render() {
         return (
-            <div className={'border-2 lg:flex-1'}>
+            <div className={'border-2 flex-1'}>
                 <h3 className={'text-2xl'}>Graph summary:</h3>
                 <DescriptionTable
                     keys={['nodes', 'edges', 'median_distance']}

@@ -22,12 +22,14 @@ class SingleGraphView extends Component {
             return <div>Loading . . . </div>
         } else {
             return (
-                <div className={'flex flex-col lg:flex-row lg:flex-wrap p-2'}>
+                <div className={'flex flex-col p-2'}>
                     <GraphMapHeader graph_metadata={this.state.graph_metadata}/>
-                    <GraphMapBody graph_metadata={this.state.graph_metadata}
-                                  vertices_metadata={this.state.vertices_metadata}
-                                  graph_name={this.state.graph_name}/>
-                    {/*<InfoPanel/>*/}
+                    <div className={'flex flex-col lg:flex-row'}>
+                        <GraphMapBody graph_metadata={this.state.graph_metadata}
+                                      vertices_metadata={this.state.vertices_metadata}
+                                      graph_name={this.state.graph_name}/>
+                        <InfoPanel/>
+                    </div>
                 </div>
             );
         }
