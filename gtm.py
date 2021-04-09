@@ -15,7 +15,7 @@ def extract_arguments():
     argument_list = full_cmd_arguments[1:]
     print(argument_list)
     short_options = "n:z:"
-    long_options = ["csv=", "ts=", "min_t=", "max_t=", "std=", "min_thick=", "max_thick="]
+    long_options = ["csv=", "labels=", "ts=", "min_t=", "max_t=", "std=", "min_thick=", "max_thick="]
     try:
         arguments, values = getopt.getopt(argument_list, short_options, long_options)
     except getopt.error as err:
@@ -69,7 +69,7 @@ configurations = {
     "bg_color": "black"
 }
 
-main(args['--csv'], configurations)
+main(args['--csv'], configurations, args.get('--labels', None))
 
 # # Evaluate given options
 # for current_argument, current_value in arguments:
