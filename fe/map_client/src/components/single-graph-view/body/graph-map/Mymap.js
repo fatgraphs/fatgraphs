@@ -14,8 +14,9 @@ class Mymap extends React.Component {
             myMap: null,
             graph_metadata: props.graph_metadata,
             vertices_metadata: props.vertices_metadata,
-            is_marker_visible: true,
-            graph_name: this.props.graph_name
+            is_marker_visible: false,
+            graph_name: this.props.graph_name,
+            markers: []
         }
         this.draw_markers = this.draw_markers.bind(this)
     }
@@ -35,17 +36,33 @@ class Mymap extends React.Component {
             </div>
     }
 
+    componentDidUpdate() {
+        console.log(this.state.markers)
+
+        if(this.state.is_marker_visible && this.state.markers.length === 0){
+            this.draw_markers(this.state.myMap);
+        }
+
+        if(! this.state.is_marker_visible && this.state.markers.length > 0){
+            for (const i in this.state.markers) {
+                this.state.myMap.removeLayer(this.state.markers[i])
+            }
+            this.setState({markers: []})
+        }
+    }
+
     componentDidMount() {
 
-        let corner1 = L.latLng(0, 0);
-        let corner2 = L.latLng(- configs['tile_size'], configs['tile_size']);
-        let bounds = L.latLngBounds(corner1, corner2); // stops panning (scrolling around)  maxBounds: bounds
+        // uncomment if we need to bound the map
+        // let corner1 = L.latLng(0, 0);
+        // let corner2 = L.latLng(- configs['tile_size'], configs['tile_size']);
+        // let bounds = L.latLngBounds(corner1, corner2); // stops panning (scrolling around)  maxBounds: bounds
 
+        let initial_zoom = 0;
         const myMap = L.map('mapid' , {
             noWrap: true,
             crs: L.CRS.Simple,
-        }).setView([configs['tile_size'] / -4.0, configs['tile_size'] / 4.0], 0);
-        // TODO: insert initial zoom constant
+        }).setView([configs['tile_size'] / -4.0, configs['tile_size'] / 4.0], initial_zoom);
 
         this.setState({myMap: myMap})
 
@@ -57,38 +74,38 @@ class Mymap extends React.Component {
             detectRetina: true
         }).addTo(myMap);
 
-        let popup = L.popup()
-            .setContent('<p>Hello world!<br />This is a nice popup.</p>')
-
         console.log("rendering the map")
         console.log(this.state.is_marker_visible)
-        if(this.state.is_marker_visible){
-            this.draw_markers(popup, myMap);
-        }
 
-        // not used, keep for reference
         myMap.on('zoom', function () {
-            // console.log("on zoom callback")
             this.setState({zoom: myMap.getZoom()})
         }.bind(this))
     }
 
-    draw_markers(popup, myMap) {
+    draw_markers(myMap) {
+
+        let popup = L.popup()
+            .setContent('<p>Hello world!<br />This is a nice popup.</p>')
+
+        let markers = []
+
         for (let p in this.state.vertices_metadata) {
             let pos = convert_graph_coordinate_to_map(parseTuple(p),
                 this.state.graph_metadata['min_coordinate'], this.state.graph_metadata['max_coordinate']);
 
-                let myIcon = L.divIcon({className: 'my-div-icon'});
-                L.marker(pos, {icon: myIcon})
-                    .bindPopup(popup).openPopup()
-                    .addTo(myMap);
-
-            };
-
-        myMap.on('zoom', function () {
-            // console.log("on zoom callback")
-            this.setState({zoom: myMap.getZoom()})
-        }.bind(this))
+            let myIcon = L.divIcon({className: 'my-div-icon'});
+            let marker = L.marker(pos, {icon: myIcon});
+            markers.push(marker)
+            // marker.bindPopup(popup).openPopup()
+            //         .addTo(myMap);
+        }
+        console.log("okkkkkkkk >>>>>>>>>>")
+        // this.setState({markers: markers})
+        for (const marker in markers) {
+            // console.log(markers[marker])
+            markers[marker].addTo(myMap);
+        }
+        this.setState({markers: markers})
     }
 }
 
@@ -113,7 +130,7 @@ function convert_graph_coordinate_to_map(graph_coordinate, g_min, g_max){
     let graph_side = g_max - g_min
     let map_x = (graph_coordinate[0] + Math.abs(g_min)) * configs["tile_size"] / graph_side
     let map_y = (graph_coordinate[1] + Math.abs(g_min)) * configs["tile_size"] / graph_side
-    return [- map_y, map_x]
+    return [- map_y / 2, map_x / 2]
 }
 
 function parseTuple(t) {
