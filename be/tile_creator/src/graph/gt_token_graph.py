@@ -14,13 +14,13 @@ class GraphToolTokenGraph:
     An instacne of GraphToolTokenGraph contains all the static information needed to render a graph.
     '''
 
-    def __init__(self, graph, metadata):
+    def __init__(self, graph, configuration_dictionary, metadata):
         if not isinstance(graph, TokenGraph):
             raise TypeError("GraphToolTokenGraph needs an instance of TokeGraph to be instantiated")
         self.metadata = metadata
-        self.init_from_token_graph(graph)
+        self.init_from_token_graph(graph, configuration_dictionary)
 
-    def init_from_token_graph(self, token_graph):
+    def init_from_token_graph(self, token_graph, configuration_dictionary):
         # TODO: optimise
 
         self.g = Graph(directed=True)
@@ -56,7 +56,18 @@ class GraphToolTokenGraph:
         self._ensure_layout_is_square(token_graph)
 
         self.degree = self.g.degree_property_map("in")
-        self.degree.a = 4 * (np.sqrt(self.degree.a) * 0.5 + 0.4)
+        # self.degree.a = 4 * (np.sqrt(self.degree.a) * 0.5 + 0.4)
+        self.degree.a = self.calculate_vertices_size(configuration_dictionary)
+
+    def calculate_vertices_size(self, configuration_dictionary):
+        med_distance = self.metadata.graph_metadata['median_pixel_distance'][0]
+        targetMedian = med_distance * configuration_dictionary['target_median']
+        targetMax = med_distance * configuration_dictionary['target_max']
+        medToMax = max(list(self.degree.a)) - np.median(list(self.degree.a))
+        targetMedToMax = targetMax - targetMedian
+        degrees = (self.degree.a - np.median(self.degree.a)) * (targetMedToMax / medToMax) + targetMedian
+        degrees = np.clip(degrees, 1, targetMax)
+        return degrees
 
     def _convert_amount_to_edge_width(self, x, max_amount):
         # TODO: optimise

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import getopt, sys, os
 
-
 # -n "experiment number 7" -csv="path/to/file" -ts=512 -z=3 -min_t=0.01 -max_t=0.1 -std=0.5 -max_edge_thickness=8 -min_edge_thickness=1
 from be.configuration import CONFIGURATIONS
 from be.tile_creator.main import main
@@ -15,7 +14,8 @@ def extract_arguments():
     argument_list = full_cmd_arguments[1:]
     print(argument_list)
     short_options = "n:z:"
-    long_options = ["csv=", "labels=", "ts=", "min_t=", "max_t=", "std=", "min_thick=", "max_thick="]
+    long_options = ["csv=", "labels=", "ts=", "min_t=", "max_t=", "std=", "min_thick=", "max_thick=", "target_median=",
+                    "target_max="]
     try:
         arguments, values = getopt.getopt(argument_list, short_options, long_options)
     except getopt.error as err:
@@ -35,12 +35,8 @@ def result_in_directory_existing(path):
         os.mkdir(path)
 
 
-
-
 def ensure_container_directory_exists():
     result_in_directory_existing(CONFIGURATIONS['graphs_home'])
-
-
 
 
 def mkdir_for_this_graph():
@@ -66,6 +62,8 @@ configurations = {
     "std_transparency_as_percentage": float(args.get("--std", 0.5)),
     "max_edge_thickness": float(args.get('--min_thick', 4)),
     "min_edge_thickness": float(args.get('--max_thick', 1)),
+    "target_median": float(args.get("--target_median", 0.5)),
+    "target_max": float(args.get("--target_max", 3)),
     "bg_color": "black"
 }
 

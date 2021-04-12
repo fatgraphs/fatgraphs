@@ -11,7 +11,7 @@ from be.tile_creator.src.token_graph_metadata import TokenGraphMetadata
 def main(csv_path, configuration_dictionary, labels_path=None):
     graph = TokenGraph(csv_path, {'dtype': {'amount': float}})
     metadata = TokenGraphMetadata(graph, configuration_dictionary, labels_path)
-    gt_graph = GraphToolTokenGraph(graph, metadata)
+    gt_graph = GraphToolTokenGraph(graph, configuration_dictionary, metadata)
 
     _generate_metadata_files(metadata, configuration_dictionary)
 
