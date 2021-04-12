@@ -11,5 +11,5 @@ class DataPreprocessorTest(GenericGraphTest):
         self.assertIsNotNone(self.preprocessor)
 
     def test_preprocess(self):
-        self.preprocessor.preprocess(self.graphs[0].raw_data)
+        self.preprocessor.preprocess(self.graphs[0].data)
 

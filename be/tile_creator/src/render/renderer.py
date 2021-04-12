@@ -1,8 +1,7 @@
 import math
 import os
-import numpy as np
 from graph_tool.draw import graph_draw
-
+import pandas as pd
 from be.tile_creator.src.graph.gt_token_graph import GraphToolTokenGraph
 from be.tile_creator.src.render.transparency_calculator import TransparencyCalculator
 
@@ -12,10 +11,11 @@ class GraphRenderer:
     # TODO consider passing the configuration object to
     # the GraphRenderer constructor so it's more flexible
     # (rn is relying on the global config)
-    def __init__(self, graph, configurations):
+    def __init__(self, graph, metadata, configurations):
         if not isinstance(graph, GraphToolTokenGraph):
             raise TypeError("graph renderer needs an instance of GraphToolTokenGraph as argument")
         self.graph = graph
+        self.metadata = metadata
         self.configurations = configurations
 
     def render_tiles(self):
@@ -38,11 +38,16 @@ class GraphRenderer:
 
             for t in tuples:
                 # TODO: check that width and height are the same: in thoery we implicityl rely on this equality
+
+                min_coordinate = self.metadata.graph_metadata['min'][0]
+                max_coordinate = self.metadata.graph_metadata['max'][0]
+                side = max_coordinate - min_coordinate
+
                 fit = (
-                    round(self.graph.min_x + ((self.graph.side / divide_by) * t[0]), 2),
-                    round(self.graph.min_y + ((self.graph.side / divide_by) * t[1]), 2),
-                    round(self.graph.side / divide_by, 2),
-                    round(self.graph.side / divide_by, 2))
+                    round(min_coordinate + ((side / divide_by) * t[0]), 2),
+                    round(min_coordinate + ((side / divide_by) * t[1]), 2),
+                    round(side / divide_by, 2),
+                    round(side / divide_by, 2))
 
                 print(fit)
 
@@ -69,6 +74,7 @@ class GraphRenderer:
                    edge_pen_width=self.graph.edge_weight,
                    adjust_aspect=False,
                    fit_view_ink=True)
+
 
 # DEBUG CODE - DONT DELETE
 

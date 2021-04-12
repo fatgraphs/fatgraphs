@@ -7,8 +7,8 @@
     "graph_metadata": "/tokengallery/graph-metadata"
   },
   "graphs_home": "be/graph-maps",
-  "vertices_metadata_file_name": "vertices_metadata",
-  "graph_metadata_file_name": "graph_metadata",
+  "vertices_metadata_file_name": "vertices_metadata.csv",
+  "graph_metadata_file_name": "graph_metadata.csv",
   "tile_size": 2048,
   "zoom_levels": 3,
   "min_transparency": 0.01,

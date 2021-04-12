@@ -8,7 +8,7 @@ class GraphMapHeader extends Component {
         this.state = {
             nodes: props.graph_metadata.vertices,
             edges: props.graph_metadata.edges,
-            median_distance: props.graph_metadata.median_distance
+            median_distance: props.graph_metadata.median_pixel_distance
         }
     }
 

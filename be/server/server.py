@@ -37,7 +37,7 @@ def get_tile(graph_name, z, x, y):
 
 @app.route(CONFIGURATIONS['endpoints']['vertices_metadata'] + '/<graph_name>')
 def get_nodes_metadata(graph_name):
-    source = os.path.join(CONFIGURATIONS['graphs_home'], graph_name, 'vertices_metadata')
+    source = os.path.join(CONFIGURATIONS['graphs_home'], graph_name, CONFIGURATIONS['vertices_metadata_file_name'])
     if os.path.exists(source):
         csv = pd.read_csv(source)
     else:
@@ -54,16 +54,15 @@ def get_nodes_metadata(graph_name):
 
 @app.route(CONFIGURATIONS['endpoints']['graph_metadata'] + '/<graph_name>')
 def get_graph_metadata(graph_name):
-    source = os.path.join(CONFIGURATIONS['graphs_home'], graph_name, 'graph_metadata')
+    source = os.path.join(CONFIGURATIONS['graphs_home'], graph_name, CONFIGURATIONS['graph_metadata_file_name'])
     if os.path.exists(source):
         csv = pd.read_csv(source)
     else:
         raise Exception("The vertices metadata file is missing")
-    # TODO: save nodes and edges and dont hardcode
-    return {"vertices": int(csv['nodes'][0]),
+    return {"vertices": int(csv['vertices'][0]),
             "edges": int(csv['edges'][0]),
             "min_coordinate": csv['min'][0],
             "max_coordinate": csv['max'][0],
             "zoom_levels": int(csv['zoom_levels'][0]),
-            "median_distance": float(csv["median_distance"][0])
+            "median_pixel_distance": float(csv["median_pixel_distance"][0])
             }
