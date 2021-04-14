@@ -19,12 +19,12 @@ class TokenGraphMetadata:
 
         # save min and max coordinate value for later using it to place markers on the map
         # (needed to convert from graph coordinate space to map coordinate space)
-        zoom_levels = configuration_dictionary['zoom_levels']
         self.graph_metadata = pd.DataFrame(data={'min': [min_coordinate_value],
                                                  'max': [max_coordinate_value],
                                                  'vertices': [token_graph.id_address_pos.shape[0]],
                                                  'edges': [token_graph.edge_amounts.shape[0]],
-                                                 'zoom_levels': [zoom_levels]})
+                                                 'zoom_levels': [configuration_dictionary['zoom_levels']],
+                                                 'tile_size': configuration_dictionary['tile_size']})
         distance = self.compute_median_distance(token_graph, configuration_dictionary)
         self.graph_metadata['median_pixel_distance'] = distance
 

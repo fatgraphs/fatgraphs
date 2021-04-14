@@ -12,9 +12,6 @@ class Mymap extends React.Component {
             zoom:0,
             center:'world',
             myMap: null,
-            graph_metadata: props.graph_metadata,
-            vertices_metadata: props.vertices_metadata,
-            graph_name: this.props.graph_name,
             markers: []
         }
         this.draw_markers = this.draw_markers.bind(this)
@@ -61,16 +58,16 @@ class Mymap extends React.Component {
         const myMap = L.map('mapid' , {
             noWrap: true,
             crs: L.CRS.Simple,
-        }).setView([configs['tile_size'] / -4.0, configs['tile_size'] / 4.0], initial_zoom);
+        }).setView([this.props.graph_metadata.tile_size / -2.0, this.props.graph_metadata.tile_size / 2.0], initial_zoom);
 
         this.setState({myMap: myMap})
 
         // TODO: create API file for all calls to server and add the tile call
-        const layer = L.tileLayer(configs['endpoints']['base'] +  configs['endpoints']['tile'] + "/" + this.state.graph_name + '/{z}/{x}/{y}.png?{randint}', {
+        const layer = L.tileLayer(configs['endpoints']['base'] +  configs['endpoints']['tile'] + "/" + this.props.graph_name + '/{z}/{x}/{y}.png?{randint}', {
             randint: Math.floor( Math.random() * 200000 ) + 1,
-            maxZoom: this.state.graph_metadata['zoom_levels'] - 1,
+            maxZoom: this.props.graph_metadata['zoom_levels'] - 1,
             attribution: 'tokengallery 2.0',
-            tileSize: configs['tile_size'] / 2.0,
+            tileSize: this.props.graph_metadata.tile_size,
             detectRetina: true
         }).addTo(myMap);
 
@@ -86,9 +83,9 @@ class Mymap extends React.Component {
 
         let markers = []
 
-        for (let p in this.state.vertices_metadata) {
+        for (let p in this.props.vertices_metadata) {
             let pos = convert_graph_coordinate_to_map(parseTuple(p),
-                this.state.graph_metadata['min_coordinate'], this.state.graph_metadata['max_coordinate']);
+                this.props.graph_metadata['min_coordinate'], this.props.graph_metadata['max_coordinate']);
 
             let myIcon = L.divIcon({className: 'my-div-icon'});
             let marker = L.marker(pos, {icon: myIcon});

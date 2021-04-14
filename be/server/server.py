@@ -69,5 +69,6 @@ def get_graph_metadata(graph_name):
             "min_coordinate": csv['min'][0],
             "max_coordinate": csv['max'][0],
             "zoom_levels": int(csv['zoom_levels'][0]),
-            "median_pixel_distance": float(csv["median_pixel_distance"][0])
+            "median_pixel_distance": float(csv["median_pixel_distance"][0]),
+            'tile_size': int(csv['tile_size'])
             }
