@@ -16,6 +16,11 @@ cors = CORS(app)
 app.url_map.converters['signed_int'] = SignedIntConverter
 
 
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def catch_all(path):
+    return 'You want path: %s' % path
+
 @app.route(CONFIGURATIONS['endpoints']['available_graphs'])
 def get_available_graphs():
     graph_names = os.listdir(CONFIGURATIONS['graphs_home'])

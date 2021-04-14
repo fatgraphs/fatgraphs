@@ -6,7 +6,7 @@ import {
     BrowserRouter as Router,
     Switch,
     Route,
-    Link
+    Link, HashRouter
 } from "react-router-dom";
 import About from "./components/about/About";
 import NavigationBar from "./components/navigationBar/NavigationBar";
@@ -15,12 +15,15 @@ import GraphThumbnail from "./components/gallery/body/graph-thumbnail/GraphThumb
 
 export default function App() {
 
-    return (<Router>
+    return (<HashRouter>
 
         <NavigationBar></NavigationBar>
 
 
         <Switch>
+
+            <Route exact path="/" component={Gallery}>
+            </Route>
 
             <Route path="/about" component={About}>
             </Route>
@@ -29,11 +32,14 @@ export default function App() {
                 <SingleGraphView/>
             </Route>
 
-            <Route path="/" component={Gallery}>
-            </Route>
 
+            <Route path="*">
+                <div>
+                    <p className={'text-6xl'}>404</p>
+                </div>
+            </Route>
 
         </Switch>
 
-    </Router>);
+    </HashRouter>);
 }
