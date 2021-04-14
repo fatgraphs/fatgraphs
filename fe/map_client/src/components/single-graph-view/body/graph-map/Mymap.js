@@ -66,7 +66,8 @@ class Mymap extends React.Component {
         this.setState({myMap: myMap})
 
         // TODO: create API file for all calls to server and add the tile call
-        const layer = L.tileLayer(configs['endpoints']['base'] +  configs['endpoints']['tile'] + "/" + this.state.graph_name + '/{z}/{x}/{y}.png', {
+        const layer = L.tileLayer(configs['endpoints']['base'] +  configs['endpoints']['tile'] + "/" + this.state.graph_name + '/{z}/{x}/{y}.png?{randint}', {
+            randint: Math.floor( Math.random() * 200000 ) + 1,
             maxZoom: this.state.graph_metadata['zoom_levels'] - 1,
             attribution: 'tokengallery 2.0',
             tileSize: configs['tile_size'] / 2.0,
