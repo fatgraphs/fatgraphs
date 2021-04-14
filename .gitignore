@@ -50,5 +50,6 @@ gradle-app.setting
 
 # Don't upload images to the repo as it would consume space
 *.png
+be/graph-maps/
 
 **/node_modules/*

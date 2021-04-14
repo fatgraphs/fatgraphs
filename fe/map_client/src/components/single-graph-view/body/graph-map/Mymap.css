@@ -1,4 +1,10 @@
-#mapid {height: 800px}
+#mapid {
+    height: 85vh;
+    width: 85vw;
+    background: black;
+    /*height: 700px;*/
+    /*width: 700px;*/
+}
 
 .infotile {display: flex;}
 .infotile div {
@@ -16,4 +22,5 @@
 .my-div-icon {
     background-color: rgba(255, 255, 0, 0.5);
     border: 1px solid #666;
+    border-radius: 10px;
 }

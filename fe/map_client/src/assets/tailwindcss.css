@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+h1 {
+    @apply text-6xl
+}
+
 .border {
     border: 2px solid #000;
     padding: 5px;

@@ -1,10 +1,14 @@
 {
   "endpoints": {
     "base": "http://127.0.0.1:5000",
+    "available_graphs": "/tokengallery/graphs",
     "tile": "/tokengallery/tile",
-    "interest_points": "/tokengallery/interest-points",
-    "graph_summary": "/tokengallery/graph-summary"
+    "vertices_metadata": "/tokengallery/vertices-metadata",
+    "graph_metadata": "/tokengallery/graph-metadata"
   },
+  "graphs_home": "be/graph-maps",
+  "vertices_metadata_file_name": "vertices_metadata.csv",
+  "graph_metadata_file_name": "graph_metadata.csv",
   "tile_size": 2048,
   "zoom_levels": 3,
   "min_transparency": 0.01,

@@ -14,24 +14,26 @@ class GraphToolTokenGraph:
     An instacne of GraphToolTokenGraph contains all the static information needed to render a graph.
     '''
 
-    def __init__(self, graph):
+    def __init__(self, graph, configurations, metadata):
         if not isinstance(graph, TokenGraph):
-            raise TypeError("GraphToolTokenGraph needs an instance of TokeGraph as argument")
-        self.init_from_token_graph(graph)
+            raise TypeError("GraphToolTokenGraph needs an instance of TokeGraph to be instantiated")
+        self.metadata = metadata
+        self.init_from_token_graph(graph, configurations)
 
-    def init_from_token_graph(self, token_graph):
+    def init_from_token_graph(self, token_graph, configurations):
         # TODO: optimise
 
         self.g = Graph(directed=True)
         self.vertex_positions = self.g.new_vertex_property("vector<double>")
         self.edge_weight = self.g.new_edge_property("float")
         self.edge_length = self.g.new_edge_property("float")
+        self.control_points = self.g.new_edge_property('vector<float>')
 
         # populate vertex positions with the positions specified i nt he layout
-        for i, row in enumerate(token_graph.ids_to_positions.sort_values("vertex")[["x", "y"]].values):
+        for i, row in enumerate(token_graph.id_address_pos.sort_values("vertex")[["x", "y"]].values):
             self.vertex_positions[i] = row
 
-        data = token_graph.edge_ids_amounts.rename(columns={'source_id': 'source', 'target_id': 'target'})
+        data = token_graph.edge_amounts.rename(columns={'source_id': 'source', 'target_id': 'target'})
         data['amount'] = pd.to_numeric(data['amount'])
 
         self.g.add_edge_list(
@@ -44,25 +46,44 @@ class GraphToolTokenGraph:
             map(
                 lambda x: self._convert_amount_to_edge_width(x, max_amount),
                 list(self.edge_weight.a)
-                )
+            )
         )
 
         # TODO: loop edges have weigth zero, define a minimum
-        edge_lengths = self._calculate_edge_lengths(data, token_graph.ids_to_positions)
+        edge_lengths = self._calculate_edge_lengths(data, token_graph.id_address_pos)
 
         self.edge_length.a = edge_lengths.values
 
-        self._square_out(token_graph.ids_to_positions)
+        self._ensure_layout_is_square(token_graph)
 
         self.degree = self.g.degree_property_map("in")
-        self.degree.a = 4 * (np.sqrt(self.degree.a) * 0.5 + 0.4)
+        # self.degree.a = 4 * (np.sqrt(self.degree.a) * 0.5 + 0.4)
+        self.degree.a = self.calculate_vertices_size(configurations)
+
+        angle = configurations['edge_curvature']  # negative is clockwise
+        for v in self.g.vertices():
+            for e in v.out_edges():
+                self.control_points[e] = [0, 0, 0.25, angle, 0.75, angle, 1, 0]
+
+    def calculate_vertices_size(self, configuration_dictionary):
+
+        med_distance = self.metadata.graph_metadata['median_pixel_distance'][0]
+        targetMedian = med_distance * configuration_dictionary['target_median']
+        targetMax = med_distance * configuration_dictionary['target_max']
+
+        medToMax = max(list(self.degree.a)) - np.median(list(self.degree.a))
+        targetMedToMax = targetMax - targetMedian
+        degrees = (self.degree.a - np.median(self.degree.a)) * (targetMedToMax / medToMax) + targetMedian
+        degrees = np.clip(degrees, 1, targetMax)
+        return degrees
 
     def _convert_amount_to_edge_width(self, x, max_amount):
         # TODO: optimise
         zero_amount_become_one = x + 1.0
         log_amount = math.log10(zero_amount_become_one)
-        thickness = (log_amount / math.log10(max_amount) * (CONFIGURATIONS['max_edge_thickness'] - CONFIGURATIONS['min_edge_thickness'])) + \
-                    CONFIGURATIONS['min_edge_thickness']
+        min_thick = CONFIGURATIONS['min_edge_thickness']
+        max_thick = CONFIGURATIONS['max_edge_thickness']
+        thickness = (log_amount / math.log10(max_amount) * (max_thick - min_thick)) + min_thick
         return thickness
 
     def _calculate_edge_lengths(self, data, layout):
@@ -78,17 +99,13 @@ class GraphToolTokenGraph:
         ssy___ = ssx_ssy ** 0.5
         return ssy___
 
-    def _square_out(self, values):
+    def _ensure_layout_is_square(self, token_graph):
         # add two vertices that ensure that the layout is a square
-        temp_max_x = values['x'].max()
-        temp_max_y = values['y'].max()
-        temp_min_x = values['x'].min()
-        temp_min_y = values['y'].min()
 
         top_left = self.g.add_vertex()
         bottom_right = self.g.add_vertex()
-        min_coordinate_value = min(temp_min_x, temp_min_y)
-        max_coordinate_value = max(temp_max_x, temp_max_y)
+        min_coordinate_value = self.metadata.graph_metadata['min'][0]
+        max_coordinate_value = self.metadata.graph_metadata['max'][0]
 
         self.vertex_positions[top_left] = (min_coordinate_value, min_coordinate_value)
         self.vertex_positions[bottom_right] = (max_coordinate_value, max_coordinate_value)
@@ -101,13 +118,3 @@ class GraphToolTokenGraph:
 
         self.edge_length[e1] = 0
         self.edge_length[e2] = 0
-
-        self.max_x = max_coordinate_value
-        self.max_y = max_coordinate_value
-        self.min_x = min_coordinate_value
-        self.min_y = min_coordinate_value
-        self.side = max_coordinate_value - min_coordinate_value
-        # save min and max coordinate value for later using it to place markers on the map
-        d = {'min': [min_coordinate_value], 'max': [max_coordinate_value]}
-        df = pd.DataFrame(data=d)
-        df.to_csv(MIN_MAX_PATH, index=False)
