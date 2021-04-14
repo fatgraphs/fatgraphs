@@ -14,19 +14,20 @@ class GraphToolTokenGraph:
     An instacne of GraphToolTokenGraph contains all the static information needed to render a graph.
     '''
 
-    def __init__(self, graph, configuration_dictionary, metadata):
+    def __init__(self, graph, configurations, metadata):
         if not isinstance(graph, TokenGraph):
             raise TypeError("GraphToolTokenGraph needs an instance of TokeGraph to be instantiated")
         self.metadata = metadata
-        self.init_from_token_graph(graph, configuration_dictionary)
+        self.init_from_token_graph(graph, configurations)
 
-    def init_from_token_graph(self, token_graph, configuration_dictionary):
+    def init_from_token_graph(self, token_graph, configurations):
         # TODO: optimise
 
         self.g = Graph(directed=True)
         self.vertex_positions = self.g.new_vertex_property("vector<double>")
         self.edge_weight = self.g.new_edge_property("float")
         self.edge_length = self.g.new_edge_property("float")
+        self.control_points = self.g.new_edge_property('vector<float>')
 
         # populate vertex positions with the positions specified i nt he layout
         for i, row in enumerate(token_graph.id_address_pos.sort_values("vertex")[["x", "y"]].values):
@@ -57,12 +58,19 @@ class GraphToolTokenGraph:
 
         self.degree = self.g.degree_property_map("in")
         # self.degree.a = 4 * (np.sqrt(self.degree.a) * 0.5 + 0.4)
-        self.degree.a = self.calculate_vertices_size(configuration_dictionary)
+        self.degree.a = self.calculate_vertices_size(configurations)
+
+        angle = configurations['edge_curvature']  # negative is clockwise
+        for v in self.g.vertices():
+            for e in v.out_edges():
+                self.control_points[e] = [0, 0, 0.25, angle, 0.75, angle, 1, 0]
 
     def calculate_vertices_size(self, configuration_dictionary):
+
         med_distance = self.metadata.graph_metadata['median_pixel_distance'][0]
         targetMedian = med_distance * configuration_dictionary['target_median']
         targetMax = med_distance * configuration_dictionary['target_max']
+
         medToMax = max(list(self.degree.a)) - np.median(list(self.degree.a))
         targetMedToMax = targetMax - targetMedian
         degrees = (self.degree.a - np.median(self.degree.a)) * (targetMedToMax / medToMax) + targetMedian
@@ -73,9 +81,9 @@ class GraphToolTokenGraph:
         # TODO: optimise
         zero_amount_become_one = x + 1.0
         log_amount = math.log10(zero_amount_become_one)
-        thickness = (log_amount / math.log10(max_amount) * (
-                    CONFIGURATIONS['max_edge_thickness'] - CONFIGURATIONS['min_edge_thickness'])) + \
-                    CONFIGURATIONS['min_edge_thickness']
+        min_thick = CONFIGURATIONS['min_edge_thickness']
+        max_thick = CONFIGURATIONS['max_edge_thickness']
+        thickness = (log_amount / math.log10(max_amount) * (max_thick - min_thick)) + min_thick
         return thickness
 
     def _calculate_edge_lengths(self, data, layout):

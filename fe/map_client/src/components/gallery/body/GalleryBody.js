@@ -19,7 +19,7 @@ class GalleryBody extends Component {
     }
 
     render() {
-        return <div className={'flex'}>
+        return <div className={'flex flex-wrap'}>
                 {this.state.available_graphs.map((value, index) => {
                     return <GraphThumbnail name={value}
                                            key={index}

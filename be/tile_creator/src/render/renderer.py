@@ -73,7 +73,9 @@ class GraphRenderer:
                    fit_view=fit,
                    edge_pen_width=self.graph.edge_weight,
                    adjust_aspect=False,
-                   fit_view_ink=True)
+                   fit_view_ink=True,
+                   edge_control_points=self.graph.control_points,
+                   edge_end_marker="none")
 
 
 # DEBUG CODE - DONT DELETE

@@ -60,10 +60,11 @@ configurations = {
     "min_transparency": float(args.get('--min_t', 0.01)),
     "max_transparency": float(args.get('--max_t', 0.1)),
     "std_transparency_as_percentage": float(args.get("--std", 0.5)),
-    "max_edge_thickness": float(args.get('--min_thick', 4)),
-    "min_edge_thickness": float(args.get('--max_thick', 1)),
+    "max_edge_thickness": float(args.get('--max_thick', 4)),
+    "min_edge_thickness": float(args.get('--min_thick', 1)),
     "target_median": float(args.get("--target_median", 0.5)),
     "target_max": float(args.get("--target_max", 3)),
+    "edge_curvature": float(args.get("--edge_curvature", 4)),
     "bg_color": "black"
 }
 
