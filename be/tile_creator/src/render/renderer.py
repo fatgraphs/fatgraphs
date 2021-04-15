@@ -65,7 +65,7 @@ class GraphRenderer:
         graph_draw(self.graph.g,
                    pos=self.graph.vertex_positions,
                    bg_color=self.configurations['bg_color'],
-                   vertex_size=self.graph.degree,
+                   vertex_size=self.graph.vertices_size,
                    vertex_fill_color=[1, 0, 0, 0.8],
                    edge_color=edge_colors,
                    output_size=[self.configurations['tile_size'], self.configurations['tile_size']],

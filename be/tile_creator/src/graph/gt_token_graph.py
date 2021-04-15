@@ -28,6 +28,7 @@ class GraphToolTokenGraph:
         self.edge_weight = self.g.new_edge_property("float")
         self.edge_length = self.g.new_edge_property("float")
         self.control_points = self.g.new_edge_property('vector<float>')
+        self.vertices_size = self.g.new_vertex_property('float')
 
         # populate vertex positions with the positions specified i nt he layout
         for i, row in enumerate(token_graph.id_address_pos.sort_values("vertex")[["x", "y"]].values):
@@ -57,8 +58,7 @@ class GraphToolTokenGraph:
         self._ensure_layout_is_square(token_graph)
 
         self.degree = self.g.degree_property_map("in")
-        # self.degree.a = 4 * (np.sqrt(self.degree.a) * 0.5 + 0.4)
-        self.degree.a = self.calculate_vertices_size(configurations)
+        self.vertices_size.a = self.calculate_vertices_size(configurations)
 
         angle = configurations['edge_curvature']  # negative is clockwise
         for v in self.g.vertices():
