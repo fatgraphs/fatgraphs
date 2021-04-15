@@ -11958,6 +11958,71 @@ video {
   line-height: 1;
 }
 
+.active\:text-xs:active {
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+
+.active\:text-sm:active {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.active\:text-base:active {
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+
+.active\:text-lg:active {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+}
+
+.active\:text-xl:active {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+}
+
+.active\:text-2xl:active {
+  font-size: 1.5rem;
+  line-height: 2rem;
+}
+
+.active\:text-3xl:active {
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+}
+
+.active\:text-4xl:active {
+  font-size: 2.25rem;
+  line-height: 2.5rem;
+}
+
+.active\:text-5xl:active {
+  font-size: 3rem;
+  line-height: 1;
+}
+
+.active\:text-6xl:active {
+  font-size: 3.75rem;
+  line-height: 1;
+}
+
+.active\:text-7xl:active {
+  font-size: 4.5rem;
+  line-height: 1;
+}
+
+.active\:text-8xl:active {
+  font-size: 6rem;
+  line-height: 1;
+}
+
+.active\:text-9xl:active {
+  font-size: 8rem;
+  line-height: 1;
+}
+
 .leading-3 {
   line-height: .75rem;
 }
@@ -43012,6 +43077,71 @@ h1 {
     line-height: 1;
   }
 
+  .sm\:active\:text-xs:active {
+    font-size: 0.75rem;
+    line-height: 1rem;
+  }
+
+  .sm\:active\:text-sm:active {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+
+  .sm\:active\:text-base:active {
+    font-size: 1rem;
+    line-height: 1.5rem;
+  }
+
+  .sm\:active\:text-lg:active {
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+  }
+
+  .sm\:active\:text-xl:active {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+  }
+
+  .sm\:active\:text-2xl:active {
+    font-size: 1.5rem;
+    line-height: 2rem;
+  }
+
+  .sm\:active\:text-3xl:active {
+    font-size: 1.875rem;
+    line-height: 2.25rem;
+  }
+
+  .sm\:active\:text-4xl:active {
+    font-size: 2.25rem;
+    line-height: 2.5rem;
+  }
+
+  .sm\:active\:text-5xl:active {
+    font-size: 3rem;
+    line-height: 1;
+  }
+
+  .sm\:active\:text-6xl:active {
+    font-size: 3.75rem;
+    line-height: 1;
+  }
+
+  .sm\:active\:text-7xl:active {
+    font-size: 4.5rem;
+    line-height: 1;
+  }
+
+  .sm\:active\:text-8xl:active {
+    font-size: 6rem;
+    line-height: 1;
+  }
+
+  .sm\:active\:text-9xl:active {
+    font-size: 8rem;
+    line-height: 1;
+  }
+
   .sm\:leading-3 {
     line-height: .75rem;
   }
@@ -73973,6 +74103,71 @@ h1 {
   }
 
   .md\:text-9xl {
+    font-size: 8rem;
+    line-height: 1;
+  }
+
+  .md\:active\:text-xs:active {
+    font-size: 0.75rem;
+    line-height: 1rem;
+  }
+
+  .md\:active\:text-sm:active {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+
+  .md\:active\:text-base:active {
+    font-size: 1rem;
+    line-height: 1.5rem;
+  }
+
+  .md\:active\:text-lg:active {
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+  }
+
+  .md\:active\:text-xl:active {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+  }
+
+  .md\:active\:text-2xl:active {
+    font-size: 1.5rem;
+    line-height: 2rem;
+  }
+
+  .md\:active\:text-3xl:active {
+    font-size: 1.875rem;
+    line-height: 2.25rem;
+  }
+
+  .md\:active\:text-4xl:active {
+    font-size: 2.25rem;
+    line-height: 2.5rem;
+  }
+
+  .md\:active\:text-5xl:active {
+    font-size: 3rem;
+    line-height: 1;
+  }
+
+  .md\:active\:text-6xl:active {
+    font-size: 3.75rem;
+    line-height: 1;
+  }
+
+  .md\:active\:text-7xl:active {
+    font-size: 4.5rem;
+    line-height: 1;
+  }
+
+  .md\:active\:text-8xl:active {
+    font-size: 6rem;
+    line-height: 1;
+  }
+
+  .md\:active\:text-9xl:active {
     font-size: 8rem;
     line-height: 1;
   }
@@ -104942,6 +105137,71 @@ h1 {
     line-height: 1;
   }
 
+  .lg\:active\:text-xs:active {
+    font-size: 0.75rem;
+    line-height: 1rem;
+  }
+
+  .lg\:active\:text-sm:active {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+
+  .lg\:active\:text-base:active {
+    font-size: 1rem;
+    line-height: 1.5rem;
+  }
+
+  .lg\:active\:text-lg:active {
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+  }
+
+  .lg\:active\:text-xl:active {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+  }
+
+  .lg\:active\:text-2xl:active {
+    font-size: 1.5rem;
+    line-height: 2rem;
+  }
+
+  .lg\:active\:text-3xl:active {
+    font-size: 1.875rem;
+    line-height: 2.25rem;
+  }
+
+  .lg\:active\:text-4xl:active {
+    font-size: 2.25rem;
+    line-height: 2.5rem;
+  }
+
+  .lg\:active\:text-5xl:active {
+    font-size: 3rem;
+    line-height: 1;
+  }
+
+  .lg\:active\:text-6xl:active {
+    font-size: 3.75rem;
+    line-height: 1;
+  }
+
+  .lg\:active\:text-7xl:active {
+    font-size: 4.5rem;
+    line-height: 1;
+  }
+
+  .lg\:active\:text-8xl:active {
+    font-size: 6rem;
+    line-height: 1;
+  }
+
+  .lg\:active\:text-9xl:active {
+    font-size: 8rem;
+    line-height: 1;
+  }
+
   .lg\:leading-3 {
     line-height: .75rem;
   }
@@ -135907,6 +136167,71 @@ h1 {
     line-height: 1;
   }
 
+  .xl\:active\:text-xs:active {
+    font-size: 0.75rem;
+    line-height: 1rem;
+  }
+
+  .xl\:active\:text-sm:active {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+
+  .xl\:active\:text-base:active {
+    font-size: 1rem;
+    line-height: 1.5rem;
+  }
+
+  .xl\:active\:text-lg:active {
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+  }
+
+  .xl\:active\:text-xl:active {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+  }
+
+  .xl\:active\:text-2xl:active {
+    font-size: 1.5rem;
+    line-height: 2rem;
+  }
+
+  .xl\:active\:text-3xl:active {
+    font-size: 1.875rem;
+    line-height: 2.25rem;
+  }
+
+  .xl\:active\:text-4xl:active {
+    font-size: 2.25rem;
+    line-height: 2.5rem;
+  }
+
+  .xl\:active\:text-5xl:active {
+    font-size: 3rem;
+    line-height: 1;
+  }
+
+  .xl\:active\:text-6xl:active {
+    font-size: 3.75rem;
+    line-height: 1;
+  }
+
+  .xl\:active\:text-7xl:active {
+    font-size: 4.5rem;
+    line-height: 1;
+  }
+
+  .xl\:active\:text-8xl:active {
+    font-size: 6rem;
+    line-height: 1;
+  }
+
+  .xl\:active\:text-9xl:active {
+    font-size: 8rem;
+    line-height: 1;
+  }
+
   .xl\:leading-3 {
     line-height: .75rem;
   }
@@ -166868,6 +167193,71 @@ h1 {
   }
 
   .\32xl\:text-9xl {
+    font-size: 8rem;
+    line-height: 1;
+  }
+
+  .\32xl\:active\:text-xs:active {
+    font-size: 0.75rem;
+    line-height: 1rem;
+  }
+
+  .\32xl\:active\:text-sm:active {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+
+  .\32xl\:active\:text-base:active {
+    font-size: 1rem;
+    line-height: 1.5rem;
+  }
+
+  .\32xl\:active\:text-lg:active {
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+  }
+
+  .\32xl\:active\:text-xl:active {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+  }
+
+  .\32xl\:active\:text-2xl:active {
+    font-size: 1.5rem;
+    line-height: 2rem;
+  }
+
+  .\32xl\:active\:text-3xl:active {
+    font-size: 1.875rem;
+    line-height: 2.25rem;
+  }
+
+  .\32xl\:active\:text-4xl:active {
+    font-size: 2.25rem;
+    line-height: 2.5rem;
+  }
+
+  .\32xl\:active\:text-5xl:active {
+    font-size: 3rem;
+    line-height: 1;
+  }
+
+  .\32xl\:active\:text-6xl:active {
+    font-size: 3.75rem;
+    line-height: 1;
+  }
+
+  .\32xl\:active\:text-7xl:active {
+    font-size: 4.5rem;
+    line-height: 1;
+  }
+
+  .\32xl\:active\:text-8xl:active {
+    font-size: 6rem;
+    line-height: 1;
+  }
+
+  .\32xl\:active\:text-9xl:active {
     font-size: 8rem;
     line-height: 1;
   }

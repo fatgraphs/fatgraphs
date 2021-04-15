@@ -8,14 +8,14 @@ import os
 from be.tile_creator.src.token_graph_metadata import TokenGraphMetadata
 
 
-def main(csv_path, configuration_dictionary, labels_path=None):
-    graph = TokenGraph(csv_path, {'dtype': {'amount': float}})
-    metadata = TokenGraphMetadata(graph, configuration_dictionary, labels_path)
-    gt_graph = GraphToolTokenGraph(graph, configuration_dictionary, metadata)
+def main(configurations):
+    graph = TokenGraph(configurations['source'], {'dtype': {'amount': float}})
+    metadata = TokenGraphMetadata(graph, configurations)
+    gt_graph = GraphToolTokenGraph(graph, configurations, metadata)
 
-    _generate_metadata_files(metadata, configuration_dictionary)
+    _generate_metadata_files(metadata, configurations)
 
-    renderer = GraphRenderer(gt_graph, metadata, configuration_dictionary)
+    renderer = GraphRenderer(gt_graph, metadata, configurations)
     renderer.render_tiles()
 
 
@@ -30,6 +30,5 @@ def _generate_metadata_files(metadata, configuration_dictionary):
 
 
 if __name__ == '__main__':
-    configuration_dictionary = CONFIGURATIONS
-    configuration_dictionary['output_folder'] = "be/graph-maps/testing-main"
-    main(LARGE_GRAPH_RAW_PATH, configuration_dictionary)
+    raise Exception("We are not supporting running main.py directly for tile generation, you should instead use " + \
+                    "gtm.py as the entry point")
