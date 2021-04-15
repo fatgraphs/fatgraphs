@@ -8,10 +8,10 @@ class TokenGraphMetadata:
             (eg labels indicating exchanges)
     """
 
-    def __init__(self, token_graph, configuration_dictionary, labels=None):
+    def __init__(self, token_graph, configuration_dictionary):
         self.vertices_metadata = pd.DataFrame(columns=['address', 'label', 'x', 'y'])
-        if labels is not None:
-            raw_labels = pd.read_csv(labels)
+        if configuration_dictionary['labels'] is not None:
+            raw_labels = pd.read_csv(configuration_dictionary['labels'])
             address_to_label = raw_labels[['address', 'label']]
             self.vertices_metadata = address_to_label.merge(token_graph.id_address_pos, on="address")
             self.vertices_metadata = self.vertices_metadata.drop_duplicates()
@@ -20,6 +20,7 @@ class TokenGraphMetadata:
 
         # save min and max coordinate value for later using it to place markers on the map
         # (needed to convert from graph coordinate space to map coordinate space)
+        configuration_dictionary['labels'] = "" if configuration_dictionary['labels'] is None else configuration_dictionary['labels']
         configuration_frame = pd.DataFrame(data=configuration_dictionary, index=[0])
         graph_dependent_metadata = pd.DataFrame(data={'min': [min_coordinate_value],
                                                       'max': [max_coordinate_value],

@@ -64,11 +64,6 @@ def get_graph_metadata(graph_name):
         csv = pd.read_csv(source)
     else:
         raise Exception("The vertices metadata file is missing")
-    return {"vertices": int(csv['vertices'][0]),
-            "edges": int(csv['edges'][0]),
-            "min_coordinate": csv['min'][0],
-            "max_coordinate": csv['max'][0],
-            "zoom_levels": int(csv['zoom_levels'][0]),
-            "median_pixel_distance": float(csv["median_pixel_distance"][0]),
-            'tile_size': int(csv['tile_size'])
-            }
+    metadata_dictionary = csv.to_dict(orient='records')[0]
+    metadata_dictionary['labels'] = str(metadata_dictionary['labels'])
+    return metadata_dictionary

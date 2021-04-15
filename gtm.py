@@ -15,7 +15,7 @@ def extract_arguments():
     print(argument_list)
     short_options = "n:z:"
     long_options = ["csv=", "labels=", "ts=", "min_t=", "max_t=", "std=", "min_thick=", "max_thick=", "target_median=",
-                    "target_max="]
+                    "target_max=", "edge_curvature="]
     try:
         arguments, values = getopt.getopt(argument_list, short_options, long_options)
     except getopt.error as err:
@@ -50,6 +50,8 @@ def mkdir_for_this_graph():
 args = extract_arguments()
 ensure_container_directory_exists()
 graph_path = mkdir_for_this_graph()
+source_file = args['--csv']
+source_labels = args.get('--labels', None)
 
 # default value as second arg og 'get'
 # TODO find a way of ensuring that htis dict keys are the same as defined in configuration.json
@@ -65,10 +67,12 @@ configurations = {
     "target_median": float(args.get("--target_median", 0.5)),
     "target_max": float(args.get("--target_max", 3)),
     "edge_curvature": float(args.get("--edge_curvature", 4)),
-    "bg_color": "black"
+    "bg_color": "black",
+    "source": source_file,
+    "labels": source_labels
 }
 
-main(args['--csv'], configurations, args.get('--labels', None))
+main(configurations)
 
 # # Evaluate given options
 # for current_argument, current_value in arguments:
