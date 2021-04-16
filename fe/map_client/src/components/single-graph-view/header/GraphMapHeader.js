@@ -46,11 +46,16 @@ class GraphMapHeader extends Component {
 
     generateGtmCommand() {
         let build = "./gtm.py" + " --csv " + this.props.graph_metadata.source +
-            " --ts " + this.props.graph_metadata.tile_size + " -z " + this.props.graph_metadata.zoom_levels +
-            " --min_t " + this.props.graph_metadata.min_transparency + " --max_t " + this.props.graph_metadata.max_transparency +
-            " --std " + this.props.graph_metadata.std_transparency_as_percentage + " --max_thick " + this.props.graph_metadata.max_edge_thickness +
-            " --min_thick " + this.props.graph_metadata.min_edge_thickness + " --target_median " + this.props.graph_metadata.target_median +
-            " --target_max " + this.props.graph_metadata.target_max + " --edge_curvature " + this.props.graph_metadata.edge_curvature
+            " --ts " + this.props.graph_metadata.tile_size +
+            " -z " + this.props.graph_metadata.zoom_levels +
+            " --min_t " + this.props.graph_metadata.min_transparency +
+            " --max_t " + this.props.graph_metadata.max_transparency +
+            " --std " + this.props.graph_metadata.std_transparency_as_percentage +
+            " --med_thick " + this.props.graph_metadata.med_edge_thickness +
+            " --max_thick " + this.props.graph_metadata.max_edge_thickness +
+            " --med_size " + this.props.graph_metadata.med_vertex_size +
+            " --max_size " + this.props.graph_metadata.max_vertex_size +
+            " --edge_curvature " + this.props.graph_metadata.edge_curvature
         return build;
     }
 }
