@@ -6,6 +6,7 @@ import pandas as pd
 
 from be.configuration import MIN_MAX_PATH, CONFIGURATIONS
 from be.tile_creator.src.graph.token_graph import TokenGraph
+from be.utils import shift_and_scale
 
 
 class GraphToolTokenGraph:
@@ -42,13 +43,8 @@ class GraphToolTokenGraph:
             hashed=False,
             eprops=[self.edge_weight])
 
-        max_amount = float(self.edge_weight.a.max())
-        self.edge_weight.a = list(
-            map(
-                lambda x: self._convert_amount_to_edge_width(x, max_amount),
-                list(self.edge_weight.a)
-            )
-        )
+
+        self.edge_weight.a = self.calculate_edges_thickness(configurations)
 
         # TODO: loop edges have weigth zero, define a minimum
         edge_lengths = self._calculate_edge_lengths(data, token_graph.id_address_pos)
@@ -68,23 +64,11 @@ class GraphToolTokenGraph:
     def calculate_vertices_size(self, configuration_dictionary):
 
         med_distance = self.metadata.graph_metadata['median_pixel_distance'][0]
-        targetMedian = med_distance * configuration_dictionary['target_median']
-        targetMax = med_distance * configuration_dictionary['target_max']
+        target_median = med_distance * configuration_dictionary['med_vertex_size']
+        target_max = med_distance * configuration_dictionary['max_vertex_size']
 
-        medToMax = max(list(self.degree.a)) - np.median(list(self.degree.a))
-        targetMedToMax = targetMax - targetMedian
-        degrees = (self.degree.a - np.median(self.degree.a)) * (targetMedToMax / medToMax) + targetMedian
-        degrees = np.clip(degrees, 1, targetMax)
-        return degrees
+        return shift_and_scale(self.degree.a, target_median, target_max)
 
-    def _convert_amount_to_edge_width(self, x, max_amount):
-        # TODO: optimise
-        zero_amount_become_one = x + 1.0
-        log_amount = math.log10(zero_amount_become_one)
-        min_thick = CONFIGURATIONS['min_edge_thickness']
-        max_thick = CONFIGURATIONS['max_edge_thickness']
-        thickness = (log_amount / math.log10(max_amount) * (max_thick - min_thick)) + min_thick
-        return thickness
 
     def _calculate_edge_lengths(self, data, layout):
         data = data.merge(layout.rename(columns={"vertex": "target"}), on='target', how='left') \
@@ -118,3 +102,11 @@ class GraphToolTokenGraph:
 
         self.edge_length[e1] = 0
         self.edge_length[e2] = 0
+
+    def calculate_edges_thickness(self, configurations):
+        med_distance = self.metadata.graph_metadata['median_pixel_distance'][0]
+        target_median = med_distance * configurations['med_edge_thickness']
+        target_max = med_distance * configurations['max_edge_thickness']
+
+        log_amounts = np.log10(self.edge_weight.a) # amounts can be huge numbers, reduce the range
+        return shift_and_scale(log_amounts, target_median, target_max)

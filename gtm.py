@@ -14,8 +14,8 @@ def extract_arguments():
     argument_list = full_cmd_arguments[1:]
     print(argument_list)
     short_options = "n:z:"
-    long_options = ["csv=", "labels=", "ts=", "min_t=", "max_t=", "std=", "min_thick=", "max_thick=", "target_median=",
-                    "target_max=", "edge_curvature="]
+    long_options = ["csv=", "labels=", "ts=", "min_t=", "max_t=", "std=", "med_thick=", "max_thick=", "med_size=",
+                    "max_size=", "edge_curvature="]
     try:
         arguments, values = getopt.getopt(argument_list, short_options, long_options)
     except getopt.error as err:
@@ -62,10 +62,10 @@ configurations = {
     "min_transparency": float(args.get('--min_t', 0.01)),
     "max_transparency": float(args.get('--max_t', 0.1)),
     "std_transparency_as_percentage": float(args.get("--std", 0.5)),
-    "max_edge_thickness": float(args.get('--max_thick', 4)),
-    "min_edge_thickness": float(args.get('--min_thick', 1)),
-    "target_median": float(args.get("--target_median", 0.5)),
-    "target_max": float(args.get("--target_max", 3)),
+    "max_edge_thickness": float(args.get('--max_thick', 1)),
+    "med_edge_thickness": float(args.get('--med_thick', 0.5)),
+    "max_vertex_size": float(args.get("--max_size", 2.5)),
+    "med_vertex_size": float(args.get("--med_size", 0.5)),
     "edge_curvature": float(args.get("--edge_curvature", 4)),
     "bg_color": "black",
     "source": source_file,
