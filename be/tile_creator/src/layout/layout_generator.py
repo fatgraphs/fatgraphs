@@ -1,5 +1,5 @@
 import cugraph
-import pandas as pd
+import numpy as np
 
 
 class LayoutGenerator:
@@ -33,7 +33,7 @@ class LayoutGenerator:
         We rectangularise the circular layout in order to better spread out the nodes.
         '''
         def scale(array, a, b):
-            return (b - a) * ((array - min(array)) / (max(array) - min(array))) + a
+            return (b - a) * ((array - min(array)) / max(1, (max(array) - min(array)))) + a
 
         # the layout is circular # to use more of the rectangular space, project onto a square
         u = layout["x"]
@@ -42,7 +42,6 @@ class LayoutGenerator:
         umin = u.min()
         vmax = v.max()
         vmin = v.min()
-        sqrt = pd.np.sqrt
 
         # https://stats.stackexchange.com/a/178629
 
@@ -50,8 +49,12 @@ class LayoutGenerator:
         v = scale(v, -0.9, 0.9)
 
         # https://stackoverflow.com/a/32391780
-        x = (0.5 * sqrt(2 + (u*u) - (v*v) + 2*u*sqrt(2))) - (0.5 * sqrt(2 + (u*u) - (v*v) - 2*u*sqrt(2)))
-        y = (0.5 * sqrt(2 - (u*u) + (v*v) + 2*v*sqrt(2))) - (0.5 * sqrt(2 - (u*u) + (v*v) - 2*v*sqrt(2)))
+        sqrt_two = np.sqrt(2)
+        x = (0.5 * np.sqrt(2 + (u*u) - (v*v) + 2 * u * sqrt_two)) - (0.5 * np.sqrt(2 + (u * u) - (v * v) - 2 * u * sqrt_two))
+        y = (0.5 * np.sqrt(2 - (u*u) + (v*v) + 2 * v * sqrt_two)) - (0.5 * np.sqrt(2 - (u * u) + (v * v) - 2 * v * sqrt_two))
+        # for small graphs the above equation can produce nans
+        x = np.nan_to_num(x)
+        y = np.nan_to_num(y)
         x = scale(x, umin, umax)
         y = scale(y, vmin, vmax)
         layout["x"] = x
