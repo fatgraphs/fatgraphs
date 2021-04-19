@@ -59,7 +59,8 @@ class GraphToolTokenGraph:
         angle = configurations['edge_curvature']  # negative is clockwise
         for v in self.g.vertices():
             for e in v.out_edges():
-                self.control_points[e] = [0, 0, 0.25, angle, 0.75, angle, 1, 0]
+                exp = self.edge_length[e] / self.metadata.graph_metadata['median_pixel_distance']
+                self.control_points[e] = [0, 0, 0.25, exp, 0.75, exp, 1, 0]
 
     def calculate_vertices_size(self, configuration_dictionary):
 
