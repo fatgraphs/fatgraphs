@@ -17,9 +17,9 @@ class GraphRenderer:
         self.graph = graph
         self.metadata = metadata
         self.configurations = configurations
+        self.transparency_calculator = TransparencyCalculator(self.graph.edge_length.a, self.configurations)
 
     def render_tiles(self):
-        tc = TransparencyCalculator(min(self.graph.edge_length.a), max(self.graph.edge_length.a), self.configurations)
 
         for zoom_level in range(0, self.configurations['zoom_levels']):
             number_of_images = 4 ** zoom_level
@@ -33,7 +33,7 @@ class GraphRenderer:
             edge_colors = self.graph.g.new_edge_property("vector<double>")
             for e in self.graph.g.edges():
                 edge_length = self.graph.edge_length[e]
-                transparency = tc.get_transparency(edge_length, zoom_level)
+                transparency = self.transparency_calculator.get_transparency(edge_length, zoom_level)
                 edge_colors[e] = (1, 1, 1, transparency)
 
             for t in tuples:

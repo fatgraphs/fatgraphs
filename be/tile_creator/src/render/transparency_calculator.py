@@ -2,11 +2,13 @@ import numpy as np
 
 class TransparencyCalculator:
 
-    def __init__(self, min_length, max_length, configurations):
+    def __init__(self, edge_lengths, configurations):
         self.configurations = configurations
-        self.min_length = max(1, min_length)
-        self.max_length = max_length
-        self._do_args_check(max_length, min_length, self.configurations['zoom_levels'])
+        self.edge_lengths = edge_lengths
+        self.min_length = max(1, min(edge_lengths))
+        self.max_length = max(edge_lengths)
+        self._do_args_check(self.max_length, self.min_length, self.configurations['zoom_levels'])
+        self.compute_values_for_gaussian()
 
     def _do_args_check(self, max_length, min_length, zoom_levels):
         if min_length < 0:
@@ -26,13 +28,14 @@ class TransparencyCalculator:
 
         return self.gaussian_bumps(edge_length, zoom_level)
 
-    def gaussian_bumps(self, edge_length, zoom_level):
+    def gaussian_bumps(self, edge_length, current_zoom_level):
         '''
         A strategy to calculate transparency.
         '''
 
-        step = (self.max_length - self.min_length) / (self.configurations['zoom_levels'] + 1)
-        mean = step * (self.configurations['zoom_levels'] - zoom_level)
+        step = 1 / (self.configurations['zoom_levels'] + 1) # 0.25
+        q = step * (self.configurations['zoom_levels'] - current_zoom_level) # 0.75
+        mean = np.quantile(self.edge_lengths, q)
         std = self.configurations['std_transparency_as_percentage'] * (self.max_length - self.min_length)
 
         return self._gauss(edge_length, mean, std)
@@ -44,3 +47,10 @@ class TransparencyCalculator:
         min_output = self.configurations['min_transparency']
         max_output = self.configurations['max_transparency']
         return (max_output - min_output) * np.exp(-np.power(x - mu, 2.) / (2 * np.power(std, 2.))) + min_output
+
+    def compute_values_for_gaussian(self):
+        self.values = {}
+        for zoom_level in range(0, self.configurations['zoom_levels']):
+            self.values[zoom_level] = []
+            for edge_length in range(int(self.min_length), int(self.max_length) + 1):
+                self.values[zoom_level].append(self.get_transparency(edge_length, zoom_level))
