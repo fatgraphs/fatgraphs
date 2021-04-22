@@ -48,8 +48,13 @@ gradle-app.setting
 # IDE files
 **/.idea/*
 
-# Don't upload images to the repo as it would consume space
+# Don't upload images and row data to the repo as it would consume space
 *.png
+*.jpg
+*.csv
 be/graph-maps/
+
+# eclude jupyter notebook cache files
+*-checkpoint.ipynb
 
 **/node_modules/*
