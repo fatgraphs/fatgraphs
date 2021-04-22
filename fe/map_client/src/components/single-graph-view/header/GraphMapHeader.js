@@ -2,6 +2,8 @@ import React, {Component} from 'react';
 import DescriptionTable from "../../description-table/DescriptionTable";
 import {faClipboard} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {withRouter} from "react-router-dom";
+import GraphHeaderNavigationBar from "./graphHeaderNavigationBar/GraphHeaderNavigationBar";
 
 class GraphMapHeader extends Component {
 
@@ -18,8 +20,6 @@ class GraphMapHeader extends Component {
     }
 
     render() {
-        let ownPropertyNames = Object.getOwnPropertyNames(this.props.graph_metadata);
-        let ownPropertyValues = Object.values(this.props.graph_metadata).map((e) => String(e))
         return (
             <div className={'border-2 flex-1'}>
                 <div className={'relative flex flex-row items-center'}>
@@ -30,11 +30,7 @@ class GraphMapHeader extends Component {
                         </p>
                     </div>
                 </div>
-
-                <DescriptionTable
-                    keys={ownPropertyNames}
-                    values={ownPropertyValues}>
-                </DescriptionTable>
+                <GraphHeaderNavigationBar graph_metadata={this.props.graph_metadata}/>
             </div>
         );
     }
@@ -60,4 +56,4 @@ class GraphMapHeader extends Component {
     }
 }
 
-export default GraphMapHeader;
+export default withRouter(GraphMapHeader);

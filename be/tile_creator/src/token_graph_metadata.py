@@ -28,6 +28,7 @@ class TokenGraphMetadata:
                                                       'edges': [token_graph.edge_amounts.shape[0]]})
         self.graph_metadata = pd.concat([configuration_frame, graph_dependent_metadata], axis=1)
         # TODO refactor this is messyy
+        # TODO computing the median distance is super slow for large graph, could use an approximation such as amount of nodes and tile size
         distance = self.compute_median_distance(token_graph, configuration_dictionary, min_coordinate_value,
                                                 max_coordinate_value)
         self.graph_metadata['median_pixel_distance'] = distance

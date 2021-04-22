@@ -4,7 +4,8 @@
     "available_graphs": "/tokengallery/graphs",
     "tile": "/tokengallery/tile",
     "vertices_metadata": "/tokengallery/vertices-metadata",
-    "graph_metadata": "/tokengallery/graph-metadata"
+    "graph_metadata": "/tokengallery/graph-metadata",
+    "edge_distributions": "/tokengallery/edge_distributions"
   },
   "graphs_home": "be/graph-maps",
   "vertices_metadata_file_name": "vertices_metadata.csv",

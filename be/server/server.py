@@ -67,3 +67,13 @@ def get_graph_metadata(graph_name):
     metadata_dictionary = csv.to_dict(orient='records')[0]
     metadata_dictionary['labels'] = str(metadata_dictionary['labels'])
     return metadata_dictionary
+
+
+@app.route(CONFIGURATIONS['endpoints']['edge_distributions'] + '/<graph_name>/<zoom_level>')
+def get_distributions(graph_name, zoom_level):
+    path_join = os.path.join(CONFIGURATIONS['graphs_home'], graph_name)
+    distribution_file_names = list(filter(lambda x: 'distribution' in x, os.listdir(path_join)))
+    distribution_file_name = list(filter(lambda x: str(zoom_level) in x, distribution_file_names))[0]
+
+    file = os.path.join(CONFIGURATIONS['graphs_home'], graph_name, distribution_file_name)
+    return send_from_directory("../..", file, mimetype='image/jpeg')

@@ -109,5 +109,5 @@ class GraphToolTokenGraph:
         target_median = med_distance * configurations['med_edge_thickness']
         target_max = med_distance * configurations['max_edge_thickness']
 
-        log_amounts = np.log10(self.edge_weight.a) # amounts can be huge numbers, reduce the range
+        log_amounts = np.log10(self.edge_weight.a + 1) # amounts can be huge numbers, reduce the range
         return shift_and_scale(log_amounts, target_median, target_max)
