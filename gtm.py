@@ -39,17 +39,18 @@ def ensure_container_directory_exists():
     result_in_directory_existing(CONFIGURATIONS['graphs_home'])
 
 
-def mkdir_for_this_graph():
+def mkdir_for_this_graph(graph_name):
     # TODO load confoguraitons instead of relying on BE
     path = os.path.join(CONFIGURATIONS['graphs_home'])
-    path = os.path.join(path, args["-n"])
+    path = os.path.join(path, graph_name)
     result_in_directory_existing(path)
     return path
 
 
 args = extract_arguments()
 ensure_container_directory_exists()
-graph_path = mkdir_for_this_graph()
+graph_name = args["-n"]
+graph_path = mkdir_for_this_graph(graph_name)
 source_file = args['--csv']
 source_labels = args.get('--labels', None)
 
@@ -57,13 +58,14 @@ source_labels = args.get('--labels', None)
 # TODO find a way of ensuring that htis dict keys are the same as defined in configuration.json
 configurations = {
     "output_folder": graph_path,
-    "tile_size": int(args.get('--ts', 512)),
+    'graph_name': graph_name,
+    "tile_size": int(args.get('--ts', 256)),
     "zoom_levels": int(args.get('-z', 2)),
     "min_transparency": float(args.get('--min_t', 0.01)),
     "max_transparency": float(args.get('--max_t', 0.1)),
     "std_transparency_as_percentage": float(args.get("--std", 0.5)),
-    "max_edge_thickness": float(args.get('--max_thick', 1)),
-    "med_edge_thickness": float(args.get('--med_thick', 0.5)),
+    "max_edge_thickness": float(args.get('--max_thick', 0.5)),
+    "med_edge_thickness": float(args.get('--med_thick', 0.25)),
     "max_vertex_size": float(args.get("--max_size", 2.5)),
     "med_vertex_size": float(args.get("--med_size", 0.5)),
     "edge_curvature": float(args.get("--edge_curvature", 4)),

@@ -59,8 +59,8 @@ def generate_distribution_img(edge_lengths, scaled_transparency_values, x, zoom_
     ax1.hist(edge_lengths, len(x), color=color)
     ax1.tick_params(axis='y')
     ax1.tick_params(axis='x')
-    ax1.xaxis.set_ticks(np.arange(min(x), max(x) + 1, 2.0))
-    ax1.yaxis.set_ticks(np.arange(min(x), max(x) + 1, 2.0))
+    # ax1.xaxis.set_ticks(np.arange(min(x), max(x) + 1, 2.0))
+    # ax1.yaxis.set_ticks(np.arange(min(x), max(x) + 1, 2.0))
 
     ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
 
