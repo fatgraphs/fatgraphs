@@ -1,5 +1,9 @@
+import asyncio
 import math
 import os
+from copy import deepcopy
+from multiprocessing.context import Process
+
 from graph_tool.draw import graph_draw
 import pandas as pd
 from be.tile_creator.src.graph.gt_token_graph import GraphToolTokenGraph
@@ -18,10 +22,13 @@ class GraphRenderer:
         self.metadata = metadata
         self.configurations = configurations
         self.transparency_calculator = TransparencyCalculator(self.graph.edge_length.a, self.configurations)
+        self.tasks = []
 
     def render_tiles(self):
 
         for zoom_level in range(0, self.configurations['zoom_levels']):
+            vertex_size = deepcopy(self.graph.vertices_size)
+            edge_size = deepcopy(self.graph.edge_weight)
             number_of_images = 4 ** zoom_level
             divide_by = int(math.sqrt(number_of_images))
             tuples = []
@@ -54,24 +61,29 @@ class GraphRenderer:
                 tile_name = "z_" + str(zoom_level) + "x_" + str(t[0]) + "y_" + str(t[1]) + ".png"
                 file_name = os.path.join(self.configurations['output_folder'], tile_name)
 
-                self._render(fit, file_name, edge_colors)
+                p = Process(target=self._render, args=(fit, file_name, edge_colors, vertex_size, edge_size))
+
+                self.tasks.append(p)
             # This ensures that vertices and edges maintain the same apparent size when zooming.
             # Without it you would notice that vertices and edges shrink when zooming.
             self.graph.vertices_size.a = self.graph.vertices_size.a * 2
             self.graph.edge_weight.a = self.graph.edge_weight.a * 2
+        for p in self.tasks:
+            p.start()
 
-    def _render(self, fit, file_name, edge_colors):
+
+    def _render(self, fit, file_name, edge_colors, vertex_size, edge_size):
 
         graph_draw(self.graph.g,
                    pos=self.graph.vertex_positions,
                    bg_color=self.configurations['bg_color'],
-                   vertex_size=self.graph.vertices_size,
+                   vertex_size=vertex_size,
                    vertex_fill_color=[1, 0, 0, 0.8],
                    edge_color=edge_colors,
                    output_size=[self.configurations['tile_size'], self.configurations['tile_size']],
                    output=file_name,
                    fit_view=fit,
-                   edge_pen_width=self.graph.edge_weight,
+                   edge_pen_width=edge_size,
                    adjust_aspect=False,
                    fit_view_ink=True,
                    edge_control_points=self.graph.control_points,
