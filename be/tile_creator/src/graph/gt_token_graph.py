@@ -56,11 +56,12 @@ class GraphToolTokenGraph:
         self.degree = self.g.degree_property_map("in")
         self.vertices_size.a = self.calculate_vertices_size(configurations)
 
-        angle = configurations['edge_curvature']  # negative is clockwise
         for v in self.g.vertices():
             for e in v.out_edges():
-                exp = self.edge_length[e] / self.metadata.graph_metadata['median_pixel_distance']
-                self.control_points[e] = [0, 0, 0.25, exp, 0.75, exp, 1, 0]
+                curvature = max(1, self.edge_length[e] / max(1, self.metadata.graph_metadata['median_pixel_distance'][0]))
+                arbitrarily_scaled_curvature = max(1, curvature * 0.75)
+                # exp = math.log10(self.edge_length[e] + 1)
+                self.control_points[e] = [0, 0, 0.25, curvature, 0.75, curvature, 1, 0]
 
     def calculate_vertices_size(self, configuration_dictionary):
 

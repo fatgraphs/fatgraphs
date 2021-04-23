@@ -15,7 +15,7 @@ def extract_arguments():
     print(argument_list)
     short_options = "n:z:"
     long_options = ["csv=", "labels=", "ts=", "min_t=", "max_t=", "std=", "med_thick=", "max_thick=", "med_size=",
-                    "max_size=", "edge_curvature="]
+                    "max_size="]
     try:
         arguments, values = getopt.getopt(argument_list, short_options, long_options)
     except getopt.error as err:
@@ -66,9 +66,8 @@ configurations = {
     "std_transparency_as_percentage": float(args.get("--std", 0.5)),
     "max_edge_thickness": float(args.get('--max_thick', 0.5)),
     "med_edge_thickness": float(args.get('--med_thick', 0.25)),
-    "max_vertex_size": float(args.get("--max_size", 2.5)),
-    "med_vertex_size": float(args.get("--med_size", 0.5)),
-    "edge_curvature": float(args.get("--edge_curvature", 4)),
+    "max_vertex_size": float(args.get("--max_size", 1)),
+    "med_vertex_size": float(args.get("--med_size", 0.9)),
     "bg_color": "black",
     "source": source_file,
     "labels": source_labels
