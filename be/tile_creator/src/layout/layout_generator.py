@@ -6,7 +6,7 @@ class LayoutGenerator:
 
     def __init__(self):
         self.default_force_atlas_2_options = {'max_iter': 500,
-                                              'strong_gravity_mode': True,
+                                              'strong_gravity_mode': False,
                                               'barnes_hut_theta': 1.2,
                                               'outbound_attraction_distribution': False,
                                               'gravity': 1,
