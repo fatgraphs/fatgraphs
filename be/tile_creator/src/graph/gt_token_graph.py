@@ -99,11 +99,11 @@ class GraphToolTokenGraph:
         e1 = self.g.add_edge(top_left, top_left)
         e2 = self.g.add_edge(bottom_right, bottom_right)
 
-        self.edge_weight[e1] = 10
-        self.edge_weight[e2] = 10
+        self.edge_weight[e1] = 1
+        self.edge_weight[e2] = 1
 
-        self.edge_length[e1] = 0
-        self.edge_length[e2] = 0
+        self.edge_length[e1] = 1
+        self.edge_length[e2] = 1
 
     def calculate_edges_thickness(self, configurations):
         med_distance = self.metadata.graph_metadata['median_pixel_distance'][0]
