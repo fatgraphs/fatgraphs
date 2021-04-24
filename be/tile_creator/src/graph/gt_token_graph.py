@@ -43,7 +43,6 @@ class GraphToolTokenGraph:
             hashed=False,
             eprops=[self.edge_weight])
 
-
         self.edge_weight.a = self.calculate_edges_thickness(configurations)
 
         # TODO: loop edges have weigth zero, define a minimum
@@ -53,12 +52,15 @@ class GraphToolTokenGraph:
 
         self._ensure_layout_is_square(token_graph)
 
-        self.degree = self.g.degree_property_map("in")
+        self.in_degree = token_graph.degree.sort_values("vertex")['in_degree'].to_array()  # self.g.degree_property_map("in")
+        # for fake vertices to square out
+        self.in_degree = np.append(self.in_degree, [1, 1])
         self.vertices_size.a = self.calculate_vertices_size(configurations)
 
         for v in self.g.vertices():
             for e in v.out_edges():
-                curvature = max(1, self.edge_length[e] / max(1, self.metadata.graph_metadata['median_pixel_distance'][0]))
+                curvature = max(1,
+                                self.edge_length[e] / max(1, self.metadata.graph_metadata['median_pixel_distance'][0]))
                 arbitrarily_scaled_curvature = max(1, curvature * 0.75)
                 # exp = math.log10(self.edge_length[e] + 1)
                 self.control_points[e] = [0, 0, 0.25, curvature, 0.75, curvature, 1, 0]
@@ -69,8 +71,7 @@ class GraphToolTokenGraph:
         target_median = med_distance * configuration_dictionary['med_vertex_size']
         target_max = med_distance * configuration_dictionary['max_vertex_size']
 
-        return shift_and_scale(self.degree.a, target_median, target_max)
-
+        return shift_and_scale(self.in_degree, target_median, target_max)
 
     def _calculate_edge_lengths(self, data, layout):
         data = data.merge(layout.rename(columns={"vertex": "target"}), on='target', how='left') \
@@ -110,5 +111,5 @@ class GraphToolTokenGraph:
         target_median = med_distance * configurations['med_edge_thickness']
         target_max = med_distance * configurations['max_edge_thickness']
 
-        log_amounts = np.log10(self.edge_weight.a + 1) # amounts can be huge numbers, reduce the range
+        log_amounts = np.log10(self.edge_weight.a + 1)  # amounts can be huge numbers, reduce the range
         return shift_and_scale(log_amounts, target_median, target_max)

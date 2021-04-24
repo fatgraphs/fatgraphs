@@ -17,8 +17,9 @@ class TokenGraph:
         """
         self.data = self._get_data(options, path)
         addresses_to_ids = self._map_addresses_to_ids()
-        self.edge_amounts = self._make_edge_amounts(addresses_to_ids)
+        self.edge_amounts = self._make_edge_ids_to_amount(addresses_to_ids)
         self.gpu_frame = self._make_graph_gpu_frame()
+        self.degree = self.gpu_frame.degrees()
         self.id_address_pos = self._make_layout(addresses_to_ids)
 
     def _get_data(self, options, path):
@@ -47,7 +48,7 @@ class TokenGraph:
         graph.from_cudf_edgelist(data_ids, source='source_id', destination='target_id')
         return graph
 
-    def _make_edge_amounts(self, addresses_to_ids):
+    def _make_edge_ids_to_amount(self, addresses_to_ids):
         data = self.data
         # associate source id to the source address
         data = data.merge(addresses_to_ids.rename(columns={"address": "source"})).rename(
