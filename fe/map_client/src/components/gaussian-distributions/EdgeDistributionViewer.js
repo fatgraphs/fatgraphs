@@ -14,7 +14,7 @@ class EdgeDistributionViewer extends Component {
     componentDidMount() {
         let fetches = []
         for (let zoom_level = 0; zoom_level < this.props.zoom_levels; zoom_level++) {
-            let name_zoom = "/" + this.props.graph_name + "/" + zoom_level;
+            let name_zoom = "/" + this.props.graph_name + "/" + zoom_level + "?" + Math.floor( Math.random() * 2000 ) + 1;
             fetches.push(fetch(configs['endpoints']['base'] + configs['endpoints']['edge_distributions'] + name_zoom)
                 .then(response => {
                     return response.blob()
