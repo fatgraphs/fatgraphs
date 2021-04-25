@@ -4,6 +4,7 @@ import os
 from copy import deepcopy
 from multiprocessing.context import Process
 
+import numpy as np
 from graph_tool.draw import graph_draw
 import pandas as pd
 from be.tile_creator.src.graph.gt_token_graph import GraphToolTokenGraph
@@ -15,20 +16,21 @@ class GraphRenderer:
     # TODO consider passing the configuration object to
     # the GraphRenderer constructor so it's more flexible
     # (rn is relying on the global config)
-    def __init__(self, graph, metadata, configurations):
-        if not isinstance(graph, GraphToolTokenGraph):
+    def __init__(self, gt_graph, visual_layout, metadata, configurations):
+        if not isinstance(gt_graph, GraphToolTokenGraph):
             raise TypeError("graph renderer needs an instance of GraphToolTokenGraph as argument")
-        self.graph = graph
+        self.gt_graph = gt_graph
+        self.visual_layout = visual_layout
         self.metadata = metadata
         self.configurations = configurations
-        self.transparency_calculator = TransparencyCalculator(self.graph.edge_length.a, self.configurations)
+        self.transparency_calculator = TransparencyCalculator(self.gt_graph.edge_length.a, self.configurations)
         self.tasks = []
 
     def render_tiles(self):
 
         for zoom_level in range(0, self.configurations['zoom_levels']):
-            vertex_size = deepcopy(self.graph.vertices_size)
-            edge_size = deepcopy(self.graph.edge_weight)
+            vertex_size = deepcopy(self.gt_graph.vertex_sizes)
+            edge_size = deepcopy(self.gt_graph.edge_thickness)
             number_of_images = 4 ** zoom_level
             divide_by = int(math.sqrt(number_of_images))
             tuples = []
@@ -37,9 +39,9 @@ class GraphRenderer:
                     tuples.append((x, y))
 
             # edge colors are calculated at render time because transparency depends on zoom level
-            edge_colors = self.graph.g.new_edge_property("vector<double>")
-            for e in self.graph.g.edges():
-                edge_length = self.graph.edge_length[e]
+            edge_colors = self.gt_graph.g.new_edge_property("vector<double>")
+            for e in self.gt_graph.g.edges():
+                edge_length = self.gt_graph.edge_length[e]
                 transparency = self.transparency_calculator.get_transparency(edge_length, zoom_level)
                 edge_colors[e] = (1, 1, 1, transparency)
 
@@ -66,16 +68,20 @@ class GraphRenderer:
                 self.tasks.append(p)
             # This ensures that vertices and edges maintain the same apparent size when zooming.
             # Without it you would notice that vertices and edges shrink when zooming.
-            self.graph.vertices_size.a = self.graph.vertices_size.a * 2
-            self.graph.edge_weight.a = self.graph.edge_weight.a * 2
+            self.gt_graph.vertex_sizes.a *= 2
+            self.gt_graph.edge_thickness.a *= 2
         for p in self.tasks:
             p.start()
 
-
     def _render(self, fit, file_name, edge_colors, vertex_size, edge_size):
 
-        graph_draw(self.graph.g,
-                   pos=self.graph.vertex_positions,
+        if np.isnan(self.gt_graph.vertex_positions.get_2d_array([0, 1])).any() or \
+                np.isnan(vertex_size.a).any() or \
+                np.isnan(edge_size.a).any():
+            raise Exception("Something is wrong")
+
+        graph_draw(self.gt_graph.g,
+                   pos=self.gt_graph.vertex_positions,
                    bg_color=self.configurations['bg_color'],
                    vertex_size=vertex_size,
                    vertex_fill_color=[1, 0, 0, 0.8],
@@ -86,7 +92,7 @@ class GraphRenderer:
                    edge_pen_width=edge_size,
                    adjust_aspect=False,
                    fit_view_ink=True,
-                   edge_control_points=self.graph.control_points,
+                   edge_control_points=self.gt_graph.control_points,
                    edge_end_marker="none")
 
 

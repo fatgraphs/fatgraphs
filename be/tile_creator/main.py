@@ -2,6 +2,7 @@ from be.configuration import MEDIUM_GRAPH_RAW_PATH, SMALL_GRAPH_RAW_PATH, CONFIG
     LABELS_PATH, METADATA_PATH, LARGE_GRAPH_RAW_PATH
 from be.tile_creator.src.graph.gt_token_graph import GraphToolTokenGraph
 from be.tile_creator.src.graph.token_graph import TokenGraph
+from be.tile_creator.src.layout.visual_layout import VisualLayout
 from be.tile_creator.src.render.renderer import GraphRenderer
 import os
 import scipy.stats as ss
@@ -13,12 +14,16 @@ from be.tile_creator.src.token_graph_metadata import TokenGraphMetadata
 
 def main(configurations):
     graph = TokenGraph(configurations['source'], {'dtype': {'amount': float}})
-    metadata = TokenGraphMetadata(graph, configurations)
-    gt_graph = GraphToolTokenGraph(graph, configurations, metadata)
+    visual_layout = VisualLayout(graph, configurations['tile_size'],
+                                 configurations['med_vertex_size'], configurations['max_vertex_size'],
+                                 configurations['med_edge_thickness'], configurations['max_edge_thickness'])
+
+    metadata = TokenGraphMetadata(graph, visual_layout, configurations)
+    gt_graph = GraphToolTokenGraph(graph, visual_layout, metadata, configurations)
 
     _generate_metadata_files(metadata, configurations)
 
-    renderer = GraphRenderer(gt_graph, metadata, configurations)
+    renderer = GraphRenderer(gt_graph, visual_layout, metadata, configurations)
 
     for zl in range(0, configurations['zoom_levels']):
         edge_lengths, scaled_values, x = compute_data_for_graph(gt_graph, renderer, zl)
