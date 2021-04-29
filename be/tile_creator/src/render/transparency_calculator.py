@@ -8,7 +8,6 @@ class TransparencyCalculator:
         self.min_length = max(1, min(edge_lengths))
         self.max_length = max(edge_lengths)
         self._do_args_check(self.max_length, self.min_length, self.configurations['zoom_levels'])
-        self.compute_values_for_gaussian()
 
     def _do_args_check(self, max_length, min_length, zoom_levels):
         if min_length < 0:
@@ -48,9 +47,3 @@ class TransparencyCalculator:
         max_output = self.configurations['max_transparency']
         return (max_output - min_output) * np.exp(-np.power(x - mu, 2.) / (2 * np.power(std, 2.))) + min_output
 
-    def compute_values_for_gaussian(self):
-        self.values = {}
-        for zoom_level in range(0, self.configurations['zoom_levels']):
-            self.values[zoom_level] = []
-            for edge_length in range(int(self.min_length), int(self.max_length) + 1, 20):
-                self.values[zoom_level].append(self.get_transparency(edge_length, zoom_level))

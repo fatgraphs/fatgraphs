@@ -35,7 +35,8 @@ class VisualLayout:
         temp_min = min(self.vertex_positions.min()['x'], self.vertex_positions.min()['y'])
         self._ensure_layout_is_square(temp_min, temp_max)
         self.ids_to_graph_positions = self.make_ids_to_graph_positions()
-        self.edge_lengths_graph_space = self._calculate_edge_lengths()
+        self.edge_lengths_graph_space = self._calculate_edge_lengths_graph_space()
+        self.edge_lengths_tile_space = self.edge_lengths_graph_space * tile_size / (temp_max - temp_min)
         self.median_pixel_distance = self.compute_median_pixel_distance(tile_size, temp_min, temp_max)
         self.vertex_sizes = self.calculate_vertices_size(graph.degrees['in_degree'], med_vertex_distance,
                                                          max_vertex_distance)
@@ -142,7 +143,7 @@ class VisualLayout:
         target_max = self.median_pixel_distance * max_edge_thickness
         return shift_and_scale(amounts, target_median, target_max)
 
-    def _calculate_edge_lengths(self):
+    def _calculate_edge_lengths_graph_space(self):
         distances = ((self.ids_to_graph_positions['source_x'] - self.ids_to_graph_positions['target_x']) ** 2 + (
                 self.ids_to_graph_positions['source_y'] - self.ids_to_graph_positions['target_y']) ** 2) ** 0.5
         return distances.to_array()

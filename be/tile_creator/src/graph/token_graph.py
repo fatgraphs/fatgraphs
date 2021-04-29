@@ -29,11 +29,6 @@ class TokenGraph:
         preprocessed = preprocessor.preprocess(raw_data)
         return preprocessed
 
-    # def _make_layout(self, addresses_to_ids):
-    #     lg = LayoutGenerator()
-    #     ids_to_positions = lg.make_layout(self.gpu_frame)
-    #     return addresses_to_ids.merge(ids_to_positions)
-
     def _map_addresses_to_ids(self):
         # get unique addresses
         column_values = self.data[["source", "target"]].values.ravel()

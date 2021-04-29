@@ -11,22 +11,19 @@ from be.tile_creator.src.graph.gt_token_graph import GraphToolTokenGraph
 from be.tile_creator.src.render.transparency_calculator import TransparencyCalculator
 
 
-class GraphRenderer:
+class TilesRenderer:
 
-    # TODO consider passing the configuration object to
-    # the GraphRenderer constructor so it's more flexible
-    # (rn is relying on the global config)
-    def __init__(self, gt_graph, visual_layout, metadata, configurations):
+    def __init__(self, gt_graph, visual_layout, metadata, transparency_calculator, configurations):
         if not isinstance(gt_graph, GraphToolTokenGraph):
             raise TypeError("graph renderer needs an instance of GraphToolTokenGraph as argument")
         self.gt_graph = gt_graph
         self.visual_layout = visual_layout
         self.metadata = metadata
         self.configurations = configurations
-        self.transparency_calculator = TransparencyCalculator(self.gt_graph.edge_length.a, self.configurations)
+        self.transparency_calculator = transparency_calculator
         self.tasks = []
 
-    def render_tiles(self):
+    def render(self):
 
         for zoom_level in range(0, self.configurations['zoom_levels']):
             vertex_size = deepcopy(self.gt_graph.vertex_sizes)
