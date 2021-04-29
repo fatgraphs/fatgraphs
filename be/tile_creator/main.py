@@ -29,7 +29,8 @@ def main(configurations):
     ed_renderer = EdgeDistributionRenderer(configurations['zoom_levels'],
                                            visual_layout.edge_lengths_graph_space,
                                            transparency_calculator,
-                                           configurations['output_folder'])
+                                           configurations['output_folder'],
+                                           visual_layout.max - visual_layout.min)
     ed_renderer.render()
 
     tiles_renderer.render()
