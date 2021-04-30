@@ -9,10 +9,11 @@ class GraphToolTokenGraph:
     An instacne of GraphToolTokenGraph contains all the static information needed to render a graph.
     '''
 
-    def __init__(self, graph, visual_layout, metadata, configurations):
+    def __init__(self, graph, visual_layout, metadata, edge_curvature):
         if not isinstance(graph, TokenGraph):
             raise TypeError("GraphToolTokenGraph needs an instance of TokeGraph to be instantiated")
         self.metadata = metadata
+        self.edge_curvature = edge_curvature if edge_curvature < 0 else -1 * edge_curvature
         self.g = Graph(directed=True)
         self._add_edges(graph)
         self.vertex_positions = self._make_vertex_positions(visual_layout)
@@ -25,10 +26,7 @@ class GraphToolTokenGraph:
         self.control_points = self.g.new_edge_property('vector<float>')
         for v in self.g.vertices():
             for e in v.out_edges():
-                curvature = max(1,
-                                self.edge_length[e] / max(1, self.metadata.graph_metadata['median_pixel_distance'][0]))
-                arbitrarily_scaled_curvature = max(1, curvature * 0.75)
-                # exp = math.log10(self.edge_length[e] + 1)
+                curvature = self.edge_length[e] * self.edge_curvature
                 self.control_points[e] = [0, 0, 0.25, curvature, 0.75, curvature, 1, 0]
 
     def _add_edges(self, graph):

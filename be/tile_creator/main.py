@@ -20,7 +20,7 @@ def main(configurations):
 
     metadata = TokenGraphMetadata(graph, visual_layout, configurations)
     _generate_metadata_files(metadata, configurations)
-    gt_graph = GraphToolTokenGraph(graph, visual_layout, metadata, configurations)
+    gt_graph = GraphToolTokenGraph(graph, visual_layout, metadata, configurations['curvature'])
 
     transparency_calculator = TransparencyCalculator(visual_layout.edge_lengths_graph_space, configurations)
 
@@ -30,7 +30,8 @@ def main(configurations):
                                            visual_layout.edge_lengths_graph_space,
                                            transparency_calculator,
                                            configurations['output_folder'],
-                                           visual_layout.max - visual_layout.min)
+                                           visual_layout.max - visual_layout.min,
+                                           configurations['tile_size'])
     ed_renderer.render()
 
     tiles_renderer.render()

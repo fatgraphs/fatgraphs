@@ -4,7 +4,7 @@ import os
 
 
 class EdgeDistributionRenderer:
-    def __init__(self, zoom_levels, edge_lengths, transparency_calculator, output_folder, side_graph_space):
+    def __init__(self, zoom_levels, edge_lengths, transparency_calculator, output_folder, side_graph_space, tile_size):
         self.zoom_levels = zoom_levels
         self.edge_lenghts = edge_lengths
         self.output_folder = output_folder
@@ -13,6 +13,7 @@ class EdgeDistributionRenderer:
         self.max_length = int(max(self.edge_lenghts))
         self.zoom_to_transparencies = self.generate_transparency_values_for_plots()
         self.side_graph_space = side_graph_space
+        self.tile_size = tile_size
 
     def render(self):
         for zl in range(0, self.zoom_levels):
@@ -43,27 +44,35 @@ class EdgeDistributionRenderer:
         color = 'tab:red'
         fig, ax1 = plt.subplots()
         fig.suptitle("Zoom lvl: " + str(zoom_level) + " Longest Edge: " + str(self.max_length), fontsize=15)
-        ax1.set_xlabel('Edge Length (graph space)')
+        ax1.set_xlabel('Edge Len Graph')
         y_title = "Count ( tot: " + str(len(edge_lengths)) + " )"
         ax1.set_ylabel(y_title, color=color)
         ax1.hist(edge_lengths, len(x), color=color)
+        ax1.set_xticks(ax1.get_xticks()[1::])
         ax1.tick_params(axis='y')
         ax1.tick_params(axis='x')
         for i in range(0, 2**zoom_level):
-            print(i)
             ax1.axvline(x=self.side_graph_space / (2**zoom_level) * (i+1), ymin=0, ymax=self.max_length, color='orange')
             plt.text(self.side_graph_space / (2**zoom_level) * (i+1) + 6, self.max_length / 2, str(i + 1), rotation=90, verticalalignment='center')
-            # ax1.xaxis.set_ticks(np.arange(min(x), max(x) + 1, 2.0))
-            # ax1.yaxis.set_ticks(np.arange(min(x), max(x) + 1, 2.0))
 
-        ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
+        y_transparency = ax1.twinx()  # instantiate a second axes that shares the same x-axis
 
         color = 'tab:blue'
-        ax2.set_ylabel('Transparency', color=color)  # we already handled the x-label with ax1
-        ax2.plot(x, y, color=color)
+        y_transparency.set_ylabel('Transparency', color=color)  # we already handled the x-label with ax1
+        y_transparency.plot(x, y, color=color)
         where = int(np.where(y == max(y))[0])
-        ax2.axvline(x=x[where], ymin=0, ymax=max(edge_lengths))
-        ax2.tick_params(axis='y', labelcolor=color)
+        y_transparency.axvline(x=x[where], ymin=0, ymax=max(edge_lengths))
+        y_transparency.tick_params(axis='y', labelcolor=color)
+
+
+        x_pixel_distance = ax1.twiny()
+        x_pixel_distance.set_xlabel("Edge Len Pixel")
+        x_pixel_distance.set_xlim(ax1.get_xlim())
+        new_ticks = list(map(lambda tick: int(tick * (self.tile_size * (2 ** zoom_level)) / self.side_graph_space),
+                             ax1.get_xticks()))
+        x_pixel_distance.set_xticks(ax1.get_xticks())
+        x_pixel_distance.set_xticklabels(list(map(str, new_ticks)))
+        x_pixel_distance.tick_params(axis='x', labelcolor=color)
 
         fig.tight_layout()  # otherwise the right y-label is slightly clipped
         name = "z_" + str(zoom_level) + "_distribution" + ".png"
