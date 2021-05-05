@@ -11,29 +11,34 @@ class EdgeDistributionViewer extends Component {
             allImgsFetched: false
         }
     }
+
     componentDidMount() {
         let fetches = []
         for (let zoom_level = 0; zoom_level < this.props.zoom_levels; zoom_level++) {
-            let name_zoom = "/" + this.props.graph_name + "/" + zoom_level;
+            let name_zoom = "/" + this.props.graph_name + "/" + zoom_level + "?" + Math.floor(Math.random() * 2000) + 1;
             fetches.push(fetch(configs['endpoints']['base'] + configs['endpoints']['edge_distributions'] + name_zoom)
                 .then(response => {
                     return response.blob()
                 })
                 .then(data => {
-                    this.setState({"imgs": [...this.state.imgs, data]})
+                    this.setState({"imgs": [...this.state.imgs, {zl: zoom_level, data: data}]})
                 }));
         }
         Promise.all(fetches).then(result => {
-            this.setState({allImgsFetched : true})
+            this.setState({allImgsFetched: true})
         })
     }
 
     render() {
         return this.state.allImgsFetched ?
             <div className={'flex flex-row flex-wrap'}>
-                {this.state.imgs.map(img => {
-                    return <img width={'500rem'} src={URL.createObjectURL(img)} />
-                })}
+                {this.state.imgs
+                    .sort((a, b) => a.zl > b.zl ? 1 : -1)
+                    .map((img, i) => <img
+                        key={i}
+                        width={'500rem'}
+                        src={URL.createObjectURL(img.data)}/>
+                    )}
             </div> :
             <div>Loading . . .</div>
     }
