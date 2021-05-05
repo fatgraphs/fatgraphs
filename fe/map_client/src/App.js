@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react'
 import './assets/main.css';
 import Gallery from "./components/gallery/gallery";
 
@@ -14,6 +14,10 @@ import SingleGraphView from "./components/single-graph-view/SingleGraphView";
 import GraphThumbnail from "./components/gallery/body/graph-thumbnail/GraphThumbnail";
 
 export default function App() {
+
+    useEffect(() => {
+        document.title = "Token Gallery"
+    }, [])
 
     return (<HashRouter>
 

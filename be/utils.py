@@ -1,5 +1,9 @@
+import math
+
 import numpy as np
 import pandas as pd
+from numba import jit
+
 
 def shift_and_scale(original_values, target_median, target_max):
     """
@@ -28,5 +32,17 @@ def shift_and_scale(original_values, target_median, target_max):
     MINIMUM = 0.1
     # if MINIMUM > target_max:
     #     raise Exception("Minimum is greater than target_max, something is wrong.")
-    scaled_and_shifted_values = np.clip(scaled_and_shifted_values, MINIMUM, max(2,target_max))
+    scaled_and_shifted_values = np.clip(scaled_and_shifted_values, MINIMUM, max(2, target_max))
     return scaled_and_shifted_values
+
+@jit(nopython=True)
+def gauss(x, mean, std, min_out=0, max_out=1):
+    """
+    :param x: input value of the gaussian function
+    :param mean: the center of the gaussian bell
+    :param std: the standard deviation, larger values make the gaussian more flat
+    :param min_out: ensures that the output is >= min_clip
+    :param max_out: ensures that the output is <= min_clip
+    :return: computes the gaussian value of the provided x value scaled to fit within min and max if provided
+    """
+    return (max_out - min_out) * math.e ** ((-1 * ((x - mean) ** 2.)) / (2 * (std ** 2.))) + min_out

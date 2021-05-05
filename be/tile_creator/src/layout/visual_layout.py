@@ -1,10 +1,12 @@
+import math
+
 import cugraph
 import numpy as np
 import pandas as pd
 from cuml.neighbors.nearest_neighbors import NearestNeighbors
 import cudf
 
-from be.utils import shift_and_scale
+from be.utils import shift_and_scale, gauss
 
 
 def convert_graph_coordinate_to_map(source_x, source_y, target_x, target_y, out_1, out_2, out_3, out_4,
@@ -25,8 +27,7 @@ class VisualLayout:
                                      'gravity': 1,
                                      'scaling_ratio': 1}
 
-    def __init__(self, graph, tile_size, med_vertex_distance, max_vertex_distance, med_edge_thickness,
-                 max_edge_thickness):
+    def __init__(self, graph, config):
         self.graph = graph
 
         self.vertex_positions = self._run_force_atlas_2(graph.gpu_frame)
@@ -36,12 +37,13 @@ class VisualLayout:
         self._ensure_layout_is_square(temp_min, temp_max)
         self.ids_to_graph_positions = self.make_ids_to_graph_positions()
         self.edge_lengths_graph_space = self._calculate_edge_lengths_graph_space()
-        self.edge_lengths_tile_space = self.edge_lengths_graph_space * tile_size / (temp_max - temp_min)
-        self.median_pixel_distance = self.compute_median_pixel_distance(tile_size, temp_min, temp_max)
-        self.vertex_sizes = self.calculate_vertices_size(graph.degrees['in_degree'], med_vertex_distance,
-                                                         max_vertex_distance)
+        self.edge_lengths_tile_space = self.edge_lengths_graph_space * config['tile_size'] / (temp_max - temp_min)
+        self.median_pixel_distance = self.compute_median_pixel_distance(config['tile_size'], temp_min, temp_max)
+        self.vertex_sizes = self.calculate_vertices_size(graph.degrees['in_degree'], config['med_vertex_size'],
+                                                         config['max_vertex_size'])
         log_amounts = np.log10(graph.edge_amounts['amount'].values + 1)  # amounts can be huge numbers, reduce the range
-        self.edge_thickness = self.calculate_edges_thickness(log_amounts, med_edge_thickness, max_edge_thickness)
+        self.edge_thickness = self.calculate_edges_thickness(log_amounts, config['med_edge_thickness'],
+                                                             config['max_edge_thickness'])
 
         # TODO
         # noverlap
@@ -49,10 +51,7 @@ class VisualLayout:
         self.min = temp_min
         self.max = temp_max
 
-        # def make_layout(self, data):
-        #     # so far there is only one way of generating a layout, if needed implement strategy pattern
-        #
-        #     return
+        self.edge_transparencies = {}
 
     def _run_force_atlas_2(self, gpu_graph):
         if not isinstance(gpu_graph, cugraph.structure.graph.Graph):
@@ -115,7 +114,7 @@ class VisualLayout:
 
         model = NearestNeighbors(n_neighbors=3)
 
-        # layout = self.vertex_positions.apply(tuple_to_columns, axis=1).rename(columns={0: 'x', 1: 'y'})
+        # layout = self.vertex_positions.(tuple_to_columns, axis=1).rename(columns={0: 'x', 1: 'y'})
 
         model.fit(vertices_once[['out_1', 'out_2']])
         distances, indices = model.kneighbors(vertices_once[['out_1', 'out_2']])
@@ -149,10 +148,10 @@ class VisualLayout:
         return distances.to_array()
 
     def make_ids_to_graph_positions(self):
-        a = cudf.from_pandas(self.vertex_positions)
-        a = a.rename(columns={'x': 'source_x', 'y': 'source_y'})
-        graph_positions = self.graph.edge_ids_cudf.merge(a, left_on=['source_id'], right_on=['vertex'])
-        a = a.rename(columns={'source_x': 'target_x', 'source_y': 'target_y'})
-        graph_positions = graph_positions.merge(a, left_on=['target_id'], right_on=['vertex'])
+        vertex_x_y = cudf.from_pandas(self.vertex_positions)
+        vertex_x_y = vertex_x_y.rename(columns={'x': 'source_x', 'y': 'source_y'})
+        graph_positions = self.graph.edge_ids_cudf.merge(vertex_x_y, left_on=['source_id'], right_on=['vertex'])
+        vertex_x_y = vertex_x_y.rename(columns={'source_x': 'target_x', 'source_y': 'target_y'})
+        graph_positions = graph_positions.merge(vertex_x_y, left_on=['target_id'], right_on=['vertex'])
         graph_positions = graph_positions.drop(columns=['vertex_x', 'vertex_y'])
         return graph_positions

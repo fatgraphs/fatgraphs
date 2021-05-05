@@ -24,10 +24,16 @@ class TilesRenderer:
         self.tasks = []
 
     def render(self):
+        rgba = [[1.0] * len(self.visual_layout.edge_transparencies[0])] * 4
 
         for zoom_level in range(0, self.configurations['zoom_levels']):
             vertex_size = deepcopy(self.gt_graph.vertex_sizes)
             edge_size = deepcopy(self.gt_graph.edge_thickness)
+
+            rgba[3] = list(self.visual_layout.edge_transparencies[zoom_level].to_numpy())
+            edge_colors = self.gt_graph.edge_transparencies
+            edge_colors.set_2d_array(np.array(rgba))
+
             number_of_images = 4 ** zoom_level
             divide_by = int(math.sqrt(number_of_images))
             tuples = []
@@ -35,12 +41,6 @@ class TilesRenderer:
                 for y in range(0, divide_by):
                     tuples.append((x, y))
 
-            # edge colors are calculated at render time because transparency depends on zoom level
-            edge_colors = self.gt_graph.g.new_edge_property("vector<double>")
-            for e in self.gt_graph.g.edges():
-                edge_length = self.gt_graph.edge_length[e]
-                transparency = self.transparency_calculator.get_transparency(edge_length, zoom_level)
-                edge_colors[e] = (1, 1, 1, transparency)
 
             for t in tuples:
                 # TODO: check that width and height are the same: in thoery we implicityl rely on this equality
@@ -55,42 +55,44 @@ class TilesRenderer:
                     round(side / divide_by, 2),
                     round(side / divide_by, 2))
 
-                print(fit)
-
                 tile_name = "z_" + str(zoom_level) + "x_" + str(t[0]) + "y_" + str(t[1]) + ".png"
                 file_name = os.path.join(self.configurations['output_folder'], tile_name)
 
-                p = Process(target=self._render, args=(fit, file_name, edge_colors, vertex_size, edge_size))
-
-                self.tasks.append(p)
+                self._render(fit, file_name, edge_colors, vertex_size, edge_size)
+                # p = Process(target=self._render, args=(fit, file_name, edge_colors, vertex_size, edge_size))
+                # self.tasks.append(p)
             # This ensures that vertices and edges maintain the same apparent size when zooming.
             # Without it you would notice that vertices and edges shrink when zooming.
             self.gt_graph.vertex_sizes.a *= 2
             self.gt_graph.edge_thickness.a *= 2
-        for p in self.tasks:
-            p.start()
+        # for p in self.tasks:
+        #     p.start()
+        #     p.join()
 
     def _render(self, fit, file_name, edge_colors, vertex_size, edge_size):
+        # if np.isnan(self.gt_graph.vertex_positions.get_2d_array([0, 1])).any() or \
+        #         np.isnan(vertex_size.a).any() or \
+        #         np.isnan(edge_size.a).any():
+        #     raise Exception("Something is wrong")
 
-        if np.isnan(self.gt_graph.vertex_positions.get_2d_array([0, 1])).any() or \
-                np.isnan(vertex_size.a).any() or \
-                np.isnan(edge_size.a).any():
-            raise Exception("Something is wrong")
+        # print(self.gt_graph.vertex_positions.get_2d_array([0,1]))
+        # print(edge_colors.get_2d_array([0,1,2,3]))
 
         graph_draw(self.gt_graph.g,
                    pos=self.gt_graph.vertex_positions,
                    bg_color=self.configurations['bg_color'],
                    vertex_size=vertex_size,
                    vertex_fill_color=[1, 0, 0, 0.8],
-                   edge_color=edge_colors,
                    output_size=[self.configurations['tile_size'], self.configurations['tile_size']],
                    output=file_name,
+                   edge_color=edge_colors,
                    fit_view=fit,
                    edge_pen_width=edge_size,
                    adjust_aspect=False,
                    fit_view_ink=True,
                    edge_control_points=self.gt_graph.control_points,
                    edge_end_marker="none")
+        print(fit)
 
 
 # DEBUG CODE - DONT DELETE
