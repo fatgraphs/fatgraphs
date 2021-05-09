@@ -1,5 +1,6 @@
 import cudf
 import numpy as np
+import math
 import matplotlib.pyplot as plt
 import os
 
@@ -13,7 +14,7 @@ class EdgeDistributionRenderer:
         self.output_folder = output_folder
         self.min_length = int(min(self.edge_lenghts))
         self.max_length = int(max(self.edge_lenghts))
-        self.step = (self.max_length - self.min_length) // EdgeDistributionRenderer.BIN_FREQUENCY
+        self.step = math.ceil((self.max_length - self.min_length) / EdgeDistributionRenderer.BIN_FREQUENCY)
         self.transparency_calculator = transparency_calculator
         self.transparency_x = list(range(self.min_length, self.max_length + 1, self.step))
         self.transparency_y = self.generate_y_transparency()
