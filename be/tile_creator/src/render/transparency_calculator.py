@@ -20,12 +20,12 @@ class TransparencyCalculator:
 
     def calculate_edge_transparencies(self, edge_lengths):
         transparencies = {}
+        tile_based_mean = 0.5
+        tile_based_std = self.std_percentage
         base_std = self.std_percentage * self.graph_size
         for zl in range(0, self.zoom_levels):
-            # mean and std are the same for each zoom level
-            mean_graph_space = min(self.graph_size,
-                                   self.graph_size * ((self.tile_size * 2) / (self.tile_size * (2 ** zl))))
-            std_graph_space = base_std / max(1, zl * 1.5)
+            mean_graph_space = self.graph_size * (tile_based_mean / (2 ** zl))
+            std_graph_space = self.graph_size * (tile_based_std / (2 ** zl))
 
             frame = cudf.DataFrame(edge_lengths, columns=['x'])
             trans = frame.apply_rows(set_transparency_gaussian, incols=['x'], outcols=dict(transparency=np.float64),
@@ -34,6 +34,3 @@ class TransparencyCalculator:
             transparencies[zl] = trans.to_pandas()['transparency']
 
         return transparencies
-
-
-
