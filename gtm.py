@@ -46,41 +46,33 @@ def mkdir_for_this_graph(graph_name):
     result_in_directory_existing(path)
     return path
 
+def get_final_configurations(args, graph_path, graph_name):
+    configurations = {
+        "output_folder": graph_path,
+        'graph_name': graph_name,
+        "tile_size": int(args.get('--ts', 256)),
+        "zoom_levels": int(args.get('-z', 2)),
+        "min_transparency": float(args.get('--min_t', 0.01)),
+        "max_transparency": float(args.get('--max_t', 0.1)),
+        "std_transparency_as_percentage": float(args.get("--std", 0.5)),
+        "max_edge_thickness": float(args.get('--max_thick', 0.5)),
+        "med_edge_thickness": float(args.get('--med_thick', 0.25)),
+        "max_vertex_size": float(args.get("--max_size", 1)),
+        "med_vertex_size": float(args.get("--med_size", 0.9)),
+        "curvature": float(args.get("--curvature", 0.1)),
+        "bg_color": "black",
+        "source": args['--csv'],
+        "labels": args.get('--labels', None)
+    }
+    return configurations
 
-args = extract_arguments()
-ensure_container_directory_exists()
-graph_name = args["-n"]
-graph_path = mkdir_for_this_graph(graph_name)
-source_file = args['--csv']
-source_labels = args.get('--labels', None)
+if __name__ == "__main__":
+    args = extract_arguments()
+    ensure_container_directory_exists()
+    graph_name = args["-n"]
+    graph_path = mkdir_for_this_graph(graph_name)
 
-# default value as second arg og 'get'
-# TODO find a way of ensuring that htis dict keys are the same as defined in configuration.json
-configurations = {
-    "output_folder": graph_path,
-    'graph_name': graph_name,
-    "tile_size": int(args.get('--ts', 256)),
-    "zoom_levels": int(args.get('-z', 2)),
-    "min_transparency": float(args.get('--min_t', 0.01)),
-    "max_transparency": float(args.get('--max_t', 0.1)),
-    "std_transparency_as_percentage": float(args.get("--std", 0.5)),
-    "max_edge_thickness": float(args.get('--max_thick', 0.5)),
-    "med_edge_thickness": float(args.get('--med_thick', 0.25)),
-    "max_vertex_size": float(args.get("--max_size", 1)),
-    "med_vertex_size": float(args.get("--med_size", 0.9)),
-    "curvature": float(args.get("--curvature", 0.1)),
-    "bg_color": "black",
-    "source": source_file,
-    "labels": source_labels
-}
-
-main(configurations)
-
-# # Evaluate given options
-# for current_argument, current_value in arguments:
-#     if current_argument in ("-v", "--verbose"):
-#         print("Enabling verbose mode")
-#     elif current_argument in ("-h", "--help"):
-#         print("Displaying help")
-#     elif current_argument in ("-o", "--output"):
-#         print(("Enabling special output mode (%s)") % (current_value))
+    # default value as second arg og 'get'
+    # TODO find a way of ensuring that htis dict keys are the same as defined in configuration.json
+    configurations = get_final_configurations(args, graph_path, graph_name)
+    main(configurations)

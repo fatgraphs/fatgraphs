@@ -17,7 +17,7 @@ class GraphToolTokenGraph:
         self.g = Graph(directed=True)
         self._add_edges(graph)
         self.vertex_positions = self._make_vertex_positions(visual_layout)
-        self.edge_length = self.g.new_edge_property("float", vals=visual_layout.edge_lengths_graph_space)
+        self.edge_length = self.g.new_edge_property("float", vals=visual_layout.edge_lengths)
         self.vertex_sizes = self.g.new_vertex_property('float', vals=visual_layout.vertex_sizes)
         self.edge_thickness = self.g.new_edge_property("float", vals=visual_layout.edge_thickness)
         self._make_bezier_points()

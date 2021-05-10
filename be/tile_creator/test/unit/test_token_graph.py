@@ -1,13 +1,12 @@
 import unittest
 from be.tile_creator.src.graph.token_graph import TokenGraph
-from be.tile_creator.test.constants import TEST_DATA, PREPROCESSED_EDGES, RAW_EDGES, UNIQUE_ADDRESSES
+from be.tile_creator.test.constants import TEST_DATA, PREPROCESSED_EDGES, RAW_EDGES, UNIQUE_ADDRESSES, FAKE_NODES
 
 
 class TestTokenGraph(unittest.TestCase):
     '''
     Base class for tests
     '''
-    fake_nodes = 2
     graph = None
 
     @classmethod
@@ -22,13 +21,13 @@ class TestTokenGraph(unittest.TestCase):
 
     def test_number_of_preprocessed_edges_is_expected(cls):
 
-        cls.assertEqual(cls.graph.preprocessed_data.shape[0], PREPROCESSED_EDGES + cls.fake_nodes)
+        cls.assertEqual(cls.graph.preprocessed_data.shape[0], PREPROCESSED_EDGES + FAKE_NODES)
 
     def test_number_of_unique_addresses_is_expected(cls):
-        cls.assertEqual(cls.graph.address_to_id.shape[0], UNIQUE_ADDRESSES + cls.fake_nodes)
+        cls.assertEqual(cls.graph.address_to_id.shape[0], UNIQUE_ADDRESSES + FAKE_NODES)
 
     def test_number_of_ids_to_amount_rows_is_expected(cls):
-        cls.assertEqual(cls.graph.ids_to_amount.shape[0], PREPROCESSED_EDGES + cls.fake_nodes)
+        cls.assertEqual(cls.graph.ids_to_amount.shape[0], PREPROCESSED_EDGES + FAKE_NODES)
 
     def test_fake_nodes_have_highest_ids(cls):
         highest_id = cls.graph.address_to_id['vertex'].max()
@@ -42,4 +41,4 @@ class TestTokenGraph(unittest.TestCase):
         cls.assertTrue(all(cls.graph.ids_to_amount_cudf.to_pandas() == cls.graph.ids_to_amount))
 
     def test_there_are_as_many_vertices_ad_degrees(cls):
-        cls.assertEqual(cls.graph.degrees.shape[0], UNIQUE_ADDRESSES + cls.fake_nodes)
+        cls.assertEqual(cls.graph.degrees.shape[0], UNIQUE_ADDRESSES + FAKE_NODES)
