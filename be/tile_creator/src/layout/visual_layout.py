@@ -41,7 +41,7 @@ class VisualLayout:
         self.median_pixel_distance = self.compute_median_pixel_distance(config['tile_size'], temp_min, temp_max)
         self.vertex_sizes = self.calculate_vertices_size(graph.degrees['in_degree'], config['med_vertex_size'],
                                                          config['max_vertex_size'])
-        log_amounts = np.log10(graph.edge_amounts['amount'].values + 1)  # amounts can be huge numbers, reduce the range
+        log_amounts = np.log10(graph.ids_to_amount['amount'].values + 1)  # amounts can be huge numbers, reduce the range
         self.edge_thickness = self.calculate_edges_thickness(log_amounts, config['med_edge_thickness'],
                                                              config['max_edge_thickness'])
 
@@ -150,7 +150,7 @@ class VisualLayout:
     def make_ids_to_graph_positions(self):
         vertex_x_y = cudf.from_pandas(self.vertex_positions)
         vertex_x_y = vertex_x_y.rename(columns={'x': 'source_x', 'y': 'source_y'})
-        graph_positions = self.graph.edge_ids_cudf.merge(vertex_x_y, left_on=['source_id'], right_on=['vertex'])
+        graph_positions = self.graph.ids_to_amount_cudf.merge(vertex_x_y, left_on=['source_id'], right_on=['vertex'])
         vertex_x_y = vertex_x_y.rename(columns={'source_x': 'target_x', 'source_y': 'target_y'})
         graph_positions = graph_positions.merge(vertex_x_y, left_on=['target_id'], right_on=['vertex'])
         graph_positions = graph_positions.drop(columns=['vertex_x', 'vertex_y'])

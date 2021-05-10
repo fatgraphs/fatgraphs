@@ -10,8 +10,9 @@ def set_transparency_gaussian(x, transparency, mean, std, min_out=0, max_out=1):
 
 class TransparencyCalculator:
 
-    def __init__(self, graph_size, configurations):
-        self.graph_size = graph_size
+    def __init__(self, graph_side, longest_edge, configurations):
+        self.longest_edge = longest_edge
+        self.graph_side = graph_side
         self.tile_size = configurations['tile_size']
         self.zoom_levels = configurations['zoom_levels']
         self.std_percentage = configurations['std_transparency_as_percentage']
@@ -19,12 +20,13 @@ class TransparencyCalculator:
         self.max_t = configurations['max_transparency']
 
     def calculate_edge_transparencies(self, edge_lengths):
+        print(self.longest_edge)
         transparencies = {}
-        base_std = self.std_percentage * self.graph_size
+        base_std = self.std_percentage * self.longest_edge
         for zl in range(0, self.zoom_levels):
             # mean and std are the same for each zoom level
-            mean_graph_space = min(self.graph_size,
-                                   self.graph_size * ((self.tile_size * 2) / (self.tile_size * (2 ** zl))))
+            mean_graph_space = min(self.graph_side,
+                                   self.graph_side * ((self.tile_size * 2) / (self.tile_size * (2 ** zl))))
             std_graph_space = base_std / max(1, zl * 1.5)
 
             frame = cudf.DataFrame(edge_lengths, columns=['x'])

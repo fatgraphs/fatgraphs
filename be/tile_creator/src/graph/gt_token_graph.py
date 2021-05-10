@@ -31,7 +31,7 @@ class GraphToolTokenGraph:
                 self.control_points[e] = [0, 0, 0.25, curvature, 0.75, curvature, 1, 0]
 
     def _add_edges(self, graph):
-        data = graph.edge_amounts.rename(columns={'source_id': 'source', 'target_id': 'target'})
+        data = graph.ids_to_amount.rename(columns={'source_id': 'source', 'target_id': 'target'})
         # hashed = False ensure that vertex values correspond to vertex indices
         self.g.add_edge_list(
             data[["source", "target"]].values,

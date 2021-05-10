@@ -1,7 +1,7 @@
-from be.tile_creator.test.unit.generic_graph_test import GenericGraphTest
+from be.tile_creator.test.unit.token_graph_test import TokenGraphTest
 
 
-class GraphTest(GenericGraphTest):
+class GraphTest(TokenGraphTest):
 
     def test_loader_instanciation(self):
         self.assertIsNotNone(self.graphs)
@@ -9,7 +9,7 @@ class GraphTest(GenericGraphTest):
 
     def test_loader_has_data(self):
         for g in self.graphs:
-            self.assertIsNotNone(g.data)
+            self.assertIsNotNone(g.raw_data)
 
     def test_map_addresses_to_ids(self):
         for g in self.graphs:
