@@ -9,8 +9,6 @@ MEDIUM_GRAPH_RAW_PATH = os.path.join(data_folder, 'medium.csv')
 SMALL_GRAPH_RAW_PATH = os.path.join(data_folder, 'small.csv')
 MOCK_LABELLED_RAW_PATH = os.path.join(data_folder, 'mock_net_labelled.csv')
 LABELS_PATH = os.path.join(data_folder, 'labels.csv')
-METADATA_PATH = os.path.join(data_folder, 'metadata.csv')
-MIN_MAX_PATH = os.path.join(data_folder, 'min_max.csv')
 
 def _load_configurations():
     join = os.path.join(this_file_dir, "../configurations.json")
