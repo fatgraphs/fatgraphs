@@ -3,7 +3,7 @@ from be.tile_creator.src.graph.token_graph import TokenGraph
 from be.tile_creator.test.constants import TEST_DATA, PREPROCESSED_EDGES, RAW_EDGES, UNIQUE_ADDRESSES
 
 
-class TokenGraphTest(unittest.TestCase):
+class TestTokenGraph(unittest.TestCase):
     '''
     Base class for tests
     '''
