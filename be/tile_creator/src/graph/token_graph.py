@@ -16,10 +16,11 @@ class TokenGraph:
         self.raw_data = self._get_data(options, path)
         self.preprocessed_data = self._preprocess()
         self.address_to_id = self._map_addresses_to_ids()
-        self.ids_to_amount = self._make_edge_ids_to_amount()
-        self.ids_to_amount_cudf = cudf.DataFrame.from_pandas(self.ids_to_amount)
+        self.edge_ids_to_amount = self._make_edge_ids_to_amount()
+        self.edge_ids_to_amount_cudf = cudf.DataFrame.from_pandas(self.edge_ids_to_amount)
         self.gpu_frame = self._make_graph_gpu_frame()
-        self.degrees = self.gpu_frame.degrees().to_pandas()
+        self.degrees = self.gpu_frame.degrees().to_pandas().sort_values(by=['vertex'])
+        self.degrees = self.degrees.set_index('vertex')
 
     def _get_data(self, options, path):
         raw_data = pd.read_csv(path, **options)
@@ -35,7 +36,7 @@ class TokenGraph:
 
     def _make_graph_gpu_frame(self):
         graph = cugraph.Graph()
-        graph.from_cudf_edgelist(self.ids_to_amount_cudf, source='source_id', destination='target_id')
+        graph.from_cudf_edgelist(self.edge_ids_to_amount_cudf, source='source_id', destination='target_id')
         return graph
 
     def _make_edge_ids_to_amount(self):
@@ -45,7 +46,10 @@ class TokenGraph:
         # associate target_id with target address
         data = data.merge(self.address_to_id.rename(columns={"address": "target"})).rename(
             columns={"vertex": "target_id"})
-        return data[["source_id", "target_id", "amount"]]
+        data = data[["source_id", "target_id", "amount"]]
+        data = data.sort_values(['source_id', 'target_id'])
+        data = data.reset_index(drop=True)
+        return data
 
     def _preprocess(self):
         self.preprocessor = DataPreprocessor()

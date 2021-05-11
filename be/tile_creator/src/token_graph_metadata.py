@@ -24,5 +24,5 @@ class TokenGraphMetadata:
             'min': layout.min,
             'max': layout.max,
             'vertices': [token_graph.address_to_id.shape[0]],
-            'edges': [token_graph.ids_to_amount.shape[0]]})
+            'edges': [token_graph.edge_ids_to_amount.shape[0]]})
         self.graph_metadata = pd.concat([configuration_frame, graph_dependent_metadata], axis=1)

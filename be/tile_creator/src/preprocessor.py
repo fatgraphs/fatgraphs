@@ -10,6 +10,7 @@ class DataPreprocessor:
         self.FAKE_BLOCK_NUMBER = 1
 
     def preprocess(self, data):
+        self._check_fake_addresses_are_unused(data)
         data = self._remove_parallel_edges(data)
         return self._add_two_nodes(data)
 
@@ -24,3 +25,10 @@ class DataPreprocessor:
         data = data.append([{'source': self.FAKE_ADDRESS2, 'target': self.FAKE_ADDRESS2, 'amount': self.FAKE_AMOUNT,
                              'blockNumber': self.FAKE_BLOCK_NUMBER}])
         return data
+
+    def _check_fake_addresses_are_unused(self,  data):
+        if self.FAKE_ADDRESS1 in data['target'].values or \
+                self.FAKE_ADDRESS1 in data['source'].values or \
+                self.FAKE_ADDRESS2 in data['target'].values or \
+                self.FAKE_ADDRESS2 in data['source'].values:
+            raise Exception("Fake addresses are in use")

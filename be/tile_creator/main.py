@@ -1,5 +1,4 @@
-from be.configuration import MEDIUM_GRAPH_RAW_PATH, SMALL_GRAPH_RAW_PATH, CONFIGURATIONS, MOCK_LABELLED_RAW_PATH, \
-    LABELS_PATH, METADATA_PATH, LARGE_GRAPH_RAW_PATH
+from be.configuration import CONFIGURATIONS
 from be.tile_creator.src.graph.gt_token_graph import GraphToolTokenGraph
 from be.tile_creator.src.graph.token_graph import TokenGraph
 from be.tile_creator.src.layout.visual_layout import VisualLayout
@@ -16,9 +15,11 @@ def main(configurations):
     graph = TokenGraph(configurations['source'], {'dtype': {'amount': float}})
     print("generating layout . . .")
     visual_layout = VisualLayout(graph, configurations)
-    transparency_calculator = TransparencyCalculator(visual_layout.max - visual_layout.min, configurations)
+    transparency_calculator = TransparencyCalculator(visual_layout.max - visual_layout.min,
+                                                     max(visual_layout.edge_lengths),
+                                                     configurations)
     print("calculating transparencies . . .")
-    visual_layout.edge_transparencies = transparency_calculator.calculate_edge_transparencies(visual_layout.edge_lengths_graph_space)
+    visual_layout.edge_transparencies = transparency_calculator.calculate_edge_transparencies(visual_layout.edge_lengths)
 
     metadata = TokenGraphMetadata(graph, visual_layout, configurations)
     _generate_metadata_files(metadata, configurations)
@@ -28,7 +29,7 @@ def main(configurations):
     tiles_renderer = TilesRenderer(gt_graph, visual_layout, metadata, transparency_calculator, configurations)
 
     ed_renderer = EdgeDistributionRenderer(configurations['zoom_levels'],
-                                           visual_layout.edge_lengths_graph_space,
+                                           visual_layout.edge_lengths,
                                            transparency_calculator,
                                            configurations['output_folder'],
                                            visual_layout.max - visual_layout.min,

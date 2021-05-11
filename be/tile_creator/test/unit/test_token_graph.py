@@ -27,7 +27,7 @@ class TestTokenGraph(unittest.TestCase):
         cls.assertEqual(cls.graph.address_to_id.shape[0], UNIQUE_ADDRESSES + FAKE_NODES)
 
     def test_number_of_ids_to_amount_rows_is_expected(cls):
-        cls.assertEqual(cls.graph.ids_to_amount.shape[0], PREPROCESSED_EDGES + FAKE_NODES)
+        cls.assertEqual(cls.graph.edge_ids_to_amount.shape[0], PREPROCESSED_EDGES + FAKE_NODES)
 
     def test_fake_nodes_have_highest_ids(cls):
         highest_id = cls.graph.address_to_id['vertex'].max()
@@ -37,8 +37,8 @@ class TestTokenGraph(unittest.TestCase):
         cls.assertEqual(fake_address_2, cls.graph.preprocessor.FAKE_ADDRESS2)
 
     def test_ids_to_amount_cudf_is_initialised(cls):
-        cls.assertIsNotNone(cls.graph.ids_to_amount_cudf)
-        cls.assertTrue(all(cls.graph.ids_to_amount_cudf.to_pandas() == cls.graph.ids_to_amount))
+        cls.assertIsNotNone(cls.graph.edge_ids_to_amount_cudf)
+        cls.assertTrue(all(cls.graph.edge_ids_to_amount_cudf.to_pandas() == cls.graph.edge_ids_to_amount))
 
     def test_there_are_as_many_vertices_ad_degrees(cls):
         cls.assertEqual(cls.graph.degrees.shape[0], UNIQUE_ADDRESSES + FAKE_NODES)

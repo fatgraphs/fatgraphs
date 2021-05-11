@@ -1,8 +1,9 @@
 import unittest
-
+import numpy as np
 from be.tile_creator.src.graph.token_graph import TokenGraph
 from be.tile_creator.src.layout.visual_layout import VisualLayout
-from be.tile_creator.test.constants import TEST_DATA, TEST_FOLDER, UNIQUE_ADDRESSES, FAKE_NODES, PREPROCESSED_EDGES
+from be.tile_creator.test.constants import TEST_DATA, TEST_FOLDER, UNIQUE_ADDRESSES, FAKE_NODES, PREPROCESSED_EDGES, \
+    MEDIAN_VERTEX_DISTANCE
 from gtm import get_final_configurations
 
 
@@ -47,3 +48,27 @@ class TestVisualLayout(unittest.TestCase):
                        == pixel_max['target_y_pixel'])
         cls.assertTrue(pixel_min['source_x_pixel'] == pixel_min['source_y_pixel'] == pixel_min['target_x_pixel']
                        == pixel_min['target_y_pixel'])
+
+    def test_median_pixel_distance_is_in_ballpark(cls):
+        cls.assertAlmostEqual(cls.layout.median_pixel_distance, MEDIAN_VERTEX_DISTANCE, delta=1.0)
+
+    def test_vertices_with_higher_degree_have_larger_size(cls):
+        # relying on indices of degrees to correspond to ids
+        index_of_largest_vertex = cls.graph.degrees.idxmax()['out_degree']
+        index_of_smallest_vertex = cls.graph.degrees.idxmin()['out_degree']
+        largest = cls.layout.vertex_sizes[index_of_largest_vertex]
+        smallest = cls.layout.vertex_sizes[index_of_smallest_vertex]
+        cls.assertEqual(largest, cls.layout.vertex_sizes.max())
+        cls.assertEqual(smallest, cls.layout.vertex_sizes.min())
+
+    def test_edges_with_largest_amount_is_thickest(cls):
+        # because of clipping we can get many values that are the largest thickness
+        indexes_max_thickness = list(np.where(cls.layout.edge_thickness == cls.layout.edge_thickness.max())[0])
+        index_highest_amount = cls.graph.edge_ids_to_amount['amount'].idxmax()
+        cls.assertIn(index_highest_amount, indexes_max_thickness)
+
+    def test_edges_with_smallest_amount_is_thinnest(cls):
+        # because of clipping we can get many values that are the smallest thickness
+        indexes_min_thickness = list(np.where(cls.layout.edge_thickness == cls.layout.edge_thickness.min())[0])
+        index_min_amount = cls.graph.edge_ids_to_amount['amount'].idxmin()
+        cls.assertIn(index_min_amount, indexes_min_thickness)
