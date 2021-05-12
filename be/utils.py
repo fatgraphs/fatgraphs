@@ -46,3 +46,20 @@ def gauss(x, mean, std, min_out=0, max_out=1):
     :return: computes the gaussian value of the provided x value scaled to fit within min and max if provided
     """
     return (max_out - min_out) * math.e ** ((-1 * ((x - mean) ** 2.)) / (2 * (std ** 2.))) + min_out
+
+def calculate_diagonal_square_of_side(side):
+    """
+    :param side: a square with this side length
+    :return: the length of the diagonal
+    """
+    return math.sqrt(side**2 + side**2)
+
+def find_index_of_nearest(array, value):
+    """
+    :param array: array of values
+    :param value: a target value
+    :return: the index in the array corresponding to the element closest to the target value
+    """
+    array = np.asarray(array)
+    idx = (np.abs(array - value)).argmin()
+    return int(idx)

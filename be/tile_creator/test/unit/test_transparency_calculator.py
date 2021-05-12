@@ -1,3 +1,4 @@
+import math
 import unittest
 import numpy as np
 
@@ -7,6 +8,7 @@ from be.tile_creator.src.layout.visual_layout import VisualLayout
 from be.tile_creator.src.render.transparency_calculator import TransparencyCalculator
 from be.tile_creator.test.constants import TEST_DATA, TEST_FOLDER, UNIQUE_ADDRESSES, FAKE_NODES, PREPROCESSED_EDGES, \
     MEDIAN_VERTEX_DISTANCE
+from be.utils import calculate_diagonal_square_of_side, find_index_of_nearest
 from gtm import get_final_configurations
 
 
@@ -16,27 +18,41 @@ class TestTransparencyCalculator(unittest.TestCase):
     transparency_calculators = []
     graph_sides = [250, 10e4]  # one small, one large
     stds = [0.1, 0.5, 0.7]
+    max_zooms = [2,4,6]
 
     @classmethod
     def setUpClass(cls):
         for graph_side in cls.graph_sides:
             for std in cls.stds:
-                config = get_final_configurations({'--csv': TEST_DATA, "--std": std},
-                                                  TEST_FOLDER,
-                                                  "test_graph")
-                cls.transparency_calculators.append(TransparencyCalculator(graph_side, config))
+                for zoom in cls.max_zooms:
+                    config = get_final_configurations({'--csv': TEST_DATA, "--std": std, '-z': zoom},
+                                                      TEST_FOLDER,
+                                                      "test_graph")
+                    cls.transparency_calculators.append(TransparencyCalculator(graph_side, config))
 
     def test_initialisation(cls):
         for tc in cls.transparency_calculators:
             cls.assertIsNotNone(tc)
 
+    def test_throws_exception_if_longest_possible_edge_is_exceeded(cls):
+        for tc in cls.transparency_calculators:
+            illegal_edge = tc.graph_side * 2
+            with cls.assertRaises(Exception):
+                tc.calculate_edge_transparencies([illegal_edge])
+
     def test_all_calculators_can_calculate(cls):
         for tc in cls.transparency_calculators:
             tc.calculate_edge_transparencies([1, 2, 3])
 
-    def test_edges_as_long_as_graph_side_have_max_transparency_at_zoom_0(cls):
+    def test_there_are_as_many_transparency_arrays_as_zoom_levels(cls):
         for tc in cls.transparency_calculators:
-            cls.assertAlmostEqual(tc.calculate_edge_transparencies([tc.graph_side])[0][0], tc.max_t)
+            transparencies = tc.calculate_edge_transparencies([1, 2, 3])
+            cls.assertEqual(len(transparencies.keys()), tc.zoom_levels)
+
+    def test_longest_edge_has_max_transparency_at_zoom_0(cls):
+        for tc in cls.transparency_calculators:
+            longest_theoretical_edge = calculate_diagonal_square_of_side(tc.graph_side)
+            cls.assertAlmostEqual(tc.calculate_edge_transparencies([longest_theoretical_edge])[0][0], tc.max_t)
 
     def test_short_edges_have_low_transparency_at_zoom_0(cls):
         for tc in cls.transparency_calculators:
@@ -47,8 +63,27 @@ class TestTransparencyCalculator(unittest.TestCase):
             transparency_of_short_edge = tc.calculate_edge_transparencies([short_edge])[0][0]
             cls.assertAlmostEqual(transparency_of_short_edge, tc.min_t, delta=cls.TOLLERANCE + additional_tollerance)
 
-    def test_at_zoom_0_edges_longer_than_graph_side_are_visible(cls):
+    def test_transparency_gaussian_is_centered_at_edges_that_are_2_tiles_long(cls):
+        for tc in cls.transparency_calculators:
+            longest_theoretical_edge = calculate_diagonal_square_of_side(tc.graph_side)
+            edges = np.arange(1, longest_theoretical_edge, 1.5)
+            transparencies = tc.calculate_edge_transparencies(edges)
+            for zoom in transparencies.keys():
+                if zoom == 0:
+                    # we don't test for zoom 0
+                    continue
+                # how many values to consider left & right of the mean
+                window_size = int(max(0, (tc.std - 0.2) * 10) + 2)
+                mean = longest_theoretical_edge * (2 / (2 ** zoom))
+                index_mean = find_index_of_nearest(edges, mean)
+                peak_of_gaussian = transparencies[zoom][index_mean - window_size + 1: index_mean + window_size]
+                for transparency in peak_of_gaussian:
+                    cls.assertAlmostEqual(transparency, tc.max_t, delta=tc.max_t * 0.1)
+
+    def test_(cls):
         pass
 
-    def test_at_zoom_0_edges_shorter_than_graph_side_are_invisible(cls):
+    def test_(cls):
         pass
+
+
