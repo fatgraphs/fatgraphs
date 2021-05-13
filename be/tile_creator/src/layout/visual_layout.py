@@ -35,8 +35,8 @@ class VisualLayout:
 
         self.vertex_positions = self._run_force_atlas_2(graph.gpu_frame)
 
-        temp_max = max(self.vertex_positions.max()['x'], self.vertex_positions.max()['y'])
-        temp_min = min(self.vertex_positions.min()['x'], self.vertex_positions.min()['y'])
+        temp_max = max(self.vertex_positions[0:-2]['x'].max(), self.vertex_positions[0:-2]['y'].max())
+        temp_min = min(self.vertex_positions[0:-2]['x'].min(), self.vertex_positions[0:-2]['y'].min())
 
         # TODO
         # noverlap
@@ -65,6 +65,7 @@ class VisualLayout:
         layout = layout.to_pandas()
         # layout = self._distribute_on_square_edges(layout)
         layout = layout.sort_values(['vertex'])
+        layout = layout.reset_index(drop=True)
         return layout
 
     def _distribute_on_square_edges(self, layout):
@@ -108,8 +109,8 @@ class VisualLayout:
     def compute_median_pixel_distance(self):
         vertices_once = self.edge_ids_to_positions_pixel.drop_duplicates(['source_x', 'source_y']).to_pandas()
         model = NearestNeighbors(n_neighbors=3)
-        model.fit(vertices_once[['source_x_pixel', 'target_y_pixel']])
-        distances, indices = model.kneighbors(vertices_once[['source_x_pixel', 'target_y_pixel']])
+        model.fit(vertices_once[['source_x_pixel', 'source_y_pixel']])
+        distances, indices = model.kneighbors(vertices_once[['source_x_pixel', 'source_y_pixel']])
         median_pixel_distance = np.median(distances.flatten())
         return median_pixel_distance
 
@@ -139,6 +140,7 @@ class VisualLayout:
         vertex_x_y = vertex_x_y.rename(columns={'source_x': 'target_x', 'source_y': 'target_y'})
         graph_positions = graph_positions.merge(vertex_x_y, left_on=['target_id'], right_on=['vertex'])
         graph_positions = graph_positions.drop(columns=['vertex_x', 'vertex_y'])
+        graph_positions = graph_positions.sort_values(by=['source_id', 'target_id']).reset_index(drop=True)
         return graph_positions
 
     def convert_to_pixel_space(self, tile_size, min_coordinate, max_coordinate):

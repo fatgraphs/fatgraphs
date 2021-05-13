@@ -16,17 +16,16 @@ def main(configurations):
     print("generating layout . . .")
     visual_layout = VisualLayout(graph, configurations)
     transparency_calculator = TransparencyCalculator(visual_layout.max - visual_layout.min,
-                                                     max(visual_layout.edge_lengths),
                                                      configurations)
     print("calculating transparencies . . .")
     visual_layout.edge_transparencies = transparency_calculator.calculate_edge_transparencies(visual_layout.edge_lengths)
 
     metadata = TokenGraphMetadata(graph, visual_layout, configurations)
     _generate_metadata_files(metadata, configurations)
-    gt_graph = GraphToolTokenGraph(graph, visual_layout, metadata, configurations['curvature'])
+    gt_graph = GraphToolTokenGraph(graph.edge_ids_to_amount, visual_layout, metadata, configurations['curvature'])
 
 
-    tiles_renderer = TilesRenderer(gt_graph, visual_layout, metadata, transparency_calculator, configurations)
+    tiles_renderer = TilesRenderer(gt_graph, visual_layout.edge_transparencies, metadata, transparency_calculator, configurations)
 
     ed_renderer = EdgeDistributionRenderer(configurations['zoom_levels'],
                                            visual_layout.edge_lengths,

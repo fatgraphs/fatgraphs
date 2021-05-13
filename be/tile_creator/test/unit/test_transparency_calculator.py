@@ -54,6 +54,17 @@ class TestTransparencyCalculator(unittest.TestCase):
             longest_theoretical_edge = calculate_diagonal_square_of_side(tc.graph_side)
             cls.assertAlmostEqual(tc.calculate_edge_transparencies([longest_theoretical_edge])[0][0], tc.max_t)
 
+    def test_longest_edge_has_min_transparency_at_zoom_6_and_5(cls):
+        """
+        When completely zoomed in, the longest possible edge should be invisible
+        :return:
+        """
+        for tc in cls.transparency_calculators:
+            if tc.zoom_levels == 6:
+                longest_theoretical_edge = calculate_diagonal_square_of_side(tc.graph_side)
+                cls.assertAlmostEqual(tc.calculate_edge_transparencies([longest_theoretical_edge])[4][0], tc.min_t)
+                cls.assertAlmostEqual(tc.calculate_edge_transparencies([longest_theoretical_edge])[5][0], tc.min_t)
+
     def test_short_edges_have_low_transparency_at_zoom_0(cls):
         for tc in cls.transparency_calculators:
             short_edge = 1 / tc.graph_side
