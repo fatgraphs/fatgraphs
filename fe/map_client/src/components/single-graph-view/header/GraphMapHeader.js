@@ -41,7 +41,9 @@ class GraphMapHeader extends Component {
     }
 
     generateGtmCommand() {
-        let build = "./gtm.py" + " --csv " + this.props.graph_metadata.source +
+        let build = "./gtm.py" +
+            " -n " + this.props.graph_metadata.graph_name +
+            " --csv " + this.props.graph_metadata.source +
             " --ts " + this.props.graph_metadata.tile_size +
             " -z " + this.props.graph_metadata.zoom_levels +
             " --min_t " + this.props.graph_metadata.min_transparency +
@@ -51,7 +53,7 @@ class GraphMapHeader extends Component {
             " --max_thick " + this.props.graph_metadata.max_edge_thickness +
             " --med_size " + this.props.graph_metadata.med_vertex_size +
             " --max_size " + this.props.graph_metadata.max_vertex_size +
-            " --edge_curvature " + this.props.graph_metadata.edge_curvature
+            " --curvature " + this.props.graph_metadata.curvature
         return build;
     }
 }
