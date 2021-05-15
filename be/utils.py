@@ -1,7 +1,9 @@
 import math
 
+import cv2
 import numpy as np
 import pandas as pd
+from PIL import ImageChops, ImageStat
 from numba import jit
 
 
@@ -63,3 +65,38 @@ def find_index_of_nearest(array, value):
     array = np.asarray(array)
     idx = (np.abs(array - value)).argmin()
     return int(idx)
+
+
+def compare_images(img_1_path, img_2_path):
+    """
+    Compares two images and returns a similarity score: 1 means they are the same,
+    0 means they are completely different.
+    Note that the images should be of the same size for this to work as intended.
+    :param img_1_path:
+    :param img_2_path:
+    :return: score between 0 and 1
+    """
+    img1 = cv2.imread(img_1_path, 0)
+    img2 = cv2.imread(img_2_path, 0)
+    orb = cv2.ORB_create()
+
+    # detect keypoints and descriptors
+    kp_a, desc_a = orb.detectAndCompute(img1, None)
+    kp_b, desc_b = orb.detectAndCompute(img2, None)
+
+    # define the bruteforce matcher object
+    bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
+
+    # perform matches.
+    matches = bf.match(desc_a, desc_b)
+    # Look for similar regions with distance < 50. Goes from 0 to 100 so pick a number between.
+    similar_regions = [i for i in matches if i.distance < 46]
+    if len(matches) == 0:
+        return 0
+    return len(similar_regions) / len(matches)
+
+def is_image(filename):
+    f = filename.lower()
+    return f.endswith(".png") or f.endswith(".jpg") or \
+           f.endswith(".jpeg") or f.endswith(".bmp") or \
+           f.endswith(".gif") or '.jpg' in f or f.endswith(".svg")

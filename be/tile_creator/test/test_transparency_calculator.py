@@ -6,7 +6,7 @@ import gtm
 from be.tile_creator.src.graph.token_graph import TokenGraph
 from be.tile_creator.src.layout.visual_layout import VisualLayout
 from be.tile_creator.src.render.transparency_calculator import TransparencyCalculator
-from be.tile_creator.test.constants import TEST_DATA, TEST_FOLDER, UNIQUE_ADDRESSES, FAKE_NODES, PREPROCESSED_EDGES, \
+from be.tile_creator.test.constants import TEST_DATA_DIR, TEST_DIR, UNIQUE_ADDRESSES, FAKE_NODES, PREPROCESSED_EDGES, \
     MEDIAN_VERTEX_DISTANCE
 from be.utils import calculate_diagonal_square_of_side, find_index_of_nearest
 from gtm import get_final_configurations
@@ -25,8 +25,8 @@ class TestTransparencyCalculator(unittest.TestCase):
         for graph_side in cls.graph_sides:
             for std in cls.stds:
                 for zoom in cls.max_zooms:
-                    config = get_final_configurations({'--csv': TEST_DATA, "--std": std, '-z': zoom},
-                                                      TEST_FOLDER,
+                    config = get_final_configurations({'--csv': TEST_DATA_DIR, "--std": std, '-z': zoom},
+                                                      TEST_DIR,
                                                       "test_graph")
                     cls.transparency_calculators.append(TransparencyCalculator(graph_side, config))
 

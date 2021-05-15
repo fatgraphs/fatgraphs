@@ -1,6 +1,6 @@
 import unittest
 from be.tile_creator.src.graph.token_graph import TokenGraph
-from be.tile_creator.test.constants import TEST_DATA, PREPROCESSED_EDGES, RAW_EDGES, UNIQUE_ADDRESSES, FAKE_NODES
+from be.tile_creator.test.constants import TEST_DATA_DIR, PREPROCESSED_EDGES, RAW_EDGES, UNIQUE_ADDRESSES, FAKE_NODES
 
 
 class TestTokenGraph(unittest.TestCase):
@@ -11,7 +11,7 @@ class TestTokenGraph(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.graph = TokenGraph(TEST_DATA, {'dtype': {'amount': object}})
+        cls.graph = TokenGraph(TEST_DATA_DIR, {'dtype': {'amount': object}})
 
     def test_it_loaded(cls):
         cls.assertIsNotNone(cls.graph)
