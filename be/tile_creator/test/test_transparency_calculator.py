@@ -29,6 +29,7 @@ class TestTransparencyCalculator(unittest.TestCase):
         for tc in cls.transparency_calculators:
             cls.assertIsNotNone(tc)
             cls.assertTrue(False)
+            cls.assertTrue(False)
 
     def test_throws_exception_if_longest_possible_edge_is_exceeded(cls):
         for tc in cls.transparency_calculators:
