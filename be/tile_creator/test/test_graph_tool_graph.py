@@ -28,7 +28,6 @@ class TestGraphToolGraph(unittest.TestCase):
 
     def test_init(cls):
         cls.assertIsNotNone(cls.gtg)
-        cls.assertTrue(False)
 
     def test_edge_curvature_is_negative(cls):
         """
