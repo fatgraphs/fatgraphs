@@ -20,9 +20,9 @@ class DataPreprocessor:
         return data_frame
 
     def _add_two_nodes(self, data):
-        data = data.append([{'source': self.FAKE_ADDRESS1, 'target': self.FAKE_ADDRESS2, 'amount': self.FAKE_AMOUNT,
+        data = data.append([{'source': self.FAKE_ADDRESS1, 'target': self.FAKE_ADDRESS1, 'amount': self.FAKE_AMOUNT,
                              'blockNumber': self.FAKE_BLOCK_NUMBER}])
-        data = data.append([{'source': self.FAKE_ADDRESS2, 'target': self.FAKE_ADDRESS1, 'amount': self.FAKE_AMOUNT,
+        data = data.append([{'source': self.FAKE_ADDRESS2, 'target': self.FAKE_ADDRESS2, 'amount': self.FAKE_AMOUNT,
                              'blockNumber': self.FAKE_BLOCK_NUMBER}])
         return data
 

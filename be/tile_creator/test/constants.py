@@ -11,3 +11,4 @@ RAW_EDGES = 278
 PREPROCESSED_EDGES = 252
 UNIQUE_ADDRESSES = 197
 FAKE_NODES = 2
+FAKE_EDGES = FAKE_NODES # each fake nodes has a self-edge to itself

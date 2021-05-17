@@ -12,6 +12,9 @@ class TestUtils(unittest.TestCase):
         self.different_threshold = 0.5
         self.similar_threshold = 0.72
 
+
+    # TODO test other utils
+
     def test_compare_images(self):
         """
         Test that the method to compare imgs performs as expected on a known test set

@@ -17,7 +17,7 @@ class TestVisualLayout(unittest.TestCase):
         default_config = get_final_configurations({'--csv': TEST_DATA_DIR}, TEST_DIR, "test_graph")
         cls.layout = VisualLayout(cls.graph, default_config)
 
-    def test_fa2_has_produced_coordinates(cls):
+    def test_each_address_has_a_coordinate(cls):
         cls.assertIsNotNone(cls.layout.vertex_positions)
         cls.assertEqual(cls.layout.vertex_positions.shape[0], UNIQUE_ADDRESSES + FAKE_NODES)
 

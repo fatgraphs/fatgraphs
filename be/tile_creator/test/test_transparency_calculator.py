@@ -29,7 +29,7 @@ class TestTransparencyCalculator(unittest.TestCase):
         for tc in cls.transparency_calculators:
             cls.assertIsNotNone(tc)
 
-    def test_throws_exception_if_longest_possible_edge_is_exceeded(cls):
+    def test_throws_exception_if_there_is_an_edge_longer_than_the_diagonal(cls):
         for tc in cls.transparency_calculators:
             illegal_edge = tc.graph_side * 2
             with cls.assertRaises(Exception):
@@ -50,6 +50,7 @@ class TestTransparencyCalculator(unittest.TestCase):
             cls.assertAlmostEqual(tc.calculate_edge_transparencies([longest_theoretical_edge])[0][0], tc.max_t)
 
     def test_longest_edge_has_min_transparency_at_zoom_6_and_5(cls):
+        # TODO generalise better, check that at max zoom the longest edge has min transparency wrt other zoom_levls
         """
         When completely zoomed in, the longest possible edge should be invisible
         :return:
@@ -61,15 +62,19 @@ class TestTransparencyCalculator(unittest.TestCase):
                 cls.assertAlmostEqual(tc.calculate_edge_transparencies([longest_theoretical_edge])[5][0], tc.min_t)
 
     def test_short_edges_have_low_transparency_at_zoom_0(cls):
+        # TODO frame as previous one
+        # shortes edge has the lowest transparency wrt to othher zoom levels at zoom 0
+        # then remove magin number
         for tc in cls.transparency_calculators:
             short_edge = 1 / tc.graph_side
-            # the higher the std the more visible short edges will be
+            # the higher the std the more visible short edges will be at zoom 0
             # therefore we need to be more tollerant
             additional_tollerance = (tc.std - 0.1) / 17
             transparency_of_short_edge = tc.calculate_edge_transparencies([short_edge])[0][0]
             cls.assertAlmostEqual(transparency_of_short_edge, tc.min_t, delta=cls.TOLLERANCE + additional_tollerance)
 
     def test_transparency_gaussian_is_centered_at_edges_that_are_2_tiles_long(cls):
+        # TODO parametrise the test wrt given configuration (for mean based on tile size)
         for tc in cls.transparency_calculators:
             longest_theoretical_edge = calculate_diagonal_square_of_side(tc.graph_side)
             edges = np.arange(1, longest_theoretical_edge, 1.5)
@@ -85,11 +90,5 @@ class TestTransparencyCalculator(unittest.TestCase):
                 peak_of_gaussian = transparencies[zoom][index_mean - window_size + 1: index_mean + window_size]
                 for transparency in peak_of_gaussian:
                     cls.assertAlmostEqual(transparency, tc.max_t, delta=tc.max_t * 0.1)
-
-    def test_(cls):
-        pass
-
-    def test_(cls):
-        pass
 
 

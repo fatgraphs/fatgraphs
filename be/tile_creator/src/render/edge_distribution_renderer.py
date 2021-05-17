@@ -3,6 +3,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 
+from be.utils import calculate_diagonal_square_of_side
+
+
 class EdgeDistributionRenderer:
 
     BIN_FREQUENCY = 50
@@ -28,19 +31,29 @@ class EdgeDistributionRenderer:
         return self.transparency_calculator.calculate_edge_transparencies(self.transparency_x)
 
     def generate_distribution_img(self, edge_lengths, x, y, zoom_level):
+        # TODO refactor this mess
+        longest_theoretical_edge_px = calculate_diagonal_square_of_side(self.tile_size)
+        longest_theoretical_edge_graph = calculate_diagonal_square_of_side(self.min_length - self.max_length)
+        np.append(edge_lengths, longest_theoretical_edge_px)
+        print(longest_theoretical_edge_px)
+        print(longest_theoretical_edge_graph)
+
         color = 'tab:red'
         fig, ax1 = plt.subplots()
         fig.suptitle("Zoom lvl: " + str(zoom_level) + " Longest Edge: " + str(self.max_length), fontsize=15)
-        ax1.set_xlabel('Edge Len Graph')
+        ax1.set_xlabel('Edge Len Graph Space')
         y_title = "Count ( tot: " + str(len(edge_lengths)) + " )"
         ax1.set_ylabel(y_title, color=color)
         ax1.hist(edge_lengths, len(x), color=color)
         ax1.set_xticks(ax1.get_xticks()[1::])
         ax1.tick_params(axis='y')
         ax1.tick_params(axis='x')
+
+        how_many_tiles_across = self.side_graph_space / (2 ** zoom_level)
         for i in range(0, 2**zoom_level):
-            ax1.axvline(x=self.side_graph_space / (2**zoom_level) * (i+1), ymin=0, ymax=self.max_length, color='orange')
-            plt.text(self.side_graph_space / (2**zoom_level) * (i+1) + 6, self.max_length / 2, str(i + 1), rotation=90, verticalalignment='center')
+            tile_mark = how_many_tiles_across * (i + 1)
+            ax1.axvline(x=tile_mark, ymin=0, ymax=self.max_length, color='orange')
+            plt.text(tile_mark + 6, self.max_length / 2, str(i + 1), rotation=90, verticalalignment='center')
 
         yyy = ax1.twinx()  # instantiate a second axes that shares the same x-axis
 
@@ -54,11 +67,14 @@ class EdgeDistributionRenderer:
 
         x_pixel_distance = ax1.twiny()
         x_pixel_distance.set_xlabel("Edge Len Pixel")
-        x_pixel_distance.set_xlim(ax1.get_xlim())
-        new_ticks = list(map(lambda tick: int(tick * (self.tile_size * (2 ** zoom_level)) / self.side_graph_space),
+        # x_pixel_distance.set_xlim(ax1.get_xlim())
+        pixel_length_of_graph_side = (self.tile_size * (2 ** zoom_level))
+        new_ticks = list(map(lambda tick: int(tick * pixel_length_of_graph_side / self.side_graph_space),
                              ax1.get_xticks()))
-        x_pixel_distance.set_xticks(ax1.get_xticks())
-        x_pixel_distance.set_xticklabels(list(map(str, new_ticks)))
+
+        x_pixel_distance.set_xlim([0, longest_theoretical_edge_px])
+        # x_pixel_distance.set_xticks(tile_mark)
+        # x_pixel_distance.set_xticklabels(list(map(str, new_ticks)))
         x_pixel_distance.tick_params(axis='x', labelcolor=color)
 
         fig.tight_layout()  # otherwise the right y-label is slightly clipped
