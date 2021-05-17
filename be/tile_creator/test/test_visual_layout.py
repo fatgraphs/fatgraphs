@@ -2,8 +2,7 @@ import unittest
 import numpy as np
 from be.tile_creator.src.graph.token_graph import TokenGraph
 from be.tile_creator.src.layout.visual_layout import VisualLayout
-from be.tile_creator.test.constants import TEST_DATA_DIR, TEST_DIR, UNIQUE_ADDRESSES, FAKE_NODES, PREPROCESSED_EDGES, \
-    MEDIAN_VERTEX_DISTANCE
+from be.tile_creator.test.constants import TEST_DATA_DIR, TEST_DIR, UNIQUE_ADDRESSES, FAKE_NODES, PREPROCESSED_EDGES
 from gtm import get_final_configurations
 import math
 
@@ -59,9 +58,6 @@ class TestVisualLayout(unittest.TestCase):
                        == pixel_max['target_y_pixel'])
         cls.assertTrue(pixel_min['source_x_pixel'] == pixel_min['source_y_pixel'] == pixel_min['target_x_pixel']
                        == pixel_min['target_y_pixel'])
-
-    def test_median_pixel_distance_is_in_ballpark(cls):
-        cls.assertAlmostEqual(cls.layout.median_pixel_distance, MEDIAN_VERTEX_DISTANCE, delta=2.0)
 
     def test_vertex_with_highest_degree_has_largest_size(cls):
         # relying on indices of degrees to correspond to ids

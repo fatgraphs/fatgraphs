@@ -1,13 +1,8 @@
-import math
 import unittest
 import numpy as np
 
-import gtm
-from be.tile_creator.src.graph.token_graph import TokenGraph
-from be.tile_creator.src.layout.visual_layout import VisualLayout
 from be.tile_creator.src.render.transparency_calculator import TransparencyCalculator
-from be.tile_creator.test.constants import TEST_DATA_DIR, TEST_DIR, UNIQUE_ADDRESSES, FAKE_NODES, PREPROCESSED_EDGES, \
-    MEDIAN_VERTEX_DISTANCE
+from be.tile_creator.test.constants import TEST_DATA_DIR, TEST_DIR
 from be.utils import calculate_diagonal_square_of_side, find_index_of_nearest
 from gtm import get_final_configurations
 
