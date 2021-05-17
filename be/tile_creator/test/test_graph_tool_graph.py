@@ -52,14 +52,14 @@ class TestGraphToolGraph(unittest.TestCase):
         4       100
         """
 
-        def _extract_edges_from_gt_graph(cls):
+        def _extract_edges_from_gt_graph():
             edges_graph_tool = list(cls.gtg.g.edges())
             edges_list_of_lists = list(map(lambda e: [int(e.source()), int(e.target())], edges_graph_tool))
             edges_numpy_2d = np.array(edges_list_of_lists)
             edges_pandas = pd.DataFrame(edges_numpy_2d).rename(columns={0: 'source', 1: 'target'})
             return edges_pandas
 
-        graph_tool_edges = cls._extract_edges_from_gt_graph()
+        graph_tool_edges = _extract_edges_from_gt_graph()
         # by definition we order the edges PRIMARILY on the source vertex id
         cls.assertTrue(graph_tool_edges['source'].is_monotonic)
         #  we order the edges secondarily on target id,

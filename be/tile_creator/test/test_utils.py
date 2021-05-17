@@ -20,7 +20,7 @@ class TestUtils(unittest.TestCase):
         Test that the method to compare imgs performs as expected on a known test set
         :return:
         """
-        dirs = [os.path.join(IMG_SIMILARITY_DIR, path) for path in os.listdir(IMG_SIMILARITY_DIR)]
+        dirs = [os.path.join(IMG_SIMILARITY_DIR, path) for path in os.listdir(IMG_SIMILARITY_DIR) if os.path.isdir(path)]
         for dir in dirs:
             files = [os.path.join(dir, path) for path in os.listdir(dir) if is_image(path)]
             yes_scores = []
