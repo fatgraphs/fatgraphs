@@ -46,15 +46,6 @@ def mkdir_for_this_graph(graph_name):
     result_in_directory_existing(path)
     return path
 
-
-args = extract_arguments()
-ensure_container_directory_exists()
-graph_name = args["-n"]
-graph_path = mkdir_for_this_graph(graph_name)
-source_file = args['--csv']
-source_labels = args.get('--labels', None)
-
-
 # default value as second arg og 'get'
 # TODO find a way of ensuring that htis dict keys are the same as defined in configuration.json
 def get_final_configurations(args, graph_path, graph_name):
@@ -73,8 +64,8 @@ def get_final_configurations(args, graph_path, graph_name):
         "med_vertex_size": float(args.get("--med_size", 0.5)),
         "curvature": float(args.get("--curvature", 0.1)),
         "bg_color": "black",
-        "source": source_file,
-        "labels": source_labels
+        "source": args['--csv'],
+        "labels": args.get('--labels', None)
     }
     return configurations
 
