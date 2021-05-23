@@ -5,7 +5,7 @@ from be.tile_creator.src.graph.gt_token_graph import GraphToolTokenGraph
 from be.tile_creator.src.graph.token_graph import TokenGraph
 from be.tile_creator.src.layout.visual_layout import VisualLayout
 from be.tile_creator.src.token_graph_metadata import TokenGraphMetadata
-from be.tile_creator.test.constants import TEST_DATA_DIR, TEST_DIR
+from be.tile_creator.test.constants import TEST_DATA, TEST_DIR
 from gtm import get_final_configurations
 
 
@@ -17,8 +17,8 @@ class TestGraphToolGraph(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.graph = TokenGraph(TEST_DATA_DIR, {'dtype': {'amount': object}})
-        default_config = get_final_configurations({'--csv': TEST_DATA_DIR}, TEST_DIR, "test_graph")
+        cls.graph = TokenGraph(TEST_DATA, {'dtype': {'amount': object}})
+        default_config = get_final_configurations({'--csv': TEST_DATA}, TEST_DIR, "test_graph")
         cls.layout = VisualLayout(cls.graph, default_config)
         metadata = TokenGraphMetadata(cls.graph, cls.layout, default_config)
         cls.gtg = GraphToolTokenGraph(cls.graph.edge_ids_to_amount,

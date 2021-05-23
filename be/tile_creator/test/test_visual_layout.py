@@ -2,7 +2,7 @@ import unittest
 import numpy as np
 from be.tile_creator.src.graph.token_graph import TokenGraph
 from be.tile_creator.src.layout.visual_layout import VisualLayout
-from be.tile_creator.test.constants import TEST_DATA_DIR, TEST_DIR, UNIQUE_ADDRESSES, FAKE_NODES, PREPROCESSED_EDGES
+from be.tile_creator.test.constants import TEST_DATA, TEST_DIR, UNIQUE_ADDRESSES, FAKE_NODES, PREPROCESSED_EDGES
 from gtm import get_final_configurations
 import math
 
@@ -13,8 +13,8 @@ class TestVisualLayout(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.graph = TokenGraph(TEST_DATA_DIR, {'dtype': {'amount': object}})
-        default_config = get_final_configurations({'--csv': TEST_DATA_DIR}, TEST_DIR, "test_graph")
+        cls.graph = TokenGraph(TEST_DATA, {'dtype': {'amount': object}})
+        default_config = get_final_configurations({'--csv': TEST_DATA}, TEST_DIR, "test_graph")
         cls.layout = VisualLayout(cls.graph, default_config)
 
     def test_each_address_has_a_coordinate(cls):

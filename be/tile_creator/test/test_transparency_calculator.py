@@ -5,7 +5,7 @@ import pandas as pd
 
 from be import utils
 from be.tile_creator.src.render.transparency_calculator import TransparencyCalculator
-from be.tile_creator.test.constants import TEST_DATA_DIR, TEST_DIR
+from be.tile_creator.test.constants import TEST_DATA, TEST_DIR
 from be.utils import calculate_diagonal_square_of_side, find_index_of_nearest
 from gtm import get_final_configurations
 
@@ -24,7 +24,7 @@ class TestTransparencyCalculator(unittest.TestCase):
         for graph_side in cls.graph_sides:
             for std in cls.stds:
                 for zoom in cls.max_zooms:
-                    config = get_final_configurations({'--csv': TEST_DATA_DIR,
+                    config = get_final_configurations({'--csv': TEST_DATA,
                                                        "--std": std,
                                                        '-z': zoom,
                                                        '--mean_t': 2.0},
