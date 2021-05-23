@@ -12,27 +12,23 @@ class TokenGraph:
         :param path: path of the csv file
         :param options: dictionary of args to pass to the pandas read_csv fiunction
 
-        id_address_pos: mapping between a vertex id, it's corresponding eth address and the position determined by the
-            layout algorithm
         """
-        self.data = self._get_data(options, path)
-        addresses_to_ids = self._map_addresses_to_ids()
-        self.edge_amounts = self._make_edge_ids_to_amount(addresses_to_ids)
-        self.edge_ids_cudf = self.make_cudf_ids()
+        self.raw_data = self._get_data(options, path)
+        self.preprocessed_data = self._preprocess()
+        self.address_to_id = self._map_addresses_to_ids()
+        self.edge_ids_to_amount = self._make_edge_ids_to_amount()
+        self.edge_ids_to_amount_cudf = cudf.DataFrame.from_pandas(self.edge_ids_to_amount)
         self.gpu_frame = self._make_graph_gpu_frame()
-        self.degrees = self.gpu_frame.degrees().to_pandas()
-        self.address_id = addresses_to_ids
-        # self.id_address_pos = self._make_layout(addresses_to_ids)
+        self.degrees = self.gpu_frame.degrees().to_pandas().sort_values(by=['vertex'])
+        self.degrees = self.degrees.set_index('vertex')
 
     def _get_data(self, options, path):
         raw_data = pd.read_csv(path, **options)
-        preprocessor = DataPreprocessor()
-        preprocessed = preprocessor.preprocess(raw_data)
-        return preprocessed
+        return raw_data
 
     def _map_addresses_to_ids(self):
         # get unique addresses
-        column_values = self.data[["source", "target"]].values.ravel()
+        column_values = self.preprocessed_data[["source", "target"]].values.ravel()
         unique_values = pd.unique(column_values)
         # indices to vertices
         mapping = pd.DataFrame(unique_values).reset_index().rename(columns={"index": "vertex", 0: "address"})
@@ -40,24 +36,22 @@ class TokenGraph:
 
     def _make_graph_gpu_frame(self):
         graph = cugraph.Graph()
-        graph.from_cudf_edgelist(self.edge_ids_cudf, source='source_id', destination='target_id')
+        graph.from_cudf_edgelist(self.edge_ids_to_amount_cudf, source='source_id', destination='target_id')
         return graph
 
-    def make_cudf_ids(self):
-        data_ids = self.edge_amounts[["source_id", "target_id"]]
-        # append 2 fake nodes for ensuring the layout is a square
-        data_ids.append({'source_id': data_ids.max().max() + 1, 'target_id': data_ids.max().max() + 1},
-                        ignore_index=True)
-        data_ids.append({'source_id': data_ids.max().max() + 1, 'target_id': data_ids.max().max() + 1},
-                        ignore_index=True)
-        return cudf.DataFrame.from_pandas(data_ids)
-
-    def _make_edge_ids_to_amount(self, addresses_to_ids):
-        data = self.data
+    def _make_edge_ids_to_amount(self):
         # associate source id to the source address
-        data = data.merge(addresses_to_ids.rename(columns={"address": "source"})).rename(
+        data = self.preprocessed_data.merge(self.address_to_id.rename(columns={"address": "source"})).rename(
             columns={"vertex": "source_id"})
         # associate target_id with target address
-        data = data.merge(addresses_to_ids.rename(columns={"address": "target"})).rename(
+        data = data.merge(self.address_to_id.rename(columns={"address": "target"})).rename(
             columns={"vertex": "target_id"})
-        return data[["source_id", "target_id", "amount"]]
+        data = data[["source_id", "target_id", "amount"]]
+        data = data.sort_values(['source_id', 'target_id'])
+        data = data.reset_index(drop=True)
+        return data
+
+    def _preprocess(self):
+        self.preprocessor = DataPreprocessor()
+        preprocessed = self.preprocessor.preprocess(self.raw_data)
+        return preprocessed

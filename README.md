@@ -13,6 +13,21 @@ Run `conda install -n rapids-0.18 flask flask_cors`
 
 Your virtual environment should have all the required packages given that default anaconda environments come with many of
 the libraries we need pre-installed. If you notice that something is missing please use conda install to add the missing 
+
+#### Pre-push tests
+Copy-paste the below snippet into .git/hooks/pre-push in order to have tests automatically run before each push.
+```
+#!/bin/bash
+
+remote="$1"
+url="$2"
+
+source activate rapids2
+python -m pytest
+
+exit 0
+```
+
 package to the venv.
 ### Running
 #### Activate the venv
