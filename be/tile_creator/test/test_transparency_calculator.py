@@ -1,6 +1,9 @@
+import math
 import unittest
 import numpy as np
+import pandas as pd
 
+from be import utils
 from be.tile_creator.src.render.transparency_calculator import TransparencyCalculator
 from be.tile_creator.test.constants import TEST_DATA_DIR, TEST_DIR
 from be.utils import calculate_diagonal_square_of_side, find_index_of_nearest
@@ -9,18 +12,22 @@ from gtm import get_final_configurations
 
 class TestTransparencyCalculator(unittest.TestCase):
     TOLLERANCE = 0.001  # how many decimals to check for equality of floats
+    ZOOM_0 = 0
 
     transparency_calculators = []
     graph_sides = [250, 10e4]  # one small, one large
     stds = [0.1, 0.5, 0.7]
-    max_zooms = [2,4,6]
+    max_zooms = [2, 4, 6]
 
     @classmethod
     def setUpClass(cls):
         for graph_side in cls.graph_sides:
             for std in cls.stds:
                 for zoom in cls.max_zooms:
-                    config = get_final_configurations({'--csv': TEST_DATA_DIR, "--std": std, '-z': zoom},
+                    config = get_final_configurations({'--csv': TEST_DATA_DIR,
+                                                       "--std": std,
+                                                       '-z': zoom,
+                                                       '--mean_t': 2.0},
                                                       TEST_DIR,
                                                       "test_graph")
                     cls.transparency_calculators.append(TransparencyCalculator(graph_side, config))
@@ -44,22 +51,35 @@ class TestTransparencyCalculator(unittest.TestCase):
             transparencies = tc.calculate_edge_transparencies([1, 2, 3])
             cls.assertEqual(len(transparencies.keys()), tc.zoom_levels)
 
-    def test_longest_edge_has_max_transparency_at_zoom_0(cls):
-        for tc in cls.transparency_calculators:
-            longest_theoretical_edge = calculate_diagonal_square_of_side(tc.graph_side)
-            cls.assertAlmostEqual(tc.calculate_edge_transparencies([longest_theoretical_edge])[0][0], tc.max_t)
+    def test_longest_edge_has_highest_transparency_at_zoom_0(cls):
 
-    def test_longest_edge_has_min_transparency_at_zoom_6_and_5(cls):
+        for tc in cls.transparency_calculators:
+            edges_of_all_possible_lengths = list(
+                range(1, math.ceil(utils.calculate_diagonal_square_of_side(tc.graph_side))))
+            edge_transparencies = tc.calculate_edge_transparencies(edges_of_all_possible_lengths)
+
+            transparency_of_longest_edge = edge_transparencies[cls.ZOOM_0][len(edges_of_all_possible_lengths) - 1]
+            max_transparency = max(edge_transparencies[cls.ZOOM_0])
+            cls.assertAlmostEqual(transparency_of_longest_edge,
+                                  max_transparency)
+
+    def test_longest_edge_has_decreasing_transparencies_across_zoom_levels(cls):
         # TODO generalise better, check that at max zoom the longest edge has min transparency wrt other zoom_levls
         """
         When completely zoomed in, the longest possible edge should be invisible
         :return:
         """
         for tc in cls.transparency_calculators:
-            if tc.zoom_levels == 6:
-                longest_theoretical_edge = calculate_diagonal_square_of_side(tc.graph_side)
-                cls.assertAlmostEqual(tc.calculate_edge_transparencies([longest_theoretical_edge])[4][0], tc.min_t)
-                cls.assertAlmostEqual(tc.calculate_edge_transparencies([longest_theoretical_edge])[5][0], tc.min_t)
+            edges_of_all_possible_lengths = list(
+                range(1, math.ceil(utils.calculate_diagonal_square_of_side(tc.graph_side))))
+            edge_transparencies = tc.calculate_edge_transparencies(edges_of_all_possible_lengths)
+
+            transparencies_longest_edge_across_zooms = []
+            for z in range(0, tc.zoom_levels):
+                transparencies_longest_edge_across_zooms.append(
+                    edge_transparencies[z][len(edges_of_all_possible_lengths) - 1])
+
+        cls.assertTrue(pd.Series(transparencies_longest_edge_across_zooms).is_monotonic_decreasing)
 
     def test_short_edges_have_low_transparency_at_zoom_0(cls):
         # TODO frame as previous one
@@ -84,11 +104,12 @@ class TestTransparencyCalculator(unittest.TestCase):
                     # we don't test for zoom 0
                     continue
                 # how many values to consider left & right of the mean
-                window_size = int(max(0, (tc.std - 0.2) * 10) + 2)
-                mean = longest_theoretical_edge * (2 / (2 ** zoom))
+                window_size = int(max(1, (0.3 - tc.std) * 10))
+                mean = tc.graph_side * (2 / (2 ** zoom))
                 index_mean = find_index_of_nearest(edges, mean)
                 peak_of_gaussian = transparencies[zoom][index_mean - window_size + 1: index_mean + window_size]
                 for transparency in peak_of_gaussian:
-                    cls.assertAlmostEqual(transparency, tc.max_t, delta=tc.max_t * 0.1)
-
-
+                    cls.assertAlmostEqual(transparency,
+                        max(transparencies[zoom]),
+                        delta=tc.max_t * 0.3,
+                        msg="Failed at zoom {0}".format(zoom))
