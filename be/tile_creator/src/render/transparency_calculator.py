@@ -23,6 +23,7 @@ class TransparencyCalculator:
         self.tile_size = configurations['tile_size']
         self.zoom_levels = configurations['zoom_levels']
         self.std = configurations['std_transparency_as_percentage']
+        self.tile_based_mean = configurations["tile_based_mean_transparency"]
         self.min_t = configurations['min_transparency']
         self.max_t = configurations['max_transparency']
 
@@ -35,11 +36,9 @@ class TransparencyCalculator:
                 "{1} , the max length is {2}".format(self.graph_side, max(edge_lengths), longest_theoretical_edge))
 
         transparencies = {}
-        tile_based_mean = 0.5
-        tile_based_std = self.std_percentage
         for zl in range(0, self.zoom_levels):
-            mean_graph_space = self.graph_size * (tile_based_mean / (2 ** zl))
-            std_graph_space = self.graph_size * (tile_based_std / (2 ** zl))
+            mean_graph_space = self.graph_side * (self.tile_based_mean / (2 ** zl))
+            std_graph_space = self.graph_side * (self.std / (2 ** zl))
 
             frame = cudf.DataFrame(edge_lengths, columns=['x'])
             trans = frame.apply_rows(set_transparency_gaussian,

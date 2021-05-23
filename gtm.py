@@ -15,7 +15,7 @@ def extract_arguments():
     print(argument_list)
     short_options = "n:z:"
     long_options = ["csv=", "labels=", "ts=", "min_t=", "max_t=", "std=", "med_thick=", "max_thick=", "med_size=",
-                    "max_size=", "curvature="]
+                    "max_size=", "curvature=", "mean_t="]
     try:
         arguments, values = getopt.getopt(argument_list, short_options, long_options)
     except getopt.error as err:
@@ -54,6 +54,7 @@ graph_path = mkdir_for_this_graph(graph_name)
 source_file = args['--csv']
 source_labels = args.get('--labels', None)
 
+
 # default value as second arg og 'get'
 # TODO find a way of ensuring that htis dict keys are the same as defined in configuration.json
 def get_final_configurations(args, graph_path, graph_name):
@@ -64,6 +65,7 @@ def get_final_configurations(args, graph_path, graph_name):
         "zoom_levels": int(args.get('-z', 2)),
         "min_transparency": float(args.get('--min_t', 0)),
         "max_transparency": float(args.get('--max_t', 0.1)),
+        "tile_based_mean_transparency": float(args.get('--mean_t', 0.5)),
         "std_transparency_as_percentage": float(args.get("--std", 0.25)),
         "max_edge_thickness": float(args.get('--max_thick', 2)),
         "med_edge_thickness": float(args.get('--med_thick', 0.25)),
@@ -75,6 +77,7 @@ def get_final_configurations(args, graph_path, graph_name):
         "labels": source_labels
     }
     return configurations
+
 
 if __name__ == "__main__":
     args = extract_arguments()
