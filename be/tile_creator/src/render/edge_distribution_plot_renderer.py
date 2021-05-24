@@ -73,9 +73,8 @@ class EdgeDistributionPlotRenderer:
         new_ticks = list(map(lambda tick: int(tick * pixel_length_of_graph_side / self.side_graph_space),
                              ax1.get_xticks()))
 
-        longet_edge_contained_by_a_tile = longest_theoretical_edge_px * (2 ** zoom_level)
         for i in range(0, (2 ** zoom_level)):
-            tile_mark = longest_theoretical_edge_px * (i +1)
+            tile_mark = self.tile_size * (i+1)
             x_pixel_distance.axvline(x=tile_mark, ymin=0, ymax=self.max_length, color='green')
             plt.text(tile_mark + 6, self.max_length / 2, str(i + 1), rotation=90, verticalalignment='center')
 
