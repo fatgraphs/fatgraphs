@@ -64,8 +64,6 @@ class EdgeDistributionPlotRenderer:
             for i in range(0, (2 ** zoom_level)):
                 tile_mark = self.tile_size * (i + 1)
                 x_pixel_distance.axvline(x=tile_mark, ymin=0, ymax=self.max_length, color='green')
-                print(tile_mark + 6)
-                print(height_highest_bar / 12)
                 plt.text(tile_mark + 6, height_highest_bar / 12, str(i + 1), rotation=90, verticalalignment='top')
 
             x_pixel_distance.set_xlim([0, longest_theoretical_edge_px * (2 ** zoom_level)])
