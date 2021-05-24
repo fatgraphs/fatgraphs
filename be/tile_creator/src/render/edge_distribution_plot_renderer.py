@@ -46,7 +46,7 @@ class EdgeDistributionPlotRenderer:
                            " | Square diagonal: " + str(round(longest_theoretical_edge_graph, 2)))
             hist = ax1.hist(edge_lengths, bins=len(x), color=color, range=(0, longest_theoretical_edge_graph))
             ax1.set_xlim(0, longest_theoretical_edge_graph)
-            ax1.xaxis.set_minor_locator(MultipleLocator(5))
+            # ax1.xaxis.set_minor_locator(MultipleLocator(5))
             return max(list(map(lambda a : a.get_height(), hist[2])))
 
         def do_left_y():
@@ -67,10 +67,8 @@ class EdgeDistributionPlotRenderer:
                 plt.text(tile_mark + 6, height_highest_bar / 12, str(i + 1), rotation=90, verticalalignment='top')
 
             x_pixel_distance.set_xlim([0, longest_theoretical_edge_px * (2 ** zoom_level)])
-            # x_pixel_distance.set_xticks(tile_mark)
-            # x_pixel_distance.set_xticklabels(list(map(str, new_ticks)))
             x_pixel_distance.tick_params(axis='x', labelcolor=color)
-            x_pixel_distance.xaxis.set_minor_locator(MultipleLocator(5))
+            # x_pixel_distance.xaxis.set_minor_locator(MultipleLocator(10))
 
         def do_right_y():
             yyy = ax1.twinx()  # instantiate a second axes that shares the same x-axis
