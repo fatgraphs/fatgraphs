@@ -72,6 +72,8 @@ class TilesRenderer:
         # Parallel code
         for p in self.tasks:
             p.start()
+        for p in self.tasks:
+            p.join()
 
     def _render(self, fit, file_name, edge_colors, vertex_size, edge_size):
         # if np.isnan(self.gt_graph.vertex_positions.get_2d_array([0, 1])).any() or \
