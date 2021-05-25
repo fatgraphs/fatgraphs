@@ -83,9 +83,15 @@ class Mymap extends React.Component {
 
         let markers = []
 
+        // console.log(this.props.vertices_metadata)
+        let d = { "(442, 442)": ["okkkkk"]}
         for (let p in this.props.vertices_metadata) {
-            let pos = convert_graph_coordinate_to_map(parseTuple(p),
-                this.props.graph_metadata['min_coordinate'], this.props.graph_metadata['max_coordinate']);
+            // console.log(">>>>>>>>>>>>>>")
+            let pos = convert_graph_coordinate_to_map(
+                parseTuple(p),
+                this.props.graph_metadata['min'],
+                this.props.graph_metadata['max'],
+                this.props.graph_metadata['tile_size']);
 
             let myIcon = L.divIcon({className: 'my-div-icon'});
             let marker = L.marker(pos, {icon: myIcon});
@@ -119,12 +125,19 @@ export default Mymap;
  * @param g_min: this should be the smallest number appearing either as x or y among all
  * the coordinates of the graph
  * @param g_max same as g_min but the largest number
+ * @param tile_size tile size used when generating the graph tiles
  */
-function convert_graph_coordinate_to_map(graph_coordinate, g_min, g_max){
+function convert_graph_coordinate_to_map(graph_coordinate, g_min, g_max, tile_size){
+    console.log("graph_coordinate" + graph_coordinate)
+    // console.log(g_min)
+    // console.log(g_max)
     let graph_side = g_max - g_min
-    let map_x = (graph_coordinate[0] + Math.abs(g_min)) * configs["tile_size"] / graph_side
-    let map_y = (graph_coordinate[1] + Math.abs(g_min)) * configs["tile_size"] / graph_side
-    return [- map_y / 2, map_x / 2]
+    console.log("graph sixe: " + graph_side)
+    let map_x = (graph_coordinate[0] + Math.abs(g_min)) * tile_size / graph_side
+    let map_y = (graph_coordinate[1] + Math.abs(g_min)) * tile_size / graph_side
+    // console.log(">>>>>>>>>>>>>>")
+    console.log([- map_y, map_x])
+    return [- map_y, map_x]
 }
 
 function parseTuple(t) {
