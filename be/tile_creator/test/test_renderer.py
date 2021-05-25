@@ -6,9 +6,10 @@ import numpy as np
 from be.tile_creator.src.graph.gt_token_graph import GraphToolTokenGraph
 from be.tile_creator.src.graph.token_graph import TokenGraph
 from be.tile_creator.src.layout.visual_layout import VisualLayout
+from be.tile_creator.src.metadata.verticeslabels import VerticesLabels
 from be.tile_creator.src.render.tiles_renderer import TilesRenderer
 from be.tile_creator.src.render.transparency_calculator import TransparencyCalculator
-from be.tile_creator.src.token_graph_metadata import TokenGraphMetadata
+from be.tile_creator.src.metadata.token_graph_metadata import TokenGraphMetadata
 from be.tile_creator.test.constants import TEST_DATA, TEST_OUTPUT_DIR, TEST_REFERENCE_OUTPUT_DIR
 from be.utils import compare_images, is_image, ASCII_N, merge_tiles, to_cv
 from gtm import get_final_configurations
@@ -28,7 +29,8 @@ class TestRenderer(unittest.TestCase):
                                                   TEST_OUTPUT_DIR,
                                                   "test_graph")
         cls.layout = VisualLayout(cls.graph, default_config)
-        metadata = TokenGraphMetadata(cls.graph, cls.layout, default_config)
+        vertices_labels = VerticesLabels(default_config, cls.graph.address_to_id, cls.layout.vertex_positions)
+        metadata = TokenGraphMetadata(cls.graph, cls.layout, default_config, vertices_labels)
         cls.gtg = GraphToolTokenGraph(cls.graph.edge_ids_to_amount,
                                       cls.layout,
                                       metadata,
@@ -36,7 +38,7 @@ class TestRenderer(unittest.TestCase):
         cls.transparency_calculators = TransparencyCalculator(cls.layout.max - cls.layout.min, default_config)
         cls.layout.edge_transparencies = cls.transparency_calculators.calculate_edge_transparencies(
             cls.layout.edge_lengths)
-        cls.tile_renderer = TilesRenderer(cls.gtg, cls.layout.edge_transparencies, metadata,
+        cls.tile_renderer = TilesRenderer(cls.gtg, cls.layout, metadata,
                                           cls.transparency_calculators, default_config)
 
     def test_initialisation(cls):

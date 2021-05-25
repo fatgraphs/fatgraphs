@@ -33,7 +33,9 @@ class Mymap extends React.Component {
     }
 
     componentDidUpdate() {
-        console.log(this.state.markers)
+        if(Object.keys(this.props.vertices_metadata).length === 0){
+            return
+        }
 
         if(this.props.is_marker_visible && this.state.markers.length === 0){
             this.draw_markers(this.state.myMap);
@@ -99,8 +101,7 @@ class Mymap extends React.Component {
             // marker.bindPopup(popup).openPopup()
             //         .addTo(myMap);
         }
-        console.log("okkkkkkkk >>>>>>>>>>")
-        // this.setState({markers: markers})
+
         for (const marker in markers) {
             // console.log(markers[marker])
             markers[marker].addTo(myMap);

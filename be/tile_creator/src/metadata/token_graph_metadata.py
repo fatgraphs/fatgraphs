@@ -8,13 +8,8 @@ class TokenGraphMetadata:
             (eg labels indicating exchanges)
     """
 
-    def __init__(self, token_graph, layout, configuration_dictionary):
-        self.vertices_metadata = pd.DataFrame(columns=['address', 'label', 'x', 'y'])
-        if configuration_dictionary['labels'] is not None:
-            raw_labels = pd.read_csv(configuration_dictionary['labels'])
-            address_to_label = raw_labels[['address', 'label']]
-            self.vertices_metadata = address_to_label.merge(token_graph.address_to_id, on="address").merge(layout.vertex_positions)
-            self.vertices_metadata = self.vertices_metadata.drop_duplicates()
+    def __init__(self, token_graph, layout, configuration_dictionary, vertices_labels):
+        self.vertices_labels = vertices_labels.vertices_labels
 
         configuration_dictionary['labels'] = "" if configuration_dictionary['labels'] is None else \
             configuration_dictionary['labels']

@@ -18,6 +18,7 @@ class GraphToolTokenGraph:
                                                       vals=visual_layout.vertex_positions[["x", "y"]].values)
         self.edge_length = self.g.new_edge_property("float", vals=visual_layout.edge_lengths)
         self.vertex_sizes = self.g.new_vertex_property('float', vals=visual_layout.vertex_sizes)
+        self.vertex_shapes = self.g.new_vertex_property('string', vals=visual_layout.vertex_shapes)
         self.edge_thickness = self.g.new_edge_property("float", vals=visual_layout.edge_thickness)
         self._make_bezier_points()
         # edge transparency needs to be populated at run-time

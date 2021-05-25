@@ -13,11 +13,12 @@ from be.tile_creator.src.render.transparency_calculator import TransparencyCalcu
 
 class TilesRenderer:
 
-    def __init__(self, gt_graph, edge_transparencies, metadata, transparency_calculator, configurations):
+    def __init__(self, gt_graph, visual_layout, metadata, transparency_calculator, configurations):
         if not isinstance(gt_graph, GraphToolTokenGraph):
             raise TypeError("graph renderer needs an instance of GraphToolTokenGraph as argument")
         self.gt_graph = gt_graph
-        self.edge_transparencies = edge_transparencies
+        self.edge_transparencies = visual_layout.edge_transparencies
+        self.vertex_shapes = visual_layout.vertex_shapes
         self.metadata = metadata
         self.configurations = configurations
         self.transparency_calculator = transparency_calculator
@@ -88,6 +89,7 @@ class TilesRenderer:
                    pos=self.gt_graph.vertex_positions,
                    bg_color=self.configurations['bg_color'],
                    vertex_size=vertex_size,
+                   vertex_shape=self.gt_graph.vertex_shapes,
                    vertex_fill_color=[1, 0, 0, 0.8],
                    output_size=[self.configurations['tile_size'], self.configurations['tile_size']],
                    output=file_name,

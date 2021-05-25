@@ -56,6 +56,7 @@ class VisualLayout:
         self.max = temp_max
 
         self.edge_transparencies = {}
+        self.vertex_shapes = []
 
     def _run_force_atlas_2(self, gpu_graph):
         if not isinstance(gpu_graph, cugraph.structure.graph.Graph):
