@@ -24,7 +24,7 @@ def convert_graph_coordinate_to_map(source_x, source_y, target_x, target_y,
 class VisualLayout:
 
     default_force_atlas_2_options = {'max_iter': 500,
-                                     'strong_gravity_mode': False,
+                                     'strong_gravity_mode': True,
                                      'barnes_hut_theta': 1.2,
                                      'outbound_attraction_distribution': False,
                                      'gravity': 1,
