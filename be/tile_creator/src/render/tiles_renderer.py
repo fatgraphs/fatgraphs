@@ -58,16 +58,20 @@ class TilesRenderer:
                 tile_name = "z_" + str(zoom_level) + "x_" + str(t[0]) + "y_" + str(t[1]) + ".png"
                 file_name = os.path.join(self.configurations['output_folder'], tile_name)
 
-                self._render(fit, file_name, edge_colors, vertex_size, edge_size)
-                # p = Process(target=self._render, args=(fit, file_name, edge_colors, vertex_size, edge_size))
-                # self.tasks.append(p)
+                # Serial code
+                #  self._render(fit, file_name, edge_colors, vertex_size, edge_size)
+
+                # Parallel code
+                p = Process(target=self._render, args=(fit, file_name, edge_colors, vertex_size, edge_size))
+                self.tasks.append(p)
+
             # This ensures that vertices and edges maintain the same apparent size when zooming.
             # Without it you would notice that vertices and edges shrink when zooming.
             self.gt_graph.vertex_sizes.a *= 2
             self.gt_graph.edge_thickness.a *= 2
-        # for p in self.tasks:
-        #     p.start()
-        #     p.join()
+        # Parallel code
+        for p in self.tasks:
+            p.start()
 
     def _render(self, fit, file_name, edge_colors, vertex_size, edge_size):
         # if np.isnan(self.gt_graph.vertex_positions.get_2d_array([0, 1])).any() or \
