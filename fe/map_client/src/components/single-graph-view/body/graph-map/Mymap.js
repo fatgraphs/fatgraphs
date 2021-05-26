@@ -6,21 +6,22 @@ let configs = require('../../../../../../../configurations');
 
 class Mymap extends React.Component {
 
-    constructor (props) {
+    constructor(props) {
         super(props);
-        this.state={
-            zoom:0,
-            center:'world',
+        this.state = {
+            zoom: 0,
+            center: 'world',
             myMap: null,
             markers: []
         }
         this.draw_markers = this.draw_markers.bind(this)
+        this.make_popup = this.make_popup.bind(this)
     }
 
     render() {
 
         return <div>
-            <div >
+            <div>
                 <div>Zoom level: {this.state.zoom}</div>
                 <div id="mapid"/>
             </div>
@@ -29,19 +30,19 @@ class Mymap extends React.Component {
             {/*    call_back={this.toggle_markers}*/}
             {/*/>*/}
 
-            </div>
+        </div>
     }
 
     componentDidUpdate() {
-        if(Object.keys(this.props.vertices_metadata).length === 0){
+        if (Object.keys(this.props.vertices_metadata).length === 0) {
             return
         }
 
-        if(this.props.is_marker_visible && this.state.markers.length === 0){
+        if (this.props.is_marker_visible && this.state.markers.length === 0) {
             this.draw_markers(this.state.myMap);
         }
 
-        if(! this.props.is_marker_visible && this.state.markers.length > 0){
+        if (!this.props.is_marker_visible && this.state.markers.length > 0) {
             for (const i in this.state.markers) {
                 this.state.myMap.removeLayer(this.state.markers[i])
             }
@@ -57,7 +58,7 @@ class Mymap extends React.Component {
         // let bounds = L.latLngBounds(corner1, corner2); // stops panning (scrolling around)  maxBounds: bounds
 
         let initial_zoom = 0;
-        const myMap = L.map('mapid' , {
+        const myMap = L.map('mapid', {
             noWrap: true,
             crs: L.CRS.Simple,
         }).setView([this.props.graph_metadata.tile_size / -2.0, this.props.graph_metadata.tile_size / 2.0], initial_zoom);
@@ -65,8 +66,8 @@ class Mymap extends React.Component {
         this.setState({myMap: myMap})
 
         // TODO: create API file for all calls to server and add the tile call
-        const layer = L.tileLayer(configs['endpoints']['base'] +  configs['endpoints']['tile'] + "/" + this.props.graph_name + '/{z}/{x}/{y}.png?{randint}', {
-            randint: Math.floor( Math.random() * 200000 ) + 1,
+        const layer = L.tileLayer(configs['endpoints']['base'] + configs['endpoints']['tile'] + "/" + this.props.graph_name + '/{z}/{x}/{y}.png?{randint}', {
+            randint: Math.floor(Math.random() * 200000) + 1,
             maxZoom: this.props.graph_metadata['zoom_levels'] - 1,
             attribution: 'tokengallery 2.0',
             tileSize: this.props.graph_metadata.tile_size,
@@ -78,15 +79,23 @@ class Mymap extends React.Component {
         }.bind(this))
     }
 
+    make_popup(address) {
+        let link_etherscan = `<div>
+                                <a href="https://etherscan.io/address/${address}"
+                                    target="_blank">${address}</a>
+                            </div>`
+        let popup = L.popup()
+            .setContent(link_etherscan)
+        return popup
+    }
+
     draw_markers(myMap) {
 
-        let popup = L.popup()
-            .setContent('<p>Hello world!<br />This is a nice popup.</p>')
 
         let markers = []
 
         // console.log(this.props.vertices_metadata)
-        let d = { "(442, 442)": ["okkkkk"]}
+        // let d = {"(442, 442)": ["okkkkk"]}
         for (let p in this.props.vertices_metadata) {
             // console.log(">>>>>>>>>>>>>>")
             let pos = convert_graph_coordinate_to_map(
@@ -97,10 +106,11 @@ class Mymap extends React.Component {
 
             let myIcon = L.divIcon({className: 'my-div-icon'});
             let marker = L.marker(pos, {icon: myIcon});
-            marker.on('click', this.props.set_displayed_address(this.props.vertices_metadata[p]))
+            // marker.on('click', this.props.set_displayed_address(this.props.vertices_metadata[p]))
             markers.push(marker)
-            // marker.bindPopup(popup).openPopup()
-            //         .addTo(myMap);
+            console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+            console.log(this.props.vertices_metadata[p][1])
+            marker.bindPopup(this.make_popup(this.props.vertices_metadata[p][1])).openPopup();
         }
 
         for (const marker in markers) {
@@ -129,7 +139,7 @@ export default Mymap;
  * @param g_max same as g_min but the largest number
  * @param tile_size tile size used when generating the graph tiles
  */
-function convert_graph_coordinate_to_map(graph_coordinate, g_min, g_max, tile_size){
+function convert_graph_coordinate_to_map(graph_coordinate, g_min, g_max, tile_size) {
     console.log("graph_coordinate" + graph_coordinate)
     // console.log(g_min)
     // console.log(g_max)
@@ -138,8 +148,8 @@ function convert_graph_coordinate_to_map(graph_coordinate, g_min, g_max, tile_si
     let map_x = (graph_coordinate[0] + Math.abs(g_min)) * tile_size / graph_side
     let map_y = (graph_coordinate[1] + Math.abs(g_min)) * tile_size / graph_side
     // console.log(">>>>>>>>>>>>>>")
-    console.log([- map_y, map_x])
-    return [- map_y, map_x]
+    console.log([-map_y, map_x])
+    return [-map_y, map_x]
 }
 
 function parseTuple(t) {
