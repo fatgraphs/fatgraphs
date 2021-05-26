@@ -12,9 +12,11 @@ class SingleGraphView extends Component {
         this.state = {
             vertices_metadata: undefined,
             graph_metadata: undefined,
-            is_marker_visible: false
+            is_marker_visible: false,
+            address_displayed_currently: undefined
         }
         this.toggle_markers = this.toggle_markers.bind(this)
+        this.set_displayed_address = this.set_displayed_address.bind(this)
     }
 
     render() {
@@ -28,8 +30,10 @@ class SingleGraphView extends Component {
                         <Mymap graph_metadata={this.state.graph_metadata}
                                vertices_metadata={this.state.vertices_metadata}
                                graph_name={this.props.match.params.graph_name}
-                               is_marker_visible={this.state.is_marker_visible}/>
-                        <InfoPanel toggle={[this.toggle_markers]}/>
+                               is_marker_visible={this.state.is_marker_visible}
+                               set_displayed_address={this.set_displayed_address}/>
+                        <InfoPanel toggle={[this.toggle_markers]}
+                                   address_displayed_currently={this.state.address_displayed_currently}/>
                     </div>
                 </div>
             );
@@ -55,6 +59,16 @@ class SingleGraphView extends Component {
     toggle_markers() {
         this.setState({is_marker_visible: !this.state['is_marker_visible']})
         console.log(this.state)
+    }
+
+    set_displayed_address(address) {
+
+        function on_marker_click_callback() {
+            this.setState({address_displayed_currently: address})
+        }
+
+        on_marker_click_callback = on_marker_click_callback.bind(this)
+        return on_marker_click_callback
     }
 }
 

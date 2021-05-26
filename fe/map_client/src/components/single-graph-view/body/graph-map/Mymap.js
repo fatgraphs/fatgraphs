@@ -97,6 +97,7 @@ class Mymap extends React.Component {
 
             let myIcon = L.divIcon({className: 'my-div-icon'});
             let marker = L.marker(pos, {icon: myIcon});
+            marker.on('click', this.props.set_displayed_address(this.props.vertices_metadata[p]))
             markers.push(marker)
             // marker.bindPopup(popup).openPopup()
             //         .addTo(myMap);
