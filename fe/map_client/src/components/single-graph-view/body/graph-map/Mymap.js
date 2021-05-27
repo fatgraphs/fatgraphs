@@ -79,8 +79,9 @@ class Mymap extends React.Component {
         }.bind(this))
     }
 
-    make_popup(address) {
+    make_popup(title, address) {
         let link_etherscan = `<div>
+                                <h3>${title}</h3>
                                 <a href="https://etherscan.io/address/${address}"
                                     target="_blank">${address}</a>
                             </div>`
@@ -110,7 +111,7 @@ class Mymap extends React.Component {
             markers.push(marker)
             console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
             console.log(this.props.vertices_metadata[p][1])
-            marker.bindPopup(this.make_popup(this.props.vertices_metadata[p][1])).openPopup();
+            marker.bindPopup(this.make_popup(this.props.vertices_metadata[p][0], this.props.vertices_metadata[p][1])).openPopup();
         }
 
         for (const marker in markers) {
