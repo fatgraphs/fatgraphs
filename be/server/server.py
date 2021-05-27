@@ -1,10 +1,11 @@
 import os
 from flask import jsonify, send_from_directory
 from flask import Flask, send_file, safe_join
-from werkzeug.routing import IntegerConverter
+from werkzeug.routing import IntegerConverter, FloatConverter
 from flask_cors import CORS, cross_origin
 from be.configuration import CONFIGURATIONS
 import pandas as pd
+
 
 class SignedIntConverter(IntegerConverter):
     regex = r'-?\d+'
@@ -14,12 +15,14 @@ class SignedIntConverter(IntegerConverter):
 app = Flask(__name__)
 cors = CORS(app)
 app.url_map.converters['signed_int'] = SignedIntConverter
+app.url_map.converters['float'] = FloatConverter
 
 
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def catch_all(path):
-    return 'You want path: %s' % path
+    return "This is the catch-all route.\nYou requested the URL: %s, but it didnt match anything" % path
+
 
 @app.route(CONFIGURATIONS['endpoints']['available_graphs'])
 def get_available_graphs():
@@ -27,7 +30,8 @@ def get_available_graphs():
     return jsonify(graph_names)
 
 
-@app.route(CONFIGURATIONS['endpoints']['tile'] + '/<string:graph_name>/<signed_int:z>/<signed_int:x>/<signed_int:y>.png')
+@app.route(
+    CONFIGURATIONS['endpoints']['tile'] + '/<string:graph_name>/<signed_int:z>/<signed_int:x>/<signed_int:y>.png')
 def get_tile(graph_name, z, x, y):
     # print("recevied: " + str(z) + " " + str(x) + " " + str(y))
 
@@ -77,3 +81,10 @@ def get_distributions(graph_name, zoom_level):
 
     file = os.path.join(CONFIGURATIONS['graphs_home'], graph_name, distribution_file_name)
     return send_from_directory("../..", file, mimetype='image/jpeg')
+
+
+@app.route(
+    CONFIGURATIONS['endpoints']['proximity_click'] + '/<graph_name>/<float(signed=True):x>/<float(signed=True):y>')
+def get_closest_vertex(graph_name, x, y):
+    # return str(x) + str(y) + str(graph_name)
+    return "uohwfhiohoiff" + graph_name
