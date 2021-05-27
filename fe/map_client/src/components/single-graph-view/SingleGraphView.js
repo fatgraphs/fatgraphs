@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import UrlComposer from "../../UrlComposer";
+import UrlComposer from "../../utils/UrlComposer";
 import GraphMapHeader from "./header/GraphMapHeader";
 import {withRouter} from "react-router-dom";
 import InfoPanel from "./body/info-panel/InfoPanel";

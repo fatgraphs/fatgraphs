@@ -1,4 +1,4 @@
-let configs = require('configurations');
+const configs = require('configurations')
 
 class UrlComposer {
     static verticesMetadata(graphName){
