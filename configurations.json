@@ -5,7 +5,8 @@
     "tile": "/tokengallery/tile",
     "vertices_metadata": "/tokengallery/vertices-metadata",
     "graph_metadata": "/tokengallery/graph-metadata",
-    "edge_distributions": "/tokengallery/edge_distributions"
+    "edge_distributions": "/tokengallery/edge_distributions",
+    "proximity_click": "/tokengallery/proximity-click"
   },
   "graphs_home": "be/graph-maps",
   "vertices_metadata_file_name": "vertices_metadata.csv",
@@ -17,5 +18,6 @@
   "std_transparency_as_percentage": 0.5,
   "max_edge_thickness": 8,
   "min_edge_thickness": 1,
-  "bg_color": "black"
+  "bg_color": "black",
+  "initial_zoom" : 0
 }

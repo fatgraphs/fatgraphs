@@ -3,10 +3,9 @@ import unittest
 import numpy as np
 import pandas as pd
 
-from be import utils
 from be.tile_creator.src.render.transparency_calculator import TransparencyCalculator
 from be.tile_creator.test.constants import TEST_DATA, TEST_DIR
-from be.utils import calculate_diagonal_square_of_side, find_index_of_nearest
+from be.utils.utils import calculate_diagonal_square_of_side, find_index_of_nearest
 from gtm import get_final_configurations
 
 
@@ -55,7 +54,7 @@ class TestTransparencyCalculator(unittest.TestCase):
 
         for tc in cls.transparency_calculators:
             edges_of_all_possible_lengths = list(
-                range(1, math.ceil(utils.calculate_diagonal_square_of_side(tc.graph_side))))
+                range(1, math.ceil(calculate_diagonal_square_of_side(tc.graph_side))))
             edge_transparencies = tc.calculate_edge_transparencies(edges_of_all_possible_lengths)
 
             transparency_of_longest_edge = edge_transparencies[cls.ZOOM_0][len(edges_of_all_possible_lengths) - 1]
@@ -71,7 +70,7 @@ class TestTransparencyCalculator(unittest.TestCase):
         """
         for tc in cls.transparency_calculators:
             edges_of_all_possible_lengths = list(
-                range(1, math.ceil(utils.calculate_diagonal_square_of_side(tc.graph_side))))
+                range(1, math.ceil(calculate_diagonal_square_of_side(tc.graph_side))))
             edge_transparencies = tc.calculate_edge_transparencies(edges_of_all_possible_lengths)
 
             transparencies_longest_edge_across_zooms = []

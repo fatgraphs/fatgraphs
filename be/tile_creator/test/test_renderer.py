@@ -11,7 +11,7 @@ from be.tile_creator.src.render.tiles_renderer import TilesRenderer
 from be.tile_creator.src.render.transparency_calculator import TransparencyCalculator
 from be.tile_creator.src.metadata.token_graph_metadata import TokenGraphMetadata
 from be.tile_creator.test.constants import TEST_DATA, TEST_OUTPUT_DIR, TEST_REFERENCE_OUTPUT_DIR
-from be.utils import compare_images, is_image, ASCII_N, merge_tiles, to_cv
+from be.utils.utils import compare_images, is_image, ASCII_N, merge_tiles, to_cv
 from gtm import get_final_configurations
 
 

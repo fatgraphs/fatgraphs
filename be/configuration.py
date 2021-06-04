@@ -10,6 +10,9 @@ SMALL_GRAPH_RAW_PATH = os.path.join(data_folder, 'small.csv')
 MOCK_LABELLED_RAW_PATH = os.path.join(data_folder, 'mock_net_labelled.csv')
 LABELS_PATH = os.path.join(data_folder, 'labels.csv')
 
+LAYOUT_DB_TABLE = lambda graph_name: graph_name + "_layout"
+
+
 def _load_configurations():
     join = os.path.join(this_file_dir, "../configurations.json")
     configs = open(join, "r")
