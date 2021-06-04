@@ -1,9 +1,10 @@
 import React, {Component} from 'react';
 import UrlComposer from "../../utils/UrlComposer";
-import GraphMapHeader from "./header/GraphMapHeader";
+import Header from "./header/Header";
 import {withRouter} from "react-router-dom";
-import InfoPanel from "./body/info-panel/InfoPanel";
-import Mymap from "./body/graph-map/Mymap";
+import SidePanel from "./SidePanel";
+import GraphMap from "./GraphMap";
+import {fetchGraphMetadata, fetchVerticesMetadata} from "../../API_layer";
 
 class SingleGraphView extends Component {
 
@@ -25,14 +26,14 @@ class SingleGraphView extends Component {
         } else {
             return (
                 <div className={'flex flex-col p-2'}>
-                    <GraphMapHeader graph_metadata={this.state.graph_metadata}/>
+                    <Header graph_metadata={this.state.graph_metadata}/>
                     <div className={'flex flex-col lg:flex-row'}>
-                        <Mymap graph_metadata={this.state.graph_metadata}
-                               vertices_metadata={this.state.vertices_metadata}
-                               graph_name={this.props.match.params.graph_name}
-                               is_marker_visible={this.state.is_marker_visible}
-                               set_displayed_address={this.set_displayed_address}/>
-                        <InfoPanel toggle={[this.toggle_markers]}
+                        <GraphMap graph_metadata={this.state.graph_metadata}
+                                  vertices_metadata={this.state.vertices_metadata}
+                                  graph_name={this.props.match.params.graph_name}
+                                  is_marker_visible={this.state.is_marker_visible}
+                                  set_displayed_address={this.set_displayed_address}/>
+                        <SidePanel toggle={[this.toggle_markers]}
                                    address_displayed_currently={this.state.address_displayed_currently}/>
                     </div>
                 </div>
@@ -40,20 +41,11 @@ class SingleGraphView extends Component {
         }
     }
 
-    componentDidMount() {
-        fetch(UrlComposer.verticesMetadata(this.props.match.params.graph_name))
-            .then(response =>
-                response.json())
-            .then(data => {
-                this.setState({"vertices_metadata": data})
-            })
-
-        fetch(UrlComposer.graphMetadata(this.props.match.params.graph_name))
-            .then(response =>
-                response.json())
-            .then(data => {
-                this.setState({"graph_metadata": data})
-            })
+    async componentDidMount() {
+        let graphMetadata = await fetchGraphMetadata(this.props.match.params.graph_name);
+        let verticesMetadata = await fetchVerticesMetadata(this.props.match.params.graph_name);
+        this.setState({"graph_metadata": graphMetadata})
+        this.setState({"vertices_metadata": verticesMetadata})
     }
 
     toggle_markers() {

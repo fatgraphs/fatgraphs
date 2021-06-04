@@ -1,6 +1,12 @@
 import React, {Component} from 'react';
+import PropTypes from 'prop-types';
 
 class DescriptionTable extends Component {
+    /**
+     * A description table is a list of key-values, rendered either vertically (stack_vertically = true)
+     * or horizontally.
+     * @param props
+     */
     constructor(props) {
         super(props);
     }
@@ -26,5 +32,11 @@ class DescriptionTable extends Component {
         );
     }
 }
+
+DescriptionTable.propTypes = {
+    keys: PropTypes.array.isRequired,
+    values: PropTypes.array.isRequired,
+    stack_vertically: PropTypes.bool,
+};
 
 export default DescriptionTable;

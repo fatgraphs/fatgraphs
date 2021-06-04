@@ -18,5 +18,6 @@
   "std_transparency_as_percentage": 0.5,
   "max_edge_thickness": 8,
   "min_edge_thickness": 1,
-  "bg_color": "black"
+  "bg_color": "black",
+  "initial_zoom" : 0
 }

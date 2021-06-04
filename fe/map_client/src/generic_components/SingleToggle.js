@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
+import PropTypes from 'prop-types';
 
 class SingleToggle extends Component {
+
     render() {
         return (
            <div className={'ml-2'}>
@@ -8,7 +10,7 @@ class SingleToggle extends Component {
                   <input
                     type="checkbox"
                     // checked={this.state.checked}
-                    onChange={this.props.toggle}
+                    onChange={this.props.callback}
                   />
                   <span className={'ml-2'}>{this.props.text}</span>
                 </label>
@@ -16,5 +18,8 @@ class SingleToggle extends Component {
         );
     }
 }
-
+SingleToggle.propsTypes = {
+    callback: PropTypes.func.isRequired,
+    text: PropTypes.string
+}
 export default SingleToggle;

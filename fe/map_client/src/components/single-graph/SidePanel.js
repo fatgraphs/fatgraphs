@@ -1,9 +1,8 @@
 import * as React from "react";
-import DescriptionTable from "../../../description-table/DescriptionTable";
-import ToggleBar from "../toggle-bar/ToggleBar";
-import SingleToggle from "../toggle-bar/SingleToggle";
+import DescriptionTable from "../../generic_components/DescriptionTable";
+import ToggleBar from "../../generic_components/ToggleBar";
 
-class InfoPanel extends React.Component {
+class SidePanel extends React.Component {
 
     constructor(props) {
         super(props);
@@ -21,7 +20,7 @@ class InfoPanel extends React.Component {
 
         return <div className={'border-2'}>
             <ToggleBar>
-                <span toggle={this.props.toggle[0]}>Toggle markers</span>
+                <span callback={this.props.toggle[0]}>Toggle markers</span>
             </ToggleBar>
             <DescriptionTable
                 stack_vertically={true}
@@ -33,4 +32,4 @@ class InfoPanel extends React.Component {
 
 }
 
-export default InfoPanel
+export default SidePanel

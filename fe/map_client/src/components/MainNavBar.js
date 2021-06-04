@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {Link} from "react-router-dom";
 
-class NavigationBar extends Component {
+class MainNavBar extends Component {
     render() {
         return (
         <div>
@@ -20,4 +20,4 @@ class NavigationBar extends Component {
     }
 }
 
-export default NavigationBar;
+export default MainNavBar;

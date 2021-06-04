@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 
-class GalleryHeader extends Component {
+class GraphHeader extends Component {
     render() {
         return (
             <div className={'ml-2'}>
@@ -10,4 +10,4 @@ class GalleryHeader extends Component {
     }
 }
 
-export default GalleryHeader;
+export default GraphHeader;

@@ -1,14 +1,17 @@
 import React from 'react';
-import './Mymap.css';
+import './GraphMap.css';
 import L from 'leaflet';
 import {
     convert_graph_coordinate_to_map,
     convert_map_coordinate_to_graph,
     parseTuple
-} from "../../../../utils/CoordinatesUtil";
-let configs = require('../../../../../../../configurations');
+} from "../../utils/CoordinatesUtil";
+import UrlComposer from "../../utils/UrlComposer";
+import {fetchClosestPoint} from "../../API_layer";
 
-class Mymap extends React.Component {
+let configs = require('../../../../../configurations.json');
+
+class GraphMap extends React.Component {
 
     constructor(props) {
         super(props);
@@ -16,7 +19,8 @@ class Mymap extends React.Component {
             zoom: 0,
             center: 'world',
             myMap: null,
-            markers: []
+            markers: [],
+            closest: undefined
         }
         this.draw_markers = this.draw_markers.bind(this)
         this.make_popup = this.make_popup.bind(this)
@@ -29,15 +33,15 @@ class Mymap extends React.Component {
                 <div>Zoom level: {this.state.zoom}</div>
                 <div id="mapid"/>
             </div>
-
-            {/*<ToggleBar className={'border flex-6'}*/}
-            {/*    call_back={this.toggle_markers}*/}
-            {/*/>*/}
-
         </div>
     }
 
     componentDidUpdate() {
+        this.update_markers();
+    }
+
+    update_markers() {
+
         if (Object.keys(this.props.vertices_metadata).length === 0) {
             return
         }
@@ -61,26 +65,69 @@ class Mymap extends React.Component {
         // let corner2 = L.latLng(- configs['tile_size'], configs['tile_size']);
         // let bounds = L.latLngBounds(corner1, corner2); // stops panning (scrolling around)  maxBounds: bounds
 
-        let initial_zoom = 0;
-        const myMap = L.map('mapid', {
-            noWrap: true,
-            crs: L.CRS.Simple,
-        }).setView([this.props.graph_metadata.tile_size / -2.0, this.props.graph_metadata.tile_size / 2.0], initial_zoom);
+        const myMap = this.bindLeafletMapToHtml();
+
+        this.centerView(myMap);
+
+        this.addTileLayerToMap(myMap);
+
+        this.bindOnZoomCallback(myMap);
+
+        myMap.on('click', function (e) {
+            let coord = e.latlng;
+            let lat = coord.lat;
+            let lng = coord.lng;
+            // console.log("you clicked the map at latitude: " + lat + " and longitude: " + lng);
+            let graph_coordinate = convert_map_coordinate_to_graph(
+                [lat, lng],
+                this.props.graph_metadata['min'],
+                this.props.graph_metadata['max'],
+                this.props.graph_metadata['tile_size']);
+            // console.log(graph_coordinate)
+            fetchClosestPoint(this.props.graph_name, graph_coordinate).then(e => {
+                this.setState({closest: e})
+            })
+
+        }.bind(this));
 
         this.setState({myMap: myMap})
 
-        // TODO: create API file for all calls to server and add the tile call
-        const layer = L.tileLayer(configs['endpoints']['base'] + configs['endpoints']['tile'] + "/" + this.props.graph_name + '/{z}/{x}/{y}.png?{randint}', {
-            randint: Math.floor(Math.random() * 200000) + 1,
-            maxZoom: this.props.graph_metadata['zoom_levels'] - 1,
-            attribution: 'tokengallery 2.0',
-            tileSize: this.props.graph_metadata.tile_size,
-            detectRetina: true
-        }).addTo(myMap);
 
+    }
+
+    centerView(myMap) {
+        myMap.setView(
+            [this.props.graph_metadata.tile_size / -2.0,
+                this.props.graph_metadata.tile_size / 2.0],
+            configs['initial_zoom'])
+    }
+
+    bindOnZoomCallback(myMap) {
+        console.log(this)
         myMap.on('zoom', function () {
             this.setState({zoom: myMap.getZoom()})
         }.bind(this))
+    }
+
+    addTileLayerToMap(myMap) {
+        const tile_url = UrlComposer.tileLayerUrl(this.props.graph_name);
+        const layer = L.tileLayer(
+            tile_url,
+            {
+                randint: Math.floor(Math.random() * 200000) + 1,
+                maxZoom: this.props.graph_metadata['zoom_levels'] - 1,
+                attribution: 'tokengallery 2.0',
+                tileSize: this.props.graph_metadata.tile_size,
+                detectRetina: true
+            }).addTo(myMap);
+    }
+
+    bindLeafletMapToHtml() {
+        const myMap = L.map('mapid', {
+            noWrap: true,
+            crs: L.CRS.Simple,
+        });
+        return myMap;
     }
 
     make_popup(title, address) {
@@ -113,8 +160,8 @@ class Mymap extends React.Component {
             let marker = L.marker(pos, {icon: myIcon});
             // marker.on('click', this.props.set_displayed_address(this.props.vertices_metadata[p]))
             markers.push(marker)
-            console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-            console.log(this.props.vertices_metadata[p][1])
+            // console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+            // console.log(this.props.vertices_metadata[p][1])
             marker.bindPopup(this.make_popup(this.props.vertices_metadata[p][0], this.props.vertices_metadata[p][1])).openPopup();
         }
 
@@ -126,8 +173,8 @@ class Mymap extends React.Component {
     }
 }
 
-Mymap.propTypes = {};
+GraphMap.propTypes = {};
 
-Mymap.defaultProps = {};
+GraphMap.defaultProps = {};
 
-export default Mymap;
+export default GraphMap;

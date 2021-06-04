@@ -1,36 +1,26 @@
 import React, {Component} from 'react';
-import DescriptionTable from "../../description-table/DescriptionTable";
+import DescriptionTable from "../../../generic_components/DescriptionTable";
 import {faClipboard} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {withRouter} from "react-router-dom";
-import GraphHeaderNavigationBar from "./graphHeaderNavigationBar/GraphHeaderNavigationBar";
 
-class GraphMapHeader extends Component {
+class CopyGtmCommand extends Component {
 
     constructor(props) {
         super(props);
         console.log(this.props.graph_metadata);
-        this.state = {
-            nodes: this.props.graph_metadata.vertices,
-            edges: this.props.graph_metadata.edges,
-            median_distance: this.props.graph_metadata.median_pixel_distance
-        }
         this.copyGtmCommand = this.copyGtmCommand.bind(this)
         this.generateGtmCommand = this.generateGtmCommand.bind(this)
     }
 
     render() {
         return (
-            <div className={'border-2 flex-1'}>
-                <div className={'relative flex flex-row items-center'}>
-                    <h3 className={'text-2xl'}>Graph summary </h3>
-                    <div className={'hover:cursor-pointer active:text-2xl'}
-                         onClick={this.copyGtmCommand}>
-                        <p className={'absolute inset-y-0 right-0 mr-2'}>copy gtm command <FontAwesomeIcon icon={faClipboard}/>
-                        </p>
-                    </div>
+            <div className={'relative flex flex-row items-center'}>
+                <div className={'hover:cursor-pointer active:text-2xl'}
+                     onClick={this.copyGtmCommand}>
+                    <p className={'absolute inset-y-0 right-0 mr-2'}>copy gtm command <FontAwesomeIcon
+                        icon={faClipboard}/>
+                    </p>
                 </div>
-                <GraphHeaderNavigationBar graph_metadata={this.props.graph_metadata}/>
             </div>
         );
     }
@@ -59,4 +49,4 @@ class GraphMapHeader extends Component {
     }
 }
 
-export default withRouter(GraphMapHeader);
+export default CopyGtmCommand;

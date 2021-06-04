@@ -1,27 +1,21 @@
-import React, { useEffect } from 'react'
+import React, {useEffect} from 'react'
 import './assets/main.css';
-import Gallery from "./components/gallery/gallery";
+import Gallery from "./components/gallery/GraphGallery";
 
-import {
-    BrowserRouter as Router,
-    Switch,
-    Route,
-    Link, HashRouter
-} from "react-router-dom";
+import {HashRouter, Route, Switch} from "react-router-dom";
 import About from "./components/about/About";
-import NavigationBar from "./components/navigationBar/NavigationBar";
-import SingleGraphView from "./components/single-graph-view/SingleGraphView";
-import GraphThumbnail from "./components/gallery/body/graph-thumbnail/GraphThumbnail";
+import MainNavBar from "./components/MainNavBar";
+import SingleGraphView from "./components/single-graph/SingleGraphView";
 
 export default function App() {
 
     useEffect(() => {
-        document.title = "Token Gallery"
+        document.title = "Token GraphGallery.js"
     }, [])
 
     return (<HashRouter>
 
-        <NavigationBar></NavigationBar>
+        <MainNavBar></MainNavBar>
 
 
         <Switch>

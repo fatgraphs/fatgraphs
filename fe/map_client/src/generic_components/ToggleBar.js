@@ -5,16 +5,16 @@ class ToggleBar extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {
-            checked: props.is_marker_visible,
-            call_back: props.call_back
-        }
     }
 
+    /**
+     * A list of toggle that execute the attached callback
+     * @returns {JSX.Element}
+     */
     render() {
         return <div>
             {React.Children.map(this.props.children || null, (child, i) => {
-                return <SingleToggle text={child.props.children} toggle={child.props.toggle}/>;
+                return <SingleToggle text={child.props.children} callback={child.props.callback}/>;
             })}
         </div>
     }
