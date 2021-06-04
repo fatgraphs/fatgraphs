@@ -7,6 +7,7 @@ from numba import jit
 
 ASCII_N = 110
 
+
 def shift_and_scale(original_values, target_median, target_max):
     """
     Scales a list of values to a new range.
@@ -37,6 +38,7 @@ def shift_and_scale(original_values, target_median, target_max):
     scaled_and_shifted_values = np.clip(scaled_and_shifted_values, MINIMUM, max(2, target_max))
     return scaled_and_shifted_values
 
+
 @jit(nopython=True)
 def gauss(x, mean, std, min_out=0, max_out=1):
     """
@@ -49,12 +51,14 @@ def gauss(x, mean, std, min_out=0, max_out=1):
     """
     return (max_out - min_out) * math.e ** ((-1 * ((x - mean) ** 2.)) / (2 * (std ** 2.))) + min_out
 
+
 def calculate_diagonal_square_of_side(side):
     """
     :param side: a square with this side length
     :return: the length of the diagonal
     """
-    return math.sqrt(side**2 + side**2)
+    return math.sqrt(side ** 2 + side ** 2)
+
 
 def find_index_of_nearest(array, value):
     """
@@ -97,6 +101,7 @@ def compare_images(img_1_path, img_2_path):
         return 0
     return len(similar_regions) / len(matches)
 
+
 def is_image(filename):
     """
 
@@ -120,12 +125,14 @@ def concat_horizontally(im1, im2):
     dst.paste(im2, (im1.width, 0))
     return dst
 
+
 def concat_vertically(imgOrPath1, imgOrPath2):
     """
     :param im1:
     :param im2:
     :return: vertical concatenation of the 2 input images
     """
+
     def _concatv(im1, im2):
         dst = Image.new('RGB', (im1.width, im1.height + im2.height))
         dst.paste(im1, (0, 0))
@@ -166,6 +173,7 @@ def scale_square(imgOrPath, side, scaled_img=None):
     :param name: 
     :return: 
     """
+
     def _scale(img):
         wpercent = (side / float(img.size[0]))
         hsize = int((float(img.size[1]) * float(wpercent)))
@@ -178,10 +186,12 @@ def scale_square(imgOrPath, side, scaled_img=None):
     else:
         return _scale(imgOrPath)
 
+
 def merge_tiles(tiles):
     row1 = concat_vertically(tiles[0], tiles[1])
     row2 = concat_vertically(tiles[2], tiles[3])
     return concat_horizontally(row1, row2)
+
 
 def to_cv(pilImage):
     open_cv_image = np.array(pilImage)
