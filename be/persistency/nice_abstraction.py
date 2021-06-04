@@ -34,4 +34,9 @@ class NiceAbstraction:
     def get_closest_point(self, x, y, table):
         return self.impl.query_closest_point(x, y, table)
 
-singletonNiceAbstraction = NiceAbstraction('postgresql://postgres:7412@127.0.0.1')
+user_name = 'postgres'
+password = '7412'
+url = '127.0.0.1'
+db_name = 'test'
+
+singletonNiceAbstraction = NiceAbstraction(f'postgresql://{user_name}:{password}@{url}/{db_name}')
