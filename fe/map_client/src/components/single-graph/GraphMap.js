@@ -20,7 +20,8 @@ class GraphMap extends React.Component {
             center: 'world',
             myMap: null,
             markers: [],
-            closest: undefined
+            closest: undefined,
+            closest_marker : undefined
         }
         this.draw_markers = this.draw_markers.bind(this)
         this.make_popup = this.make_popup.bind(this)
@@ -41,6 +42,26 @@ class GraphMap extends React.Component {
     }
 
     update_markers() {
+
+        if(this.state.closest !== undefined && this.state.closest_marker === undefined){
+            let graphCoordinate = [Number.parseFloat(this.state.closest['x']), Number.parseFloat(this.state.closest['y'])];
+            let pos = convert_graph_coordinate_to_map(
+                graphCoordinate,
+                this.props.graph_metadata['min'],
+                this.props.graph_metadata['max'],
+                this.props.graph_metadata['tile_size']);
+
+            console.log(">><>>>>")
+            console.log(pos)
+
+            let myIcon = L.divIcon({className: 'proximity-marker'});
+            let marker = L.marker(pos, {icon: myIcon});
+
+            marker.bindPopup(this.make_popup('Closest point', this.state.closest['eth'])).openPopup();
+
+            this.setState({closest_marker: marker})
+            marker.addTo(this.state.myMap);
+        }
 
         if (Object.keys(this.props.vertices_metadata).length === 0) {
             return
@@ -83,9 +104,16 @@ class GraphMap extends React.Component {
                 this.props.graph_metadata['min'],
                 this.props.graph_metadata['max'],
                 this.props.graph_metadata['tile_size']);
-            // console.log(graph_coordinate)
+
+            if(this.state.closest_marker !== undefined){
+                this.state.myMap.removeLayer(this.state.closest_marker)
+            }
+
             fetchClosestPoint(this.props.graph_name, graph_coordinate).then(e => {
-                this.setState({closest: e})
+                this.setState({
+                    closest: e,
+                    closest_marker: undefined
+                })
             })
 
         }.bind(this));
