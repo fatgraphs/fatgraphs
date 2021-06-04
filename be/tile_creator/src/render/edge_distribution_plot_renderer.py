@@ -1,12 +1,8 @@
-import cudf
-import numpy as np
 import math
 import matplotlib.pyplot as plt
 import os
 
-from matplotlib.ticker import MultipleLocator
-
-from be.utils import calculate_diagonal_square_of_side
+from be.utils.utils import calculate_diagonal_square_of_side
 
 
 class EdgeDistributionPlotRenderer:

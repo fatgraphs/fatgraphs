@@ -1,12 +1,9 @@
-import math
-
 import cugraph
 import numpy as np
-import pandas as pd
 from cuml.neighbors.nearest_neighbors import NearestNeighbors
 import cudf
 
-from be.utils import shift_and_scale, gauss
+from be.utils.utils import shift_and_scale
 
 
 def convert_graph_coordinate_to_map(source_x, source_y, target_x, target_y,

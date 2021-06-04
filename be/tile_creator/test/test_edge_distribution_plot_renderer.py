@@ -6,7 +6,7 @@ from be.tile_creator.src.graph.token_graph import TokenGraph
 from be.tile_creator.src.render.edge_distribution_plot_renderer import EdgeDistributionPlotRenderer
 from be.tile_creator.src.render.transparency_calculator import TransparencyCalculator
 from be.tile_creator.test.constants import TEST_DATA, TEST_DIR
-from be.utils import calculate_diagonal_square_of_side
+from be.utils.utils import calculate_diagonal_square_of_side
 from gtm import get_final_configurations
 
 
