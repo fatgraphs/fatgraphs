@@ -1,3 +1,4 @@
+from be.configuration import LAYOUT_DB_TABLE
 from be.persistency.db_connection import DbConnection
 from be.tile_creator.src.layout.visual_layout import VisualLayout
 from be.persistency.implementation import Implementation
@@ -27,7 +28,7 @@ class NiceAbstraction:
 
         geopandas_frame = self.impl.to_geopandas(edge_ids_to_positions)
 
-        table_name = graph_name + "_" + 'layout'
+        table_name = LAYOUT_DB_TABLE(graph_name)
         self.impl.persist_geoframe(geopandas_frame, table_name)
 
     def get_closest_point(self, x, y, table):
