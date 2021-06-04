@@ -73,7 +73,11 @@ def get_final_configurations(args, graph_path, graph_name):
 if __name__ == "__main__":
     args = extract_arguments()
     ensure_container_directory_exists()
-    graph_name = args["-n"]
+
+    # graph names should be lower case and don't contain spaces
+    graph_name = args["-n"].lower()
+    graph_name = '_'.join(graph_name.split(' '))
+
     graph_path = mkdir_for_this_graph(graph_name)
 
     # default value as second arg og 'get'
