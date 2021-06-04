@@ -1,5 +1,5 @@
 # TokenGallery Map 
-### Set Up
+## Set Up
 You need to have `npm` installed.
 
 You need a graph.csv file inside data (currently it needs to be called `medium.csv`)
@@ -14,7 +14,7 @@ Run `conda install -n rapids-0.18 flask flask_cors`
 Your virtual environment should have all the required packages given that default anaconda environments come with many of
 the libraries we need pre-installed. If you notice that something is missing please use conda install to add the missing 
 
-#### Pre-push tests
+### Pre-push tests
 Copy-paste the below snippet into .git/hooks/pre-push in order to have tests automatically run before each push.
 ```
 #!/bin/bash
@@ -22,13 +22,54 @@ Copy-paste the below snippet into .git/hooks/pre-push in order to have tests aut
 remote="$1"
 url="$2"
 
-source activate rapids2
-python -m pytest
-
-exit 0
+source activate <name of your python environment>
+cd ~/tokengallery/be/tile_creator && python -m pytest
 ```
 
-package to the venv.
+#### Postgres useful cmd commands
+To quit the session:                            `\q`
+Show tables in current db:                      `\d`
+List columns of a table:                        `\d <table_name>`
+List databases available in the server:         `\l`
+Show current database and logged user:          `\c`
+Change database:                                `\connect <db_name>`
+
+### PostGIS installation
+To run the code locally please make sure postgres and the GIS extension are correctly set up.
+On Ubuntu 20 install with the below:
+
+`apt-get install postgresql-12 postgresql-contrib`
+
+Launch a session and set the password for the `postgres` user.
+`sudo -u postgres psql`
+`ALTER USER postgres  PASSWORD 1234`
+
+Launch a session with the postgres user to check that it worked:
+`psql -U postgres -h 127.0.0.1`
+
+Quit the session and install the GIS extension:
+`sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable`
+`sudo apt-get update`
+finally
+`sudo apt-get install postgis`
+
+To check that it worked, let's launch a new session and add the GIS extension to the deafult database:
+```
+psql -U postgres -h 127.0.0.1
+CREATE EXTENSION POSTGIS;
+```
+If you now issue a `\dt` command you should see a spatial table that was create.
+
+### Local DB set-up
+As of now, the gtm.py script needs a postgres db called `test` reachable via localhost.
+Create it by launching a psql session and issuing the following command:
+`CREATE DATABASE test;`
+Switch to the newly created db with:
+`\connect test`
+Install the extension:
+`CREATE EXTENSION POSTGIS;`
+You should be ready to go.
+
 ### Running
 #### Activate the venv
 Activate the virtual environment (either with the command `conda activate rapids-0.18` or from the anaconda-navvigator UI). 
