@@ -17,7 +17,10 @@ This is somewhat problematic to install, please execute the command below on a t
 Your virtual environment should have all the required packages given that default anaconda environments come with many of
 the libraries we need pre-installed. If you notice that something is missing please use conda install to add the missing 
 
-### Pre-push tests
+### Tests
+To run the `tile_creator` tests you need to have the folder `be/tile_creator/test/data` populated with the appropriate files.
+Since those are heavy images and  csv files they have not been commited. Ask the project maintainer to provide them to you.
+#### Run tests as pre-push hook 
 Copy-paste the below snippet into .git/hooks/pre-push in order to have tests automatically run before each push.
 ```
 #!/bin/bash
@@ -28,16 +31,6 @@ url="$2"
 source activate <name of your python environment>
 cd ~/tokengallery/be/tile_creator && python -m pytest
 ```
-
-#### Postgres useful cmd commands
-| Description                                       |Command|
-| -----------                                       |-----------|
-| To quit the session                               |`\q`|
-| Show tables in current db                         |`\d`|
-|List columns of a table                            |`\d <table_name>`|
-|List databases available in the server             |`\l`|
-|Show current database and logged user              |`\c`|
-|Change database                                    |`\connect <db_name>`|
 
 ### PostGIS installation
 To run the code locally please make sure postgres and the GIS extension are correctly set up.
@@ -75,18 +68,37 @@ Install the extension:
 `CREATE EXTENSION POSTGIS;`
 You should be ready to go.
 
-### Running
-#### Activate the venv
+#### Postgres useful cmd commands
+| Description                                       |Command|
+| -----------                                       |-----------|
+| To quit the session                               |`\q`|
+| Show tables in current db                         |`\d`|
+|List columns of a table                            |`\d <table_name>`|
+|List databases available in the server             |`\l`|
+|Show current database and logged user              |`\c`|
+|Change database                                    |`\connect <db_name>`|
+
+## Running
+### Activate the venv
 Activate the virtual environment (either with the command `conda activate rapids-0.18` or from the anaconda-navvigator UI). 
 Alternatively if you are usng a Jetbrain IDE you can set the python interpreter of the project to the be the anconda environment: settings>project:<your_project_name>> drop down menu on python interpreter box > show all > plus icon (+) > conda environment. In this way you can work without leaving the IDE.
-#### Launching
+### Launching server and client
 `bash launch_client.sh` and `bash launch_server.sh`should be the only command you need to run to launch the server 
 and the frontend.
+### GTM - generate token map
+The server mainly servers the tiles that make up a map that represents the graph.
+The client let you visualise and expolore such map.
 
-When developing you can comment out parts of `launch_server.sh` to save time (e.g. npm install needs to execute only once,
-tile generation is slow).
+But how are the tiles generated?
+You need to run `./gtm.py ` from the root of the project, in a terminal where the correct environment is active.
 
-## Architecture
+|ARG FLAG|DESCRIPTION|
+|--------|--------|
+|-n|        The name of the generated output. This will also be the name of the folder that wil contain all the genrated tiles.|
+
+
+
+# Folder Structure
 be: backend
 fe: frontend
 ### BE
