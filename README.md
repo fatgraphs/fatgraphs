@@ -30,12 +30,14 @@ cd ~/tokengallery/be/tile_creator && python -m pytest
 ```
 
 #### Postgres useful cmd commands
-To quit the session:                            `\q`
-Show tables in current db:                      `\d`
-List columns of a table:                        `\d <table_name>`
-List databases available in the server:         `\l`
-Show current database and logged user:          `\c`
-Change database:                                `\connect <db_name>`
+| Description                                       |Command|
+| -----------                                       |-----------|
+| To quit the session                               |`\q`|
+| Show tables in current db                         |`\d`|
+|List columns of a table                            |`\d <table_name>`|
+|List databases available in the server             |`\l`|
+|Show current database and logged user              |`\c`|
+|Change database                                    |`\connect <db_name>`|
 
 ### PostGIS installation
 To run the code locally please make sure postgres and the GIS extension are correctly set up.
