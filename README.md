@@ -10,6 +10,9 @@ https://rapids.ai/start.html
 We will now assume that an Anaconda virtual environment called `rapids-0.18` exists in your system (you can call it something else).
 
 Run `conda install -n rapids-0.18 flask flask_cors`
+Since the tests perform image comparisons between an output and a desired model, we need to have the open-cv library.
+This is somewhat problematic to install, please execute the command below on a terminal with the conda environment active.
+`pip install opencv-python`
 
 Your virtual environment should have all the required packages given that default anaconda environments come with many of
 the libraries we need pre-installed. If you notice that something is missing please use conda install to add the missing 
