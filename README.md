@@ -1,4 +1,5 @@
 # TokenGallery Map 
+
 ## Set Up
 You need to have `npm` installed.
 
@@ -20,6 +21,7 @@ the libraries we need pre-installed. If you notice that something is missing ple
 ### Tests
 To run the `tile_creator` tests you need to have the folder `be/tile_creator/test/data` populated with the appropriate files.
 Since those are heavy images and  csv files they have not been commited. Ask the project maintainer to provide them to you.
+
 #### Run tests as pre-push hook 
 Copy-paste the below snippet into .git/hooks/pre-push in order to have tests automatically run before each push.
 ```
@@ -79,28 +81,43 @@ You should be ready to go.
 |Change database                                    |`\connect <db_name>`|
 
 ## Running
+
 ### Activate the venv
 Activate the virtual environment (either with the command `conda activate rapids-0.18` or from the anaconda-navvigator UI). 
 Alternatively if you are usng a Jetbrain IDE you can set the python interpreter of the project to the be the anconda environment: settings>project:<your_project_name>> drop down menu on python interpreter box > show all > plus icon (+) > conda environment. In this way you can work without leaving the IDE.
+
 ### Launching server and client
 `bash launch_client.sh` and `bash launch_server.sh`should be the only command you need to run to launch the server 
 and the frontend.
-### GTM - generate token map
+
+### GTM script- generate token map
 The server mainly servers the tiles that make up a map that represents the graph.
 The client let you visualise and expolore such map.
 
 But how are the tiles generated?
 You need to run `./gtm.py ` from the root of the project, in a terminal where the correct environment is active.
-
-|ARG FLAG|DESCRIPTION|
-|--------|--------|
-|-n|        The name of the generated output. This will also be the name of the folder that wil contain all the genrated tiles.|
-
-
+The gtm command takes the following long list of argumeents, but you don't need to specify everything as sensible defaults are in place.
+|ARGUMENT FLAG|DESCRIPTION|
+|----------|--------|
+|-n                         |The name of the generated output. This will also be the name of the folder that wil contain all the genrated tiles.|
+|--csv                      |Path to .csv file that contains the graph. The columns of the csv are: source, target, amount. An example of a row of such csv is: `0x88e2efac3d2ef957fcd82ec201a506871ad06204,0x67fa2c06c9c6d4332f330e14a66bdf1873ef3d2b,       1000000000000000000`|
+|--labels                   |Path to .csv file with the following columns: type,address,label. An example of a row of such csv is: `airswap,0x7eeab4f134fcfa6fcaf3987d391f1d626f75f6e1, AirSwap: Deployer`|
+|--ts                       |The tile size in pixel.|
+|-z                         |How many zoom levels the map has. The minimum is 0, meaning the map has one zoom level. Note the for `z= n` 2**n tiles have to rendered.|
+|--min_t                    |Minimum transparency for edges. |
+|--max_t                    |Maximum transparency for edges. |
+|--mean_t                   |This argument is a percentage of the graph side (the graph size is the length of the side of the square that contains the graph). This percentage controls where the gaussian for the edge transparency is centered.|
+|--std                      |This argument is a percentage of the graph side. It controls the standard deviation of the the gaussian for the edge transparecy.|
+|--max_thick                |The max thickness allowed for edges.|
+|--med_thick                |The desired median value for edge thickness.|
+|--max_size                 |The max size allowed for vertices.|
+|--med_size                 |The desired median size for vertices.|
+|--curvature                |Between 0.1 and 1. How curved edges should be.|
 
 # Folder Structure
 be: backend
 fe: frontend
+
 ### BE
 The tile creator takes a csv of a graph of transactions and generates square tiles at different levels of zoom.
 You can change the zoom level as ann argument to the render function.
