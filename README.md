@@ -14,9 +14,11 @@ Run `conda install -n rapids-0.18 flask flask_cors`
 Since the tests perform image comparisons between an output and a desired model, we need to have the open-cv library.
 This is somewhat problematic to install, please execute the command below on a terminal with the conda environment active.
 `pip install opencv-python`
+To work with the postgres GIS extension from python you also need the following:
+`pip install sqlalchemy geoalchemy2 psycopg2`
 
 Your virtual environment should have all the required packages given that default anaconda environments come with many of
-the libraries we need pre-installed. If you notice that something is missing please use conda install to add the missing 
+the libraries we need pre-installed. If you notice that something is missing please use conda install to add missing dependencies.
 
 ### Tests
 To run the `tile_creator` tests you need to have the folder `be/tile_creator/test/data` populated with the appropriate files.
@@ -36,8 +38,9 @@ cd ~/tokengallery/be/tile_creator && python -m pytest
 
 ### PostGIS installation
 To run the code locally please make sure postgres and the GIS extension are correctly set up.
-On Ubuntu 20 install with the below:
+This wastested with Ubuntu 20.
 
+If you have postgresql already installed, you should skip this.
 `apt-get install postgresql-12 postgresql-contrib`
 
 Launch a session and set the password for the `postgres` user.
@@ -47,7 +50,8 @@ Launch a session and set the password for the `postgres` user.
 Launch a session with the postgres user to check that it worked:
 `psql -U postgres -h 127.0.0.1`
 
-Quit the session and install the GIS extension:
+Quit the session and install the GIS extension.
+Note that you should apt-get install the postgis version that matches your postgresql version.
 `sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable`
 `sudo apt-get update`
 finally
