@@ -16,7 +16,7 @@ class GraphMapHeader extends Component {
     render() {
         return (
             <div className={'border-2 flex-1'}>
-                <h3 className={'text-2xl'}>Graph summary </h3>
+                <h3 className={'text-2xl'}>{this.props.graph_metadata.graph_name}</h3>
                 <CopyGtmCommand graph_metadata={this.props.graph_metadata}/>
                 <GraphNavBar graph_metadata={this.props.graph_metadata}/>
             </div>
