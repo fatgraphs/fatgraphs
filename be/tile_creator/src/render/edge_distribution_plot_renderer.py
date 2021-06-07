@@ -1,35 +1,30 @@
 import math
 import matplotlib.pyplot as plt
 import os
-
+import numpy as np
 from be.utils.utils import calculate_diagonal_square_of_side
 
 
 class EdgeDistributionPlotRenderer:
     BIN_FREQUENCY = 50
 
-    def __init__(self, zoom_levels, edge_lengths, transparency_calculator, output_folder, side_graph_space, tile_size):
+    def __init__(self, zoom_levels, edge_lengths, edge_transparencies, output_folder, side_graph_space, tile_size):
         self.side_graph_space = side_graph_space
         self.zoom_levels = zoom_levels
         self.edge_lenghts = edge_lengths
+        self.edge_transparencies = edge_transparencies
         self.output_folder = output_folder
         self.min_length = int(min(self.edge_lenghts))
         self.max_length = int(max(self.edge_lenghts))
         self.step = math.ceil((self.max_length - self.min_length) / EdgeDistributionPlotRenderer.BIN_FREQUENCY)
-        self.transparency_calculator = transparency_calculator
-        self.transparency_x = list(range(self.min_length, self.max_length + 1, self.step))
-        self.transparency_y = self.generate_y_transparency()
         self.side_graph_space = side_graph_space
         self.tile_size = tile_size
 
     def render(self):
         for zl in range(0, self.zoom_levels):
-            self.generate_distribution_img(list(self.edge_lenghts), self.transparency_x, self.transparency_y[zl], zl)
+            self.generate_distribution_img(list(self.edge_lenghts), zl)
 
-    def generate_y_transparency(self):
-        return self.transparency_calculator.calculate_edge_transparencies(self.transparency_x)
-
-    def generate_distribution_img(self, edge_lengths, x, y, zoom_level):
+    def generate_distribution_img(self, edge_lengths, zoom_level):
         longest_theoretical_edge_px = calculate_diagonal_square_of_side(self.tile_size)
         longest_theoretical_edge_graph = calculate_diagonal_square_of_side(self.side_graph_space)
         color = 'tab:red'
@@ -40,7 +35,7 @@ class EdgeDistributionPlotRenderer:
             ax1.set_xlabel('Edge Len Graph Space ' +
                            "| Longest: " + str(round(self.max_length, 2)) +
                            " | Square diagonal: " + str(round(longest_theoretical_edge_graph, 2)))
-            hist = ax1.hist(edge_lengths, bins=len(x), color=color, range=(0, longest_theoretical_edge_graph))
+            hist = ax1.hist(edge_lengths, bins=25, color=color, range=(0, longest_theoretical_edge_graph))
             ax1.set_xlim(0, longest_theoretical_edge_graph)
             # ax1.xaxis.set_minor_locator(MultipleLocator(5))
             return max(list(map(lambda a : a.get_height(), hist[2])))
@@ -70,10 +65,10 @@ class EdgeDistributionPlotRenderer:
             yyy = ax1.twinx()  # instantiate a second axes that shares the same x-axis
             color = 'tab:blue'
             yyy.set_ylabel('Transparency', color=color)  # we already handled the x-label with ax1
-            yyy.plot(x, y, color=color)
+            yyy.scatter(self.edge_lenghts, self.edge_transparencies[zoom_level], color=color)
             # where = int(np.where(y == max(y))[0][0])
             # yyy.axvline(x=x[where], ymin=0, ymax=max(edge_lengths))
-            mean = self.transparency_calculator.graph_side * (self.transparency_calculator.tile_based_mean / (2 ** zoom_level))
+            mean = np.mean(self.edge_transparencies[zoom_level])
             yyy.axvline(x=mean, ymin=0, ymax=max(edge_lengths), color=color)
             yyy.tick_params(axis='y', labelcolor=color)
 

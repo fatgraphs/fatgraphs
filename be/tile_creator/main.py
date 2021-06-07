@@ -37,7 +37,7 @@ def main(configurations):
 
     ed_renderer = EdgeDistributionPlotRenderer(configurations['zoom_levels'],
                                                visual_layout.edge_lengths,
-                                               transparency_calculator,
+                                               visual_layout.edge_transparencies,
                                                configurations['output_folder'],
                                                visual_layout.max - visual_layout.min,
                                                configurations['tile_size'])
