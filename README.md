@@ -65,11 +65,14 @@ CREATE EXTENSION POSTGIS;
 If you now issue a `\dt` command you should see a spatial table that was create.
 
 ### Local DB set-up
-As of now, the gtm.py script needs a postgres db called `test` reachable via localhost.
-Create it by launching a psql session and issuing the following command:
-`CREATE DATABASE test;`
+The configuration of the local db is done by settings the relevant variables in be/configuration.py.
+The defaults are a postgres db called `test`, reachable via localhost by a user called 'potgres' with password 1234.
+You can overwrite those default to match you system configuration by changing the relevant variables in be/configuration.py
+
+Launch a psql session with your desired username and issue the following command:
+`CREATE DATABASE test; (or your chosen db name)`
 Switch to the newly created db with:
-`\connect test`
+`\connect test (or your chosen db name)`
 Install the extension:
 `CREATE EXTENSION POSTGIS;`
 You should be ready to go.

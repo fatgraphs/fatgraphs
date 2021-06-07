@@ -1,4 +1,4 @@
-from be.configuration import LAYOUT_DB_TABLE
+from be.configuration import LAYOUT_DB_TABLE, DB_USER_NAME, DB_PASSWORD, DB_URL, DB_NAME
 from be.persistency.db_connection import DbConnection
 from be.tile_creator.src.layout.visual_layout import VisualLayout
 from be.persistency.implementation import Implementation
@@ -34,9 +34,4 @@ class NiceAbstraction:
     def get_closest_point(self, x, y, table):
         return self.impl.query_closest_point(x, y, table)
 
-user_name = 'postgres'
-password = '7412'
-url = '127.0.0.1'
-db_name = 'test'
-
-singletonNiceAbstraction = NiceAbstraction(f'postgresql://{user_name}:{password}@{url}/{db_name}')
+singletonNiceAbstraction = NiceAbstraction(f'postgresql://{DB_USER_NAME}:{DB_PASSWORD}@{DB_URL}/{DB_NAME}')

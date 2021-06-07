@@ -10,6 +10,11 @@ SMALL_GRAPH_RAW_PATH = os.path.join(data_folder, 'small.csv')
 MOCK_LABELLED_RAW_PATH = os.path.join(data_folder, 'mock_net_labelled.csv')
 LABELS_PATH = os.path.join(data_folder, 'labels.csv')
 
+# DB CONFIGURATIONS
+DB_USER_NAME = 'postgres'
+DB_PASSWORD = '1234'
+DB_URL = '127.0.0.1'
+DB_NAME = 'test'
 LAYOUT_DB_TABLE = lambda graph_name: graph_name + "_layout"
 
 
