@@ -28,7 +28,7 @@ class TestRenderer(unittest.TestCase):
         fake_edges = np.append(fake_edges, cls.LONGEST)
         cls.plot_renderer = EdgeDistributionPlotRenderer(4,
                                                          fake_edges,
-                                                         cls.transparency_calculator,
+                                                         cls.transparency_calculator.calculate_edge_transparencies(fake_edges),
                                                          TEST_DIR,
                                                          cls.SIDE_GRAPH,
                                                          cls.TILE_SIZE)
