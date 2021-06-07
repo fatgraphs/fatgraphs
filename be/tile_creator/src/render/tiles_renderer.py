@@ -32,7 +32,7 @@ class TilesRenderer:
             edge_size = deepcopy(self.gt_graph.edge_thickness)
 
             rgba[3] = list(self.edge_transparencies[zoom_level].to_numpy())
-            edge_colors = self.gt_graph.edge_transparencies
+            edge_colors = self.gt_graph.edge_transparencies[zoom_level]
             edge_colors.set_2d_array(np.array(rgba))
 
             number_of_images = 4 ** zoom_level
@@ -60,7 +60,7 @@ class TilesRenderer:
                 file_name = os.path.join(self.configurations['output_folder'], tile_name)
 
                 # Serial code
-                #  self._render(fit, file_name, edge_colors, vertex_size, edge_size)
+                # self._render(fit, file_name, edge_colors, vertex_size, edge_size)
 
                 # Parallel code
                 p = Process(target=self._render, args=(fit, file_name, edge_colors, vertex_size, edge_size))

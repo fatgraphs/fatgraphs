@@ -22,7 +22,9 @@ class GraphToolTokenGraph:
         self.edge_thickness = self.g.new_edge_property("float", vals=visual_layout.edge_thickness)
         self._make_bezier_points()
         # edge transparency needs to be populated at run-time
-        self.edge_transparencies = self.g.new_edge_property("vector<float>")
+        self.edge_transparencies = []
+        for zl in range(0, metadata.graph_metadata.zoom_levels[0]):
+            self.edge_transparencies.append(self.g.new_edge_property("vector<float>"))
 
     def _make_bezier_points(self):
         self.control_points = self.g.new_edge_property('vector<float>')
