@@ -3,7 +3,7 @@ from flask import jsonify, send_from_directory
 from flask import Flask, send_file, safe_join
 from werkzeug.routing import IntegerConverter, FloatConverter
 from flask_cors import CORS, cross_origin
-from be.configuration import CONFIGURATIONS, LAYOUT_DB_TABLE
+from be.configuration import CONFIGURATIONS, VERTEX_TABLE_NAME
 import pandas as pd
 
 from be.persistency.nice_abstraction import singletonNiceAbstraction
@@ -89,8 +89,10 @@ def get_distributions(graph_name, zoom_level):
     CONFIGURATIONS['endpoints']['proximity_click'] + '/<graph_name>/<float(signed=True):x>/<float(signed=True):y>')
 def get_closest_vertex(graph_name, x, y):
     # return str(x) + str(y) + str(graph_name)
-    db_query_result = singletonNiceAbstraction.get_closest_point(x, y, LAYOUT_DB_TABLE(graph_name))
+    db_query_result = singletonNiceAbstraction.get_closest_point(x, y, VERTEX_TABLE_NAME(graph_name))
+    vertex_id = db_query_result[0]
+    eth = singletonNiceAbstraction.get_eth(graph_name, vertex_id)
     closest_point = db_query_result[1].split('(')[-1].split(')')[0].split(' ')
-    return {'eth': db_query_result[0],
+    return {'eth': eth,
             'x': closest_point[0],
             'y': closest_point[1]}

@@ -15,8 +15,12 @@ DB_USER_NAME = 'postgres'
 DB_PASSWORD = '1234'
 DB_URL = '127.0.0.1'
 DB_NAME = 'test'
-LAYOUT_DB_TABLE = lambda graph_name: graph_name + "_layout"
+METADATA_TABLE_NAME = lambda graph_name: graph_name + "_metadata"
+ID_TABLE_NAME = lambda graph_name: graph_name + "_id"
+VERTEX_TABLE_NAME = lambda graph_name: graph_name + "_vertex"
 
+#GIS CONFIGURATIONS
+SRID = 3857
 
 def _load_configurations():
     join = os.path.join(this_file_dir, "../configurations.json")

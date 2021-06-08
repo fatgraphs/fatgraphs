@@ -28,7 +28,10 @@ def main(configurations):
     metadata = TokenGraphMetadata(graph, visual_layout, configurations, vertices_labels)
     _generate_metadata_files(metadata, configurations)
 
-    singletonNiceAbstraction.persist_eth_positions(visual_layout, metadata.graph_metadata['graph_name'][0])
+    graph_name = metadata.graph_metadata['graph_name'][0]
+    singletonNiceAbstraction.create_metadata_table(graph_name, metadata.graph_metadata)
+    singletonNiceAbstraction.create_id_to_eth_table(graph_name, graph.address_to_id)
+    singletonNiceAbstraction.create_vertex_table(graph_name, visual_layout)
 
     gt_graph = GraphToolTokenGraph(graph.edge_ids_to_amount, visual_layout, metadata, configurations['curvature'])
 
