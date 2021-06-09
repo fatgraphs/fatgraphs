@@ -23,7 +23,7 @@ class DescriptionTable extends Component {
                 <dl className={outer_style}>
                     {this.props.keys.map((key, index) => {
                         return <div key={index} className={inner_style}>
-                            <dt>{key}</dt>
+                            <dt>{key + ':'}</dt>
                             <dd>{this.props.values[index]}</dd>
                     </div>;
                 })}
