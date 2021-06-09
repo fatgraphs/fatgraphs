@@ -45,7 +45,7 @@ class Implementation:
                           dtype=column_types)
 
     def get_closest_point(self, x, y, table):
-        query = f'SELECT eth, label, type, ST_AsText(ST_PointFromWKB(pos)), pos <-> ST_SetSRID(ST_MakePoint({x}, {y}), 3857) AS dist ' \
+        query = f'SELECT eth, label, type, size, ST_AsText(ST_PointFromWKB(pos)), pos <-> ST_SetSRID(ST_MakePoint({x}, {y}), 3857) AS dist ' \
                 f'FROM {table} ORDER BY dist LIMIT 1;'
         result = self.connection.execute_raw_query(query)
         return result

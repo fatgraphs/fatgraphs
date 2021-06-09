@@ -51,6 +51,7 @@ class NiceAbstraction:
         id_to_eth = id_to_eth.rename(columns={'vertex': 'id', 'address': 'eth'})
         first_merge = first.merge(id_to_eth, on='id')
         all_in_one_frame = first_merge
+        all_in_one_frame['size'] = layout.vertex_sizes
         column_types = {'pos': Geometry('POINT', srid=SRID)}
         self.impl.save_frame_to_new_table(table_name, all_in_one_frame, column_types)
 

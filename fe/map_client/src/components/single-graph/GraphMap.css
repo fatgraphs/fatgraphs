@@ -31,5 +31,5 @@
 .proximity-marker {
     background-color: rgba(255, 0, 255, 0.5);
     border: 1px solid #666;
-    border-radius: 12px;
+    border-radius: 100%;
 }

@@ -44,6 +44,7 @@ class GraphMap extends React.Component {
     update_markers() {
 
         if(this.state.closest !== undefined && this.state.closest_marker === undefined){
+            this.state.flag = false
             let graphCoordinate = [Number.parseFloat(this.state.closest['x']), Number.parseFloat(this.state.closest['y'])];
             let pos = convert_graph_coordinate_to_map(
                 graphCoordinate,
@@ -51,10 +52,16 @@ class GraphMap extends React.Component {
                 this.props.graph_metadata['max'],
                 this.props.graph_metadata['tile_size']);
 
-            console.log(">><>>>>")
-            console.log(pos)
+            // console.log(">><>>>>")
+            // console.log(pos)
+            //
+            // const raffa = {
+            //     backgroundColor: 'blue'
+            // }
+            //
+            // console.log("<<<<<<<<<<<<<<<<<<<<")
 
-            let myIcon = L.divIcon({className: 'proximity-marker'});
+            let myIcon = L.divIcon({className: 'proximity-marker', iconSize: [10 * (2**this.state.zoom), 10 * (2**this.state.zoom)]});
             let marker = L.marker(pos, {icon: myIcon});
 
             marker.bindPopup(this.make_popup('Closest point', this.state.closest['eth'])).openPopup();
@@ -95,6 +102,7 @@ class GraphMap extends React.Component {
         this.bindOnZoomCallback(myMap);
 
         myMap.on('click', function (e) {
+
             let coord = e.latlng;
             let lat = coord.lat;
             let lng = coord.lng;
@@ -132,8 +140,14 @@ class GraphMap extends React.Component {
 
     bindOnZoomCallback(myMap) {
         console.log(this)
+
         myMap.on('zoom', function () {
-            this.setState({zoom: myMap.getZoom()})
+             if(this.state.closest_marker !== undefined){
+                this.state.myMap.removeLayer(this.state.closest_marker)
+            }
+            this.setState({
+                zoom: myMap.getZoom(),
+            closest_marker: undefined})
         }.bind(this))
     }
 

@@ -10,8 +10,8 @@ class VerticesLabels():
 
         if configurations['labels'] is not None:
             raw_labels = pd.read_csv(configurations['labels'])
-            address_to_label = raw_labels[['address', 'label']]
-            self.vertices_labels = address_to_label \
+            address_label_type = raw_labels[['address', 'label', 'type']]
+            self.vertices_labels = address_label_type \
                 .merge(address_to_id, on="address") \
                 .merge(vertex_positions)
             self.vertices_labels = self.vertices_labels.drop_duplicates()
@@ -21,7 +21,9 @@ class VerticesLabels():
         # TODO chheck self.vertices_metadata has the expected heders
 
     def generate_vertiex_shapes(self):
-        shapes = ['circle'] * len(self.address_to_id)
+        # TODO this changes to triangles all vertices that are in the label list.
+        # Change it ot be exchanges.
+        default_circles = ['circle'] * len(self.address_to_id)
         for vertex in self.vertices_labels['vertex'].values:
-            shapes[vertex] = VerticesLabels.EXCHANGE
-        return shapes
+            default_circles[vertex] = VerticesLabels.EXCHANGE
+        return default_circles
