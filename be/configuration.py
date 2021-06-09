@@ -16,7 +16,6 @@ DB_PASSWORD = '1234'
 DB_URL = '127.0.0.1'
 DB_NAME = 'test'
 METADATA_TABLE_NAME = lambda graph_name: graph_name + "_metadata"
-ID_TABLE_NAME = lambda graph_name: graph_name + "_id"
 VERTEX_TABLE_NAME = lambda graph_name: graph_name + "_vertex"
 
 #GIS CONFIGURATIONS

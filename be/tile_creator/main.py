@@ -26,12 +26,10 @@ def main(configurations):
     visual_layout.vertex_shapes = vertices_labels.generate_vertiex_shapes()
 
     metadata = TokenGraphMetadata(graph, visual_layout, configurations, vertices_labels)
-    _generate_metadata_files(metadata, configurations)
 
     graph_name = metadata.graph_metadata['graph_name'][0]
     singletonNiceAbstraction.create_metadata_table(graph_name, metadata.graph_metadata)
-    singletonNiceAbstraction.create_id_to_eth_table(graph_name, graph.address_to_id)
-    singletonNiceAbstraction.create_vertex_table(graph_name, visual_layout)
+    singletonNiceAbstraction.create_vertex_table(graph_name, visual_layout, vertices_labels, graph.address_to_id)
 
     gt_graph = GraphToolTokenGraph(graph.edge_ids_to_amount, visual_layout, metadata, configurations['curvature'])
 
@@ -47,16 +45,6 @@ def main(configurations):
     ed_renderer.render()
     print("rendering tiles . . .")
     tiles_renderer.render()
-
-
-def _generate_metadata_files(metadata, configuration_dictionary):
-    output_folder = configuration_dictionary['output_folder']
-    metadata.vertices_labels.to_csv(
-        os.path.join(output_folder,
-                     CONFIGURATIONS['vertices_metadata_file_name']), index=False)
-    metadata.graph_metadata.to_csv(
-        os.path.join(output_folder,
-                     CONFIGURATIONS['graph_metadata_file_name']), index=False)
 
 
 if __name__ == '__main__':

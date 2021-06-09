@@ -1,5 +1,5 @@
 
-from sqlalchemy import text, create_engine
+from sqlalchemy import text, create_engine, inspect
 
 """
 Holds the connection object to the DB.
@@ -14,3 +14,11 @@ class DbConnection():
         query_text = text(query)
         result = self.engine.execute(query_text)
         return result
+
+    def is_table_present(self, table_name):
+        '''
+
+        :param table_name:
+        :return: True if the engine contains table with an equal name
+        '''
+        return inspect(self.engine).has_table(table_name)

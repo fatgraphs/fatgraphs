@@ -198,3 +198,14 @@ def to_cv(pilImage):
     # Convert RGB to BGR
     open_cv_image = open_cv_image[:, :, ::-1].copy()
     return open_cv_image
+
+
+def wkt_to_x_y_list(wkt):
+    """
+
+    :param wkt: well known text representation of a 2D POINT (a point in GIS).
+            e.g. POINT(34234 42)
+    :return: a python list where the first element is the x and the second is the y
+    """
+    p = wkt.split('(')[-1].split(')')[0].split(' ')
+    return [float(p[0]), float(p[1])]
