@@ -61,7 +61,12 @@ class GraphMap extends React.Component {
             //
             // console.log("<<<<<<<<<<<<<<<<<<<<")
 
-            let myIcon = L.divIcon({className: 'proximity-marker', iconSize: [10 * (2**this.state.zoom), 10 * (2**this.state.zoom)]});
+            let myIcon = L.divIcon({
+                className: 'proximity-marker',
+                iconSize: [
+                    this.state.closest.size * (2**this.state.zoom),
+                    this.state.closest.size * (2**this.state.zoom)
+                ]});
             let marker = L.marker(pos, {icon: myIcon});
 
             marker.bindPopup(this.make_popup('Closest point', this.state.closest['eth'])).openPopup();
