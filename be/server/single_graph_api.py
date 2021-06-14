@@ -33,7 +33,7 @@ def get_nodes_metadata(graph_name):
     response = {}
     for i, r in ids.iterrows():
         pos = wkt_to_x_y_list(r['st_astext'])
-        response[str(tuple(pos))] = [str(r['label']), str(r['eth'])]
+        response[str(tuple(pos))] = [str(r['label']), str(r['eth']), str(r['size'])]
     return response
 
 

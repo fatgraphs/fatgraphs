@@ -51,7 +51,7 @@ class Implementation:
         return result
 
     def get_labelled_vertices(self, table_name):
-        query = f'SELECT eth, ST_AsText(ST_PointFromWKB(pos)), label, type  FROM {table_name} WHERE label IS NOT NULL;'
+        query = f'SELECT eth, ST_AsText(ST_PointFromWKB(pos)), label, type, size  FROM {table_name} WHERE label IS NOT NULL;'
         result = self.connection.execute_raw_query(query)
         return result
 
