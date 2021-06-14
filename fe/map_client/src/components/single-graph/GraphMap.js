@@ -23,7 +23,7 @@ class GraphMap extends React.Component {
             markers: [],
             labels: [],
             closest_vertex: undefined,
-            _marker: undefined
+            closest_marker: undefined
         }
         this.draw_markers_labelled_vertices = this.draw_markers_labelled_vertices.bind(this)
         this.make_vertex_popup = this.make_vertex_popup.bind(this)
@@ -46,7 +46,7 @@ class GraphMap extends React.Component {
     }
 
     componentDidUpdate() {
-        if (this.state.closest_vertex !== undefined && this.state._marker === undefined) {
+        if (this.state.closest_vertex !== undefined && this.state.closest_marker === undefined) {
             this.draw_marker_closest_vertex();
         }
 
@@ -118,12 +118,24 @@ class GraphMap extends React.Component {
 
     bindOnZoomCallback(myMap) {
         myMap.on('zoom', function () {
-            if (this.state._marker !== undefined) {
-                this.removeMarker(this.state._marker);
+            if (this.state.closest_marker !== undefined) {
+                this.removeMarker(this.state.closest_marker);
+            }
+            if(this.state.markers.length > 0){
+                for (const i in this.state.markers) {
+                    this.removeMarker(this.state.markers[i]);
+                }
+            }
+            if(this.state.labels.length > 0){
+                for (const i in this.state.labels) {
+                    this.removeMarker(this.state.labels[i]);
+                }
             }
             this.setState({
                 zoom: myMap.getZoom(),
-                _marker: undefined
+                closest_marker: undefined,
+                markers:  [],
+                labels: []
             })
         }.bind(this))
     }
@@ -137,15 +149,14 @@ class GraphMap extends React.Component {
             // console.log("you clicked the map at latitude: " + lat + " and longitude: " + lng);
             let pos = this.to_graph_coordinate([lat, lng])
 
-            if (this.state._marker !== undefined) {
-                // console.log(this.state._marker)
-                this.removeMarker(this.state._marker)
+            if (this.state.closest_marker !== undefined) {
+                this.removeMarker(this.state.closest_marker)
             }
 
             fetchClosestPoint(this.props.graph_name, pos).then(e => {
                 this.setState({
                     closest_vertex: e,
-                    _marker: undefined
+                    closest_marker: undefined
                 })
             })
 
@@ -176,6 +187,7 @@ class GraphMap extends React.Component {
 
             let map_coordinate = this.to_map_coordinate(graph_position)
             let label_text = this.props.vertices_metadata[graph_position][0];
+            const size = this.props.vertices_metadata[graph_position][2]
             let label = this.draw_label(label_text, map_coordinate);
             labels.push(label)
 
@@ -184,8 +196,8 @@ class GraphMap extends React.Component {
                 map_coordinate,
                 label_text,
                 this.props.vertices_metadata[graph_position][1],
-                [10 * (2 ** this.state.zoom),
-                10 * (2 ** this.state.zoom)
+                [size * 2 * (2 ** this.state.zoom),
+                size * 2 * (2 ** this.state.zoom)
             ])
             markers.push(marker)
         }
@@ -212,21 +224,10 @@ class GraphMap extends React.Component {
                 this.state.closest_vertex.size * (2 ** this.state.zoom)
             ])
 
-        // let myIcon = new L.divIcon({
-        //     className: 'proximity-marker',
-        //     iconSize: [
-        //         this.state.closest_vertex.size * (2 ** this.state.zoom),
-        //         this.state.closest_vertex.size * (2 ** this.state.zoom)
-        //     ]
-        // });
-        // let marker = new L.marker(pos, {icon: myIcon});
-        //
-        // marker.bindPopup(this.make_vertex_popup('Eth: ', this.state.closest_vertex['eth'])).openPopup();
-
         marker2.addTo(this.state.myMap);
 
 
-        this.setState({_marker: marker2})
+        this.setState({closest_marker: marker2})
     }
 
 
@@ -235,7 +236,8 @@ class GraphMap extends React.Component {
         let icon = L.divIcon({
             html:`<div class="label-container">
                         <span class="label-vertex">${text}</span>
-                    </div>`});
+                    </div>`,
+        className: 'label-container'});
         let marker = L.marker(pos, {icon: icon});
         marker.addTo(this.state.myMap);
         return marker
