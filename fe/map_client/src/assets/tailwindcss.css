@@ -11,3 +11,7 @@ h1 {
     padding: 5px;
     @apply ml-2
 }
+
+.dont-lose-focus{
+/*placeholder class to mark elements that shouldn't make thier parent lose the focus*/
+}

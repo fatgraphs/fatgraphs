@@ -1,10 +1,10 @@
 import React, {Component} from 'react';
-import UrlComposer from "../../utils/UrlComposer";
 import Header from "./header/Header";
 import {withRouter} from "react-router-dom";
 import SidePanel from "./SidePanel";
 import GraphMap from "./GraphMap";
 import {fetchGraphMetadata, fetchVerticesMetadata} from "../../API_layer";
+import SearchBar from "../search-bar/SearchBar";
 
 class SingleGraphView extends Component {
 
@@ -26,6 +26,8 @@ class SingleGraphView extends Component {
         } else {
             return (
                 <div className={'flex flex-col p-2'}>
+                    <SearchBar
+                        graph_name={this.props.match.params.graph_name}/>
                     <Header graph_metadata={this.state.graph_metadata}/>
                     <div className={'flex flex-col lg:flex-row'}>
                         <GraphMap graph_metadata={this.state.graph_metadata}

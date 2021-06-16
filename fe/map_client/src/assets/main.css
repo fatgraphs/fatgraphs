@@ -31669,6 +31669,10 @@ h1 {
   margin-left: 0.5rem
 }
 
+.dont-lose-focus{
+  /*placeholder class to mark elements that shouldn't make thier parent lose the focus*/
+}
+
 @media (min-width: 640px) {
   .sm\:container {
     width: 100%;
