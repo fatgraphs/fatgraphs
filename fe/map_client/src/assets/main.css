@@ -31663,12 +31663,6 @@ h1 {
   line-height: 1
 }
 
-.border {
-  border: 2px solid #000;
-  padding: 5px;
-  margin-left: 0.5rem
-}
-
 .dont-lose-focus{
   /*placeholder class to mark elements that shouldn't make thier parent lose the focus*/
 }

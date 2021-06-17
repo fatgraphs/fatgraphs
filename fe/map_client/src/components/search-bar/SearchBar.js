@@ -21,7 +21,7 @@ class SearchBar extends Component {
 
     render() {
         return (
-            <div className={'flex flex-row border-2 position-relative h-12 z-50'}>
+            <div className={'flex flex-row flex-wrap position-relative h-12 z-50'}>
 
                 {this.state.tags_selected
                     .map((keyword, i) => <DeleatableTag
@@ -35,7 +35,7 @@ class SearchBar extends Component {
                     onSubmit={() => this.addTagCallback(this.state.current_input)}
                     onBlur={this.onBlur}
                     className={'h-12 w-60'}>
-                    <label className={'ml-1'}>
+                    <label>
                         <input className={'p-2 focus:outline-none'}
                                ref={inputEl => (this.searchInput = inputEl)}
                                placeholder={'insert tag'}

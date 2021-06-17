@@ -15,12 +15,12 @@ class GraphNavBar extends Component {
         <div>
             <nav>
                 <ul className={'flex flex-row'}>
-                    <li className={'ml-2 border'}>
+                    <li className={'border-black border-2 mr-2'}>
                         <Link to={`${this.props.match.url}/graph-metadata`}>
                             Graph metadata
                         </Link>
                     </li>
-                    <li className={'ml-2 border'}>
+                    <li className={'border-black border-2 mr-2'}>
                         <Link to={`${this.props.match.url}/edge-length-distribution`}>
                             Edge length Distribution
                         </Link>
