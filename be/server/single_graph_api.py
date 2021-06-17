@@ -30,11 +30,10 @@ def get_graph_metadata(graph_name):
 @single_graph_api.route(CONFIGURATIONS['endpoints']['vertices_metadata'] + '/<graph_name>')
 def get_nodes_metadata(graph_name):
     ids = singletonNiceAbstraction.get_labelled_vertices(graph_name)
-    response = {}
-    for i, r in ids.iterrows():
-        pos = wkt_to_x_y_list(r['st_astext'])
-        response[str(tuple(pos))] = [str(r['label']), str(r['eth']), str(r['size'])]
-    return response
+    ids['st_astext'] = ids['st_astext'].apply(wkt_to_x_y_list).apply(tuple).apply(str)
+    ids = ids.rename(columns={'st_astext': 'pos'})
+    response = ids.to_dict(orient='records')
+    return {'response': response}
 
 
 @single_graph_api.route(
