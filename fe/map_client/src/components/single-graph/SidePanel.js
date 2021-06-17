@@ -12,20 +12,14 @@ class SidePanel extends React.Component {
 
         let address = this.props.address_displayed_currently === undefined
             ? "Nothing selected"
-            : this.props.address_displayed_currently[1]
+            : this.props.address_displayed_currently
 
-        let label = this.props.address_displayed_currently === undefined
-            ? ""
-            : this.props.address_displayed_currently[0]
 
         return <div className={'border-2'}>
-            <ToggleBar>
-                <span callback={this.props.toggle[0]}>Toggle markers</span>
-            </ToggleBar>
             <DescriptionTable
                 stack_vertically={true}
-                keys={['Address', "Label"]}
-                values={[address, label]}>
+                keys={['Address']}
+                values={[address]}>
             </DescriptionTable>
         </div>
     }

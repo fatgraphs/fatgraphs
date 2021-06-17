@@ -5,7 +5,7 @@ class SingleToggle extends Component {
 
     render() {
         return (
-           <div className={'ml-2'}>
+           <div className={'ml-1'}>
                <label>
                   <input
                     type="checkbox"

@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import DescriptionTable from "../../../generic_components/DescriptionTable";
 import {faClipboard} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 
@@ -14,14 +13,14 @@ class CopyGtmCommand extends Component {
 
     render() {
         return (
-            <div className={'relative flex flex-row items-center'}>
-                <div className={'hover:cursor-pointer active:text-2xl'}
-                     onClick={this.copyGtmCommand}>
-                    <p className={'absolute inset-y-0 right-0 mr-2'}>copy gtm command <FontAwesomeIcon
-                        icon={faClipboard}/>
-                    </p>
-                </div>
+
+            <div className={'hover:cursor-pointer active:text-2xl ml-2'}
+                 onClick={this.copyGtmCommand}>
+                <p className={'mr-2'}>copy gtm command <FontAwesomeIcon
+                    icon={faClipboard}/>
+                </p>
             </div>
+
         );
     }
 
