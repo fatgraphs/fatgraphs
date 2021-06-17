@@ -38,7 +38,7 @@ class SearchBar extends Component {
                     <label>
                         <input className={'p-2 focus:outline-none'}
                                ref={inputEl => (this.searchInput = inputEl)}
-                               placeholder={'insert tag'}
+                               placeholder={'SEARCH BY NODE TYPE'}
                                type="text"
                                value={this.state.current_input}
                                onChange={this.handleChange}
@@ -50,6 +50,7 @@ class SearchBar extends Component {
                         current_input={this.state.current_input}
                         addTagCallback={this.addTagCallback}
                         graph_name={this.props.graph_name}
+                        vertices_metadata={this.props.vertices_metadata}
                     />
                 </form>
             </div>
@@ -62,17 +63,22 @@ class SearchBar extends Component {
     }
 
     addTagCallback(newTag) {
-        this.setState(oldState => ({
-            tags_selected: [...oldState.tags_selected, newTag],
-            current_input: '',
-            showAutocompletion: false
-        }))
-        // this.searchInput.focus();
+        this.setState(oldState => {
+            let tags_now = [...oldState.tags_selected, newTag];
+            this.props.selection_updated_callback(tags_now)
+            return ({
+                tags_selected: tags_now,
+                current_input: '',
+                showAutocompletion: false
+            });
+        })
     }
 
 
     closeTagCallback(toremove) {
-        this.setState({tags_selected: this.state.tags_selected.filter(tag => tag !== toremove)})
+        let tags_now = this.state.tags_selected.filter(tag => tag !== toremove);
+        this.setState({tags_selected: tags_now})
+        this.props.selection_updated_callback(tags_now)
     }
 
     onBlur(e) {

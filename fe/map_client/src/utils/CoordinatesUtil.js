@@ -25,7 +25,6 @@ export function convert_graph_coordinate_to_map(graph_coordinate, g_min, g_max, 
  */
 export function convert_map_coordinate_to_graph(map_coordinate, g_min, g_max, tile_size){
     let graph_side = g_max - g_min
-    console.log("graph sixe: " + graph_side)
     let graph_x = (map_coordinate[1] * graph_side / tile_size) - Math.abs(g_min)
     let graph_y = -(map_coordinate[0] * graph_side / tile_size) - Math.abs(g_min)
     // console.log([-map_y, map_x])

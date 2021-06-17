@@ -13,10 +13,13 @@ class GraphMapHeader extends Component {
     render() {
         return (
             <div>
-                <h3 className={'text-2xl'}>{this.props.graph_metadata.graph_name}</h3>
+
+                 <div className={'flex flex-row flex-wrap p-2'}>
+                    <h3 className={'text-2xl'}>{this.props.graph_metadata.graph_name}</h3>
+                    <CopyGtmCommand graph_metadata={this.props.graph_metadata}/>
+                </div>
                 <div className={'flex flex-row flex-wrap p-2'}>
                     <GraphNavBar graph_metadata={this.props.graph_metadata}/>
-                    <CopyGtmCommand graph_metadata={this.props.graph_metadata}/>
                 </div>
             </div>
 

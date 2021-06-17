@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
-import {bool, string} from "prop-types";
+import {bool, string, object} from "prop-types";
 import AddableTag from "./AddableTag";
-import {fetchVerticesMetadata} from "../../API_layer";
 
 class Autocompletion extends Component {
 
@@ -13,9 +12,9 @@ class Autocompletion extends Component {
     }
 
     async componentDidMount() {
-        let vertices_metadata = await fetchVerticesMetadata(this.props.graph_name)
-        let map = Object.keys(vertices_metadata).map(key => vertices_metadata[key][0]);
-        this.setState({availableStrings: map})
+        let available_types = this.props.vertices_metadata.map(rec => rec['type']);
+        let no_duplicates = Array.from(new Set(available_types));
+        this.setState({availableStrings: no_duplicates})
     }
 
 
@@ -44,7 +43,8 @@ class Autocompletion extends Component {
 Autocompletion.propTypes = {
     current_input: string.isRequired,
     graph_name: string.isRequired,
-    visible: bool.isRequired
+    visible: bool.isRequired,
+    vertices_metadata: object.isRequired
 };
 
 Autocompletion.defaultProps = {
