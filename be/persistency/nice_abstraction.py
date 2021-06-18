@@ -29,6 +29,40 @@ class NiceAbstraction:
         self.connection = DbConnection(connection_string)
         self.impl = Implementation(self.connection)
 
+    def ensure_user_table_exists(self):
+        # TODO assumed one user for now
+        """
+        If table with  user preferences doesnt exists it creates it.
+        It also makes the user_name a primary key.
+        """
+        self.impl.ensure_user_data_table()
+
+    def update_recent_tags(self, tag):
+        """
+        Updates the recent tag of the default user.
+        The tags are stored as a string of this shape:
+
+        "tag1 tag2 tag3 tag4 tag5"
+
+        :param tag_list_as_string:
+        :return:
+        """
+        raw_result = self.impl.get_recent_tags()
+        df = to_pd_frame(raw_result)
+        current = df['last_search_tags'].values[0].split(' ')
+        current.insert(0, tag)
+        updated = current[0:5]
+        updated = ' '.join(updated)
+        updated = updated.strip()
+        self.impl.update_recent_tags(updated)
+
+    def get_recent_tags(self):
+        raw_result = self.impl.get_recent_tags()
+        df = to_pd_frame(raw_result)
+        return df
+
+
+
     def create_metadata_table(self, graph_name, graph_metadata):
         table_name = METADATA_TABLE_NAME(graph_name)
         self.impl.save_frame_to_new_table(table_name, graph_metadata, {})

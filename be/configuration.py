@@ -17,6 +17,7 @@ DB_URL = '127.0.0.1'
 DB_NAME = 'test'
 METADATA_TABLE_NAME = lambda graph_name: graph_name + "_metadata"
 VERTEX_TABLE_NAME = lambda graph_name: graph_name + "_vertex"
+USER_TABLE = 'tg_user'
 
 #GIS CONFIGURATIONS
 SRID = 3857
