@@ -15,6 +15,10 @@ class DbConnection():
         result = self.engine.execute(query_text)
         return result
 
+    def add_primary_key(self, table_name, key):
+        with self.engine.connect() as con:
+            con.execute(f'ALTER TABLE {table_name} ADD PRIMARY KEY ({key});')
+
     def is_table_present(self, table_name):
         '''
 

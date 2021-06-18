@@ -6,7 +6,8 @@
     "vertices_metadata": "/tokengallery/vertices-metadata",
     "graph_metadata": "/tokengallery/graph-metadata",
     "edge_distributions": "/tokengallery/edge_distributions",
-    "proximity_click": "/tokengallery/proximity-click"
+    "proximity_click": "/tokengallery/proximity-click",
+    "user_recent_tags": "/tokengallery/recent-tag"
   },
   "graphs_home": "be/graph-maps",
   "vertices_metadata_file_name": "vertices_metadata.csv",

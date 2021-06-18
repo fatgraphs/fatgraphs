@@ -1,7 +1,9 @@
 import geopandas as gpd
+import pandas as pd
 from geoalchemy2 import WKTElement
+from sqlalchemy import String
 
-from be.configuration import SRID, METADATA_TABLE_NAME
+from be.configuration import SRID, METADATA_TABLE_NAME, USER_TABLE
 
 """
 Implements persistency logic 
@@ -28,7 +30,6 @@ def to_geopandas(pandas_1):
 
 
 class Implementation:
-
     """
     Methods here return the object that is the result of a query with the given dbLibrary.
     In the case of sqlalchemy (and geoSqlalchemy) such object is a cursor.
@@ -58,5 +59,26 @@ class Implementation:
     def get_graph_metadata(self, graph_name):
         table_name = METADATA_TABLE_NAME(graph_name)
         query = f'SELECT * FROM {table_name};'
+        result = self.connection.execute_raw_query(query)
+        return result
+
+    def ensure_user_data_table(self):
+        if not self.connection.is_table_present(USER_TABLE):
+            data_frame = pd.DataFrame(data={'user_name': ['default_user'], 'last_search_tags': ['']})
+            self.save_frame_to_new_table(USER_TABLE, data_frame, {'user_name': String,
+                                                                  'last_search_tags': String(length=999)})
+            self.connection.add_primary_key(USER_TABLE, 'user_name')
+
+    def get_recent_tags(self):
+        query = f'SELECT last_search_tags FROM {USER_TABLE} WHERE user_name = \'default_user\';'
+        result = self.connection.execute_raw_query(query)
+        return result
+
+    def update_recent_tags(self, tag_list_as_string):
+
+        query = f'INSERT INTO {USER_TABLE} (user_name, last_search_tags) '\
+                f'VALUES(\'default_user\', \'{tag_list_as_string}\') '\
+                f'ON CONFLICT (user_name) DO UPDATE ' \
+                f'SET last_search_tags = EXCLUDED.last_search_tags;'
         result = self.connection.execute_raw_query(query)
         return result

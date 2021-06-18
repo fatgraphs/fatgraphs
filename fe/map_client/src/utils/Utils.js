@@ -1,9 +1,11 @@
-export function symmetricDifference(setA, setB) {
+export function symmetricDifference(a, b) {
     /**
      * Given 2 js lists returns the set difference
      * @type {Set<any>}
      * @private
      */
+    let setA = new Set(a)
+    let setB = new Set(b)
     let _difference = new Set(setA)
     for (let elem of setB) {
         if (_difference.has(elem)) {

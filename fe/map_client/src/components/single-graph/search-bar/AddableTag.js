@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import {func, string} from "prop-types";
 
 class AddableTag extends Component {
 
@@ -10,9 +11,9 @@ class AddableTag extends Component {
         return (
             <div
                 tabIndex={0}
-                className={'z-50 odd:bg-white dont-lose-focus'}
+                className={'z-50 ' + this.props.bg_color + ' dont-lose-focus'}
                 onKeyDown={(e) => {
-                    if(e.code.toLowerCase() !== 'enter'){
+                    if (e.code.toLowerCase() !== 'enter') {
                         return;
                     }
                     this.props.addTagCallback(this.props.tag)
@@ -25,5 +26,15 @@ class AddableTag extends Component {
         );
     }
 }
+
+AddableTag.propTypes = {
+    bg_color: string,
+    tag: string.isRequired,
+    addTagCallback: func.isRequired,
+};
+
+AddableTag.defaultProps = {
+    bg_color: 'odd:bg-white'
+};
 
 export default AddableTag;

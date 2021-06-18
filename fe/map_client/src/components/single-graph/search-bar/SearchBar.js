@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import DeleatableTag from "./DeleatableTag";
 import Autocompletion from "./Autocompletion";
+import {post_recent_tag} from "../../../API_layer";
 
 class SearchBar extends Component {
 
@@ -10,7 +11,7 @@ class SearchBar extends Component {
             tags_selected: [],
             current_input: "",
             showAutocompletion: false,
-            searchInput: undefined
+            search_input_element: undefined
         }
         this.closeTagCallback = this.closeTagCallback.bind(this)
         this.addTagCallback = this.addTagCallback.bind(this)
@@ -20,6 +21,7 @@ class SearchBar extends Component {
     }
 
     render() {
+        // console.log('search bar render')
         return (
             <div className={'flex flex-row flex-wrap position-relative h-12 z-50'}>
 
@@ -37,7 +39,7 @@ class SearchBar extends Component {
                     className={'h-12 w-60'}>
                     <label>
                         <input className={'p-2 focus:outline-none'}
-                               ref={inputEl => (this.searchInput = inputEl)}
+                               ref={inputEl => (this.state.search_input_element = inputEl)}
                                placeholder={'SEARCH BY NODE TYPE'}
                                type="text"
                                value={this.state.current_input}
@@ -51,6 +53,7 @@ class SearchBar extends Component {
                         addTagCallback={this.addTagCallback}
                         graph_name={this.props.graph_name}
                         vertices_metadata={this.props.vertices_metadata}
+                        recentTags={this.props.recentTags}
                     />
                 </form>
             </div>
@@ -62,9 +65,13 @@ class SearchBar extends Component {
         this.setState({current_input: event.target.value})
     }
 
-    addTagCallback(newTag) {
+    addTagCallback(new_tag) {
         this.setState(oldState => {
-            let tags_now = [...oldState.tags_selected, newTag];
+            this.state.search_input_element.blur()
+            let tags_now = [...oldState.tags_selected, new_tag];
+            if (!this.props.recentTags.includes(new_tag)) {
+                post_recent_tag(new_tag)
+            }
             this.props.selection_updated_callback(tags_now)
             return ({
                 tags_selected: tags_now,
@@ -72,6 +79,7 @@ class SearchBar extends Component {
                 showAutocompletion: false
             });
         })
+
     }
 
 
