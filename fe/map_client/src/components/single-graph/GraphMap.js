@@ -9,6 +9,9 @@ import {
 import UrlComposer from "../../utils/UrlComposer";
 import {fetchClosestPoint} from "../../API_layer";
 import {symmetricDifference} from "../../utils/Utils";
+import LabelVertex from "./LabelVertex";
+import ReactDOMServer from 'react-dom/server';
+import ReactDOM from 'react-dom'
 
 let configs = require('../../../../../configurations.json');
 
@@ -68,7 +71,7 @@ class GraphMap extends React.Component {
 
         this.bindOnZoomCallback(myMap);
 
-        this.bindOnClickCallback(myMap);
+        // this.bindOnClickCallback(myMap);
 
         this.setState({myMap: myMap})
     }
@@ -185,7 +188,7 @@ class GraphMap extends React.Component {
 
             let map_coordinate = this.to_map_coordinate(pos)
 
-            let label = this.draw_label(type, map_coordinate);
+            let label = this.draw_label(type, eth, map_coordinate);
 
             let marker = this.make_marker_with_popup('labelled-vertex-marker',
                 map_coordinate,
@@ -242,14 +245,16 @@ class GraphMap extends React.Component {
     }
 
 
-    draw_label(text, pos) {
+    draw_label(text, eth, pos) {
+        let test_html = ReactDOMServer.renderToString(<LabelVertex label={text}/>)
         let icon = L.divIcon({
-            html: `<div class="label-container">
-                        <span class="label-vertex">${text}</span>
-                    </div>`,
+            html: test_html,
             className: 'label-container'
         });
         let marker = L.marker(pos, {icon: icon});
+        marker.bindPopup(this.make_vertex_popup(
+            text,
+            eth)).openPopup();
         marker.addTo(this.state.myMap);
         return marker
     }
