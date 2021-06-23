@@ -71,7 +71,7 @@ class GraphMap extends React.Component {
 
         this.bindOnZoomCallback(myMap);
 
-        // this.bindOnClickCallback(myMap);
+        this.bindOnClickCallback(myMap);
 
         this.setState({myMap: myMap})
     }
