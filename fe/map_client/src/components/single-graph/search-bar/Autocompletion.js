@@ -25,7 +25,7 @@ class Autocompletion extends Component {
 
         return (
             matchedStrings.length > 0 && this.props.visible ?
-                <div className={'relative'}>
+                <div className={'relative z-50'}>
                     <div
                         className={'border-black border-2 p-2 flex flex-col absolute top-0 left-0 ml-1 bg-gray-100 w-48 h-48 overflow-y-auto'}>
                         {this.props.recentTags.map((str, i) => <AddableTag
