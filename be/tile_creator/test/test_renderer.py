@@ -6,7 +6,7 @@ import numpy as np
 from be.tile_creator.src.graph.gt_token_graph import GraphToolTokenGraph
 from be.tile_creator.src.graph.token_graph import TokenGraph
 from be.tile_creator.src.layout.visual_layout import VisualLayout
-from be.tile_creator.src.metadata.verticeslabels import VerticesLabels
+from be.tile_creator.src.metadata.vertex_metadata import VerticesLabels
 from be.tile_creator.src.render.tiles_renderer import TilesRenderer
 from be.tile_creator.src.render.transparency_calculator import TransparencyCalculator
 from be.tile_creator.src.metadata.token_graph_metadata import TokenGraphMetadata
@@ -29,8 +29,7 @@ class TestRenderer(unittest.TestCase):
                                                   TEST_OUTPUT_DIR,
                                                   "test_graph")
         cls.layout = VisualLayout(cls.graph, default_config)
-        vertices_labels = VerticesLabels(default_config, cls.graph.address_to_id, cls.layout.vertex_positions)
-        metadata = TokenGraphMetadata(cls.graph, cls.layout, default_config, vertices_labels)
+        metadata = TokenGraphMetadata(cls.graph, cls.layout, default_config)
         cls.gtg = GraphToolTokenGraph(cls.graph.edge_ids_to_amount,
                                       cls.layout,
                                       metadata,

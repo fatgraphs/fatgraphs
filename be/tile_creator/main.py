@@ -2,7 +2,7 @@ from be.configuration import CONFIGURATIONS
 from be.tile_creator.src.graph.gt_token_graph import GraphToolTokenGraph
 from be.tile_creator.src.graph.token_graph import TokenGraph
 from be.tile_creator.src.layout.visual_layout import VisualLayout
-from be.tile_creator.src.metadata.verticeslabels import VerticesLabels
+from be.tile_creator.src.metadata.vertex_metadata import VerticesLabels
 from be.persistency.db_connection import DbConnection
 from be.persistency.persistence_api import PersistenceAPI, persistence_api
 from be.tile_creator.src.render.edge_distribution_plot_renderer import EdgeDistributionPlotRenderer
@@ -18,18 +18,18 @@ def main(configurations):
     graph = TokenGraph(configurations['source'], {'dtype': {'amount': float}})
     print("generating layout . . .")
     visual_layout = VisualLayout(graph, configurations)
-    vertices_labels = VerticesLabels(configurations, graph.address_to_id, visual_layout.vertex_positions)
+    vertices_metadata = VerticesLabels(configurations, graph.address_to_id, visual_layout.vertex_positions)
     transparency_calculator = TransparencyCalculator(visual_layout.max - visual_layout.min,
                                                      configurations)
     print("calculating transparencies . . .")
     visual_layout.edge_transparencies = transparency_calculator.calculate_edge_transparencies(visual_layout.edge_lengths)
-    visual_layout.vertex_shapes = vertices_labels.generate_vertiex_shapes()
+    visual_layout.vertex_shapes = vertices_metadata.generate_shapes()
 
-    metadata = TokenGraphMetadata(graph, visual_layout, configurations, vertices_labels)
+    metadata = TokenGraphMetadata(graph, visual_layout, configurations)
 
     graph_name = metadata.get_graph_name()
     persistence_api.create_metadata_table(metadata)
-    persistence_api.create_vertex_table(graph_name, visual_layout, vertices_labels, graph.address_to_id)
+    persistence_api.create_vertex_table(graph_name, visual_layout, vertices_metadata, graph.address_to_id)
 
     gt_graph = GraphToolTokenGraph(graph.edge_ids_to_amount, visual_layout, metadata, configurations['curvature'])
 

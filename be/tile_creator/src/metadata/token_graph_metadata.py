@@ -1,19 +1,11 @@
 import pandas as pd
-from cuml.neighbors import NearestNeighbors
 
 
 class TokenGraphMetadata:
-    """
-    :param labels: path of the file that contains labels for the nodes in the graph
-            (eg labels indicating exchanges)
-    """
 
-    def __init__(self, token_graph, layout, configuration_dictionary, vertices_labels):
-        self.vertices_labels = None
+    def __init__(self, token_graph, layout, configuration_dictionary):
         self.configurations = None
         self.graph_data = None
-        # TODO move out
-        self.vertices_labels = vertices_labels.vertices_labels
 
         configuration_dictionary['labels'] = "" if configuration_dictionary['labels'] is None else \
             configuration_dictionary['labels']
@@ -40,4 +32,3 @@ class TokenGraphMetadata:
 
     def get_single_frame(self):
         return pd.concat([self.configurations, self.graph_data], axis=1)
-

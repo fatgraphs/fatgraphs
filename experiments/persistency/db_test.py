@@ -4,7 +4,7 @@ from sqlalchemy import *
 
 from be.tile_creator.src.graph.token_graph import TokenGraph
 from be.tile_creator.src.layout.visual_layout import VisualLayout
-from be.tile_creator.src.metadata.verticeslabels import VerticesLabels
+from be.tile_creator.src.metadata.vertex_metadata import VerticesLabels
 from be.tile_creator.src.render.transparency_calculator import TransparencyCalculator
 
 
@@ -77,6 +77,6 @@ def load_graph_as_usual(configurations):
                                                      configurations)
     visual_layout.edge_transparencies = transparency_calculator.calculate_edge_transparencies(
         visual_layout.edge_lengths)
-    visual_layout.vertex_shapes = vertices_labels.generate_vertiex_shapes()
+    visual_layout.vertex_shapes = vertices_labels.generate_shapes()
     return visual_layout
 # geoalchemy2.types._GISType.GEOMETRY
