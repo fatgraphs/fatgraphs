@@ -42,7 +42,7 @@ class GraphMap extends React.Component {
         return <div>
             <div>
                 <div>Zoom level: {this.state.zoom}</div>
-                <div id="mapid"/>
+                <div id="mapid" className={'z-10'}/>
             </div>
         </div>
     }

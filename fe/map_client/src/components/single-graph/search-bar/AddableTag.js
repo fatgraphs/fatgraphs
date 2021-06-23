@@ -11,7 +11,7 @@ class AddableTag extends Component {
         return (
             <div
                 tabIndex={0}
-                className={'z-50 ' + this.props.bg_color + ' dont-lose-focus'}
+                className={this.props.bg_color + ' dont-lose-focus'}
                 onKeyDown={(e) => {
                     if (e.code.toLowerCase() !== 'enter') {
                         return;

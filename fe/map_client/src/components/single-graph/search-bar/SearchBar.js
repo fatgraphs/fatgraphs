@@ -23,7 +23,7 @@ class SearchBar extends Component {
     render() {
         // console.log('search bar render')
         return (
-            <div className={'flex flex-row flex-wrap position-relative h-12 z-50'}>
+            <div className={'flex flex-row flex-wrap position-relative h-12'}>
 
                 {this.state.tags_selected
                     .map((keyword, i) => <DeleatableTag
