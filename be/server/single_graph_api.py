@@ -3,7 +3,7 @@ import os
 from flask import Blueprint, request, safe_join, send_from_directory
 from werkzeug.routing import IntegerConverter
 from be.configuration import CONFIGURATIONS, VERTEX_TABLE_NAME
-from be.persistency.nice_abstraction import singletonNiceAbstraction
+from be.persistency.persistence_api import persistence_api
 from be.utils.utils import wkt_to_x_y_list
 
 
@@ -15,21 +15,21 @@ single_graph_api = Blueprint('single_graph_api', __name__)
 
 def check_graph_exists():
     graph_name = request.view_args['graph_name']
-    if not singletonNiceAbstraction.is_graph_in_db(graph_name):
+    if not persistence_api.is_graph_in_db(graph_name):
         raise Exception(f'It looks like the graph: {graph_name} was not correctly saved in the db.\n'
                         f'some or all db tables are missing, or have the wrong name.')
 
 
 @single_graph_api.route(CONFIGURATIONS['endpoints']['graph_metadata'] + '/<graph_name>')
 def get_graph_metadata(graph_name):
-    metadata_frame = singletonNiceAbstraction.get_graph_metadata(graph_name)
+    metadata_frame = persistence_api.get_graph_metadata(graph_name)
     metadata_dictionary = metadata_frame.to_dict(orient='records')[0]
     return metadata_dictionary
 
 
 @single_graph_api.route(CONFIGURATIONS['endpoints']['vertices_metadata'] + '/<graph_name>')
 def get_nodes_metadata(graph_name):
-    ids = singletonNiceAbstraction.get_labelled_vertices(graph_name)
+    ids = persistence_api.get_labelled_vertices(graph_name)
     ids['st_astext'] = ids['st_astext'].apply(wkt_to_x_y_list).apply(tuple).apply(str)
     ids = ids.rename(columns={'st_astext': 'pos'})
     response = ids.to_dict(orient='records')
@@ -66,7 +66,7 @@ def get_distributions(graph_name, zoom_level):
     CONFIGURATIONS['endpoints']['proximity_click'] + '/<graph_name>/<float(signed=True):x>/<float(signed=True):y>')
 def get_closest_vertex(graph_name, x, y):
     # return str(x) + str(y) + str(graph_name)
-    db_query_result = singletonNiceAbstraction.get_closest_point(x, y, VERTEX_TABLE_NAME(graph_name))
+    db_query_result = persistence_api.get_closest_vertex(x, y, graph_name)
     eth = db_query_result['eth'][0]
     closest_point = wkt_to_x_y_list(db_query_result['st_astext'][0])
     size = db_query_result['size'][0]

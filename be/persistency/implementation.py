@@ -3,7 +3,7 @@ import pandas as pd
 from geoalchemy2 import WKTElement
 from sqlalchemy import String
 
-from be.configuration import SRID, METADATA_TABLE_NAME, USER_TABLE
+from be.configuration import SRID, METADATA_TABLE_NAME, USER_TABLE, VERTEX_TABLE_NAME
 
 """
 Implements persistency logic 
@@ -45,13 +45,15 @@ class Implementation:
                           if_exists='replace',
                           dtype=column_types)
 
-    def get_closest_point(self, x, y, table):
+    def get_closest_vertex(self, x, y, graph_name):
+        table_name = VERTEX_TABLE_NAME(graph_name)
         query = f'SELECT eth, label, type, size, ST_AsText(ST_PointFromWKB(pos)), pos <-> ST_SetSRID(ST_MakePoint({x}, {y}), 3857) AS dist ' \
-                f'FROM {table} ORDER BY dist LIMIT 1;'
+                f'FROM {table_name} ORDER BY dist LIMIT 1;'
         result = self.connection.execute_raw_query(query)
         return result
 
-    def get_labelled_vertices(self, table_name):
+    def get_labelled_vertices(self, graph_name):
+        table_name = VERTEX_TABLE_NAME(graph_name)
         query = f'SELECT eth, ST_AsText(ST_PointFromWKB(pos)), label, type, size  FROM {table_name} WHERE label IS NOT NULL;'
         result = self.connection.execute_raw_query(query)
         return result
@@ -82,3 +84,9 @@ class Implementation:
                 f'SET last_search_tags = EXCLUDED.last_search_tags;'
         result = self.connection.execute_raw_query(query)
         return result
+
+    def save_graph_metadata(self, graph_metadata):
+        graph_name = graph_metadata.get_graph_name()
+        table_name = METADATA_TABLE_NAME(graph_name)
+        metadata_frame = graph_metadata.get_single_frame()
+        self.save_frame_to_new_table(table_name, metadata_frame, {})

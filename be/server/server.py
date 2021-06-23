@@ -6,7 +6,7 @@ from flask_cors import CORS
 from werkzeug.routing import IntegerConverter, FloatConverter
 
 from be.configuration import CONFIGURATIONS
-from be.persistency.nice_abstraction import singletonNiceAbstraction
+from be.persistency.persistence_api import persistence_api
 from be.server.single_graph_api import single_graph_api, check_graph_exists
 from be.server.user_data_api import user_data_api
 
@@ -27,7 +27,7 @@ app.before_request_funcs = {
     'single_graph_api': [check_graph_exists]
 }
 
-singletonNiceAbstraction.ensure_user_table_exists()
+persistence_api.ensure_user_table_exists()
 
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')

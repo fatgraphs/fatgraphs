@@ -46,8 +46,8 @@ class TilesRenderer:
             for t in tuples:
                 # TODO: check that width and height are the same: in thoery we implicityl rely on this equality
 
-                min_coordinate = self.metadata.graph_metadata['min'][0]
-                max_coordinate = self.metadata.graph_metadata['max'][0]
+                min_coordinate = self.metadata.get_min_coordinate()
+                max_coordinate = self.metadata.get_max_coordinate()
                 side = max_coordinate - min_coordinate
 
                 fit = (

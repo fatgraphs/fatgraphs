@@ -21,11 +21,17 @@ def to_pd_frame(raw_result):
     return df
 
 
-class NiceAbstraction:
+class PersistenceAPI:
     '''
     Mehtods of here should return results that are easy to work with: either primitive types or pandas frames.
     '''
+
+    instantiated = False
+
     def __init__(self, connection_string):
+        if PersistenceAPI.instantiated:
+            raise Exception("PersistenceAPI is a singleton, some parts of the code are initialising it twice")
+        PersistenceAPI.instantiated = True
         self.connection = DbConnection(connection_string)
         self.impl = Implementation(self.connection)
 
@@ -37,20 +43,20 @@ class NiceAbstraction:
         """
         self.impl.ensure_user_data_table()
 
-    def update_recent_tags(self, tag):
+    def update_recent_tags(self, signle_tag):
         """
         Updates the recent tag of the default user.
         The tags are stored as a string of this shape:
 
         "tag1 tag2 tag3 tag4 tag5"
 
+        :param signle_tag:string, it's the latest tag, used by a user
         :param tag_list_as_string:
         :return:
         """
-        raw_result = self.impl.get_recent_tags()
-        df = to_pd_frame(raw_result)
+        df = self.get_recent_tags()
         current = df['last_search_tags'].values[0].split(' ')
-        current.insert(0, tag)
+        current.insert(0, signle_tag)
         updated = current[0:5]
         updated = ' '.join(updated)
         updated = updated.strip()
@@ -61,30 +67,32 @@ class NiceAbstraction:
         df = to_pd_frame(raw_result)
         return df
 
+    def create_metadata_table(self, graph_metadata):
+        self.impl.save_graph_metadata(graph_metadata)
 
-
-    def create_metadata_table(self, graph_name, graph_metadata):
-        table_name = METADATA_TABLE_NAME(graph_name)
-        self.impl.save_frame_to_new_table(table_name, graph_metadata, {})
 
     def create_vertex_table(self, graph_name, layout, vertices_labels, id_to_eth):
-        # TODO now only positions ae saved, in the future this table will contain ALL info related to vertices (degree, size, shape, label ...)
-
+        # TODO now only positions ae saved, in the future this table will contain ALL info related to vertices (degree, size, shape, label ...
         # TODO refactor
         table_name = VERTEX_TABLE_NAME(graph_name)
         geopandas_frame = to_geopandas(layout.edge_ids_to_positions.to_pandas())
 
+        # all vertex IDS to position
         s = geopandas_frame[['source_id', 'source_geo']].rename(columns={'source_id': 'id', 'source_geo': 'pos'})
         t = geopandas_frame[['target_id', 'target_geo']].rename(columns={'target_id': 'id', 'target_geo': 'pos'})
         geopandas_frame = pd.concat([s, t], axis=0).drop_duplicates()
 
-        merge = geopandas_frame.merge(vertices_labels.vertices_labels[['vertex', 'label', 'type']], how='left',
-                                      left_on='id', right_on='vertex')
+        # labels & type for those that have it
+        merge = geopandas_frame.merge(vertices_labels.vertices_labels[['vertex', 'label', 'type']],
+                                      how='left',
+                                      left_on='id',
+                                      right_on='vertex')
         first = merge.groupby('id', as_index=False).first().drop(columns=['vertex'])
 
+        # id to eth address
         id_to_eth = id_to_eth.rename(columns={'vertex': 'id', 'address': 'eth'})
-        first_merge = first.merge(id_to_eth, on='id')
-        all_in_one_frame = first_merge
+        all_in_one_frame = first.merge(id_to_eth, on='id')
+
         all_in_one_frame['size'] = layout.vertex_sizes
         column_types = {'pos': Geometry('POINT', srid=SRID)}
         self.impl.save_frame_to_new_table(table_name, all_in_one_frame, column_types)
@@ -93,8 +101,8 @@ class NiceAbstraction:
         # TODO
         pass
 
-    def get_closest_point(self, x, y, table):
-        raw_result = self.impl.get_closest_point(x, y, table)
+    def get_closest_vertex(self, x, y, graph_name):
+        raw_result = self.impl.get_closest_vertex(x, y, graph_name)
         df = to_pd_frame(raw_result)
         return df
 
@@ -104,13 +112,12 @@ class NiceAbstraction:
         return df
 
     def get_labelled_vertices(self, graph_name):
-        table_name = VERTEX_TABLE_NAME(graph_name)
-        raw_result = self.impl.get_labelled_vertices(table_name)
+        raw_result = self.impl.get_labelled_vertices(graph_name)
         df = to_pd_frame(raw_result)
         return df
 
     def is_graph_in_db(self, graph_name):
-        # TODO add edge_table and tiles_table and plot_table when they will exist
+        # TODO add edge_table
         tables_must_exist = [VERTEX_TABLE_NAME(graph_name),
                              METADATA_TABLE_NAME(graph_name)]
         return all(
@@ -122,4 +129,4 @@ class NiceAbstraction:
 
 
 # only one instance
-singletonNiceAbstraction = NiceAbstraction(f'postgresql://{DB_USER_NAME}:{DB_PASSWORD}@{DB_URL}/{DB_NAME}')
+persistence_api = PersistenceAPI(f'postgresql://{DB_USER_NAME}:{DB_PASSWORD}@{DB_URL}/{DB_NAME}')

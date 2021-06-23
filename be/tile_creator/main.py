@@ -4,7 +4,7 @@ from be.tile_creator.src.graph.token_graph import TokenGraph
 from be.tile_creator.src.layout.visual_layout import VisualLayout
 from be.tile_creator.src.metadata.verticeslabels import VerticesLabels
 from be.persistency.db_connection import DbConnection
-from be.persistency.nice_abstraction import NiceAbstraction, singletonNiceAbstraction
+from be.persistency.persistence_api import PersistenceAPI, persistence_api
 from be.tile_creator.src.render.edge_distribution_plot_renderer import EdgeDistributionPlotRenderer
 from be.tile_creator.src.render.tiles_renderer import TilesRenderer
 import os
@@ -27,9 +27,9 @@ def main(configurations):
 
     metadata = TokenGraphMetadata(graph, visual_layout, configurations, vertices_labels)
 
-    graph_name = metadata.graph_metadata['graph_name'][0]
-    singletonNiceAbstraction.create_metadata_table(graph_name, metadata.graph_metadata)
-    singletonNiceAbstraction.create_vertex_table(graph_name, visual_layout, vertices_labels, graph.address_to_id)
+    graph_name = metadata.get_graph_name()
+    persistence_api.create_metadata_table(metadata)
+    persistence_api.create_vertex_table(graph_name, visual_layout, vertices_labels, graph.address_to_id)
 
     gt_graph = GraphToolTokenGraph(graph.edge_ids_to_amount, visual_layout, metadata, configurations['curvature'])
 

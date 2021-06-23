@@ -23,7 +23,7 @@ class GraphToolTokenGraph:
         self._make_bezier_points()
         # edge transparency needs to be populated at run-time
         self.edge_transparencies = []
-        for zl in range(0, metadata.graph_metadata.zoom_levels[0]):
+        for zl in range(0, metadata.get_zoom_levels()):
             self.edge_transparencies.append(self.g.new_edge_property("vector<float>"))
 
     def _make_bezier_points(self):
