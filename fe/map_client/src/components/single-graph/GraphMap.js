@@ -1,17 +1,16 @@
 import React from 'react';
 import './GraphMap.css';
 import L from 'leaflet';
-import {
-    convert_graph_coordinate_to_map,
-    convert_map_coordinate_to_graph,
-    parseTuple
-} from "../../utils/CoordinatesUtil";
 import UrlComposer from "../../utils/UrlComposer";
 import {fetchClosestPoint} from "../../API_layer";
 import {symmetricDifference} from "../../utils/Utils";
 import LabelVertex from "./LabelVertex";
 import ReactDOMServer from 'react-dom/server';
-import ReactDOM from 'react-dom'
+import {
+    convert_graph_coordinate_to_map,
+    convert_map_coordinate_to_graph,
+    parseTuple
+} from "../../utils/CoordinatesUtil";
 
 let configs = require('../../../../../configurations.json');
 
@@ -137,6 +136,8 @@ class GraphMap extends React.Component {
                         y: closest_vertex['y'],
                         eth: closest_vertex['eth'],
                         size: closest_vertex['size'],
+                        labels: closest_vertex['labels'],
+                        types: closest_vertex['types'],
                         marker: undefined
                     }
                 })
@@ -149,11 +150,28 @@ class GraphMap extends React.Component {
         this.state.myMap.removeLayer(marker)
     }
 
-    make_vertex_popup(title, address) {
+    make_vertex_popup(eth_address, labels, types) {
+
+        let unique_types = Array.from(new Set(types));
+        let unique_labels = Array.from(new Set(labels));
+        let labels_string = labels === null ? 'NA' : unique_labels.join(', ');
+        let types_string = types === null ? 'NA' : unique_types.join(', ');
+
+
         let link_etherscan = `<div>
-                                <h3>${title}</h3>
-                                <a href="https://etherscan.io/address/${address}"
-                                    target="_blank">${address}</a>
+
+                                <div>
+                                    <span>Types : </span>
+                                    <span>${types_string}</span>
+                                </div>
+                                
+                                <div>
+                                    <span>Labels : </span>
+                                    <span style="white-space: nowrap;">${labels_string}</span>
+                                </div>
+                               
+                                <a href="https://etherscan.io/address/${eth_address}"
+                                    target="_blank">${eth_address}</a>
                             </div>`
         let popup = L.popup()
             .setContent(link_etherscan)
@@ -165,8 +183,14 @@ class GraphMap extends React.Component {
 
         let markers_labels = {}
 
+        // console.log(">>>>>>>>>>>>>>>>>>>>>>")
+        // console.log(this.props.vertices_metadata)
+
         let selected_types = this.props.vertices_metadata
-            .filter(rec => this.props.selected_tags.includes(rec['type']))
+            .filter(vm => {
+                let vertex_types = vm['types'].flat();
+                return vertex_types.some(typ => this.props.selected_tags.includes(typ))
+            })
 
         let new_marker_positions = selected_types.map(st => st['pos'])
         let old_marker_positions = Object.keys(this.state.markers_labels)
@@ -184,16 +208,18 @@ class GraphMap extends React.Component {
         }
 
         for (let i in selected_types) {
-            const {pos, type, eth, size} = selected_types[i]
+            const {pos, types, eth, size, labels} = selected_types[i]
 
             let map_coordinate = this.to_map_coordinate(pos)
 
-            let label = this.draw_label(type, eth, map_coordinate);
+            let label = this.draw_text_label(eth, map_coordinate, labels, types);
 
-            let marker = this.make_marker_with_popup('labelled-vertex-marker',
+            let marker = this.make_marker_with_popup(
+                'labelled-vertex-marker',
                 map_coordinate,
-                type,
                 eth,
+                labels,
+                types,
                 [size * 2 * (2 ** this.state.zoom),
                     size * 2 * (2 ** this.state.zoom)
                 ])
@@ -213,22 +239,33 @@ class GraphMap extends React.Component {
         if (Object.keys(this.state.closest_vertex).length === 0) {
             return
         }
-        if(this.state.closest_vertex['marker'] !== undefined && this.state.zoom == this.state.closest_vertex.zoom){
+        if (this.state.closest_vertex['marker'] !== undefined && this.state.zoom == this.state.closest_vertex.zoom) {
             return
         }
 
-        if(this.state.closest_vertex['marker'] !== undefined){
+        if (this.state.closest_vertex['marker'] !== undefined) {
             this.removeMarker(this.state.closest_vertex['marker'])
         }
 
         let graphCoordinate = [Number.parseFloat(this.state.closest_vertex['x']), Number.parseFloat(this.state.closest_vertex['y'])];
         let pos = this.to_map_coordinate(graphCoordinate)
+        let types = this.state.closest_vertex['types']
+        let labels = this.state.closest_vertex['labels']
+
+        // console.log(">>>>>>>>>>")
+        // console.log(types)
+        // console.log(labels)
+
+        console.log(">>>>>>>>")
+        console.log(this.state.closest_vertex['size'])
 
 
-        let marker2 = this.make_marker_with_popup('proximity-marker',
+        let marker2 = this.make_marker_with_popup(
+            'proximity-marker',
             pos,
-            "Eth: ",
             this.state.closest_vertex['eth'],
+            labels,
+            types,
             [this.state.closest_vertex['size'] * (2 ** this.state.zoom),
                 this.state.closest_vertex['size'] * (2 ** this.state.zoom)
             ])
@@ -245,61 +282,65 @@ class GraphMap extends React.Component {
     }
 
 
-    draw_label(text, eth, pos) {
-        let test_html = ReactDOMServer.renderToString(<LabelVertex label={text}/>)
-        let icon = L.divIcon({
-            html: test_html,
-            className: 'label-container'
-        });
-        let marker = L.marker(pos, {icon: icon});
-        marker.bindPopup(this.make_vertex_popup(
-            text,
-            eth)).openPopup();
-        marker.addTo(this.state.myMap);
-        return marker
-    }
+    draw_text_label(eth, pos, labels, types) {
+        // console.log("draw_text_label >>>>")
+        // console.log(types.join(' '))
+        let h = <div>
+            {types.map((typ, index) => <LabelVertex key={index} label={typ}></LabelVertex> )}
+            </div>
 
-    make_marker_with_popup(className, pos, title, eth_addresss, iconSize) {
+                let test_html = ReactDOMServer.renderToString(h)
+                let icon = L.divIcon({
+                    html: test_html,
+                    className: 'label-container'
+                });
+                let marker = L.marker(pos, {icon: icon});
+                marker.bindPopup(this.make_vertex_popup(
+                    eth, labels, types)).openPopup();
+                marker.addTo(this.state.myMap);
+                return marker
+            }
 
-        let myIcon = L.divIcon({className: className, iconSize: iconSize});
-        let marker = L.marker(pos, {icon: myIcon});
+                make_marker_with_popup(className, pos, eth_addresss, labels, types, iconSize) {
+
+                let myIcon = L.divIcon({className: className, iconSize: iconSize});
+                let marker = L.marker(pos, {icon: myIcon});
 
 
-        marker.bindPopup(this.make_vertex_popup(
-            title,
-            eth_addresss)).openPopup();
-        return marker
-    }
+                marker.bindPopup(this.make_vertex_popup(
+                eth_addresss, labels, types)).openPopup();
+                return marker
+            }
 
-    to_map_coordinate(coordinate) {
-        let graph_coord = coordinate;
-        if (!Array.isArray(coordinate)) {
-            graph_coord = parseTuple(coordinate)
-        }
-        let pos = convert_graph_coordinate_to_map(
-            graph_coord,
-            this.props.graph_metadata['min'],
-            this.props.graph_metadata['max'],
-            this.props.graph_metadata['tile_size']);
-        return pos;
-    }
+                to_map_coordinate(coordinate) {
+                let graph_coord = coordinate;
+                if (!Array.isArray(coordinate)) {
+                graph_coord = parseTuple(coordinate)
+            }
+                let pos = convert_graph_coordinate_to_map(
+                graph_coord,
+                this.props.graph_metadata['min'],
+                this.props.graph_metadata['max'],
+                this.props.graph_metadata['tile_size']);
+                return pos;
+            }
 
-    to_graph_coordinate(coordinate) {
-        let map_coord = coordinate;
-        if (!Array.isArray(coordinate)) {
-            map_coord = parseTuple(coordinate)
-        }
-        let pos = convert_map_coordinate_to_graph(
-            map_coord,
-            this.props.graph_metadata['min'],
-            this.props.graph_metadata['max'],
-            this.props.graph_metadata['tile_size']);
-        return pos;
-    }
-}
+                to_graph_coordinate(coordinate) {
+                let map_coord = coordinate;
+                if (!Array.isArray(coordinate)) {
+                map_coord = parseTuple(coordinate)
+            }
+                let pos = convert_map_coordinate_to_graph(
+                map_coord,
+                this.props.graph_metadata['min'],
+                this.props.graph_metadata['max'],
+                this.props.graph_metadata['tile_size']);
+                return pos;
+            }
+                }
 
-GraphMap.propTypes = {};
+                GraphMap.propTypes = {};
 
-GraphMap.defaultProps = {};
+                GraphMap.defaultProps = {};
 
-export default GraphMap;
+                export default GraphMap;

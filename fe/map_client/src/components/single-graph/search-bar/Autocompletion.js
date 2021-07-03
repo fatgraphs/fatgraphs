@@ -12,8 +12,8 @@ class Autocompletion extends Component {
     }
 
     async componentDidMount() {
-        let available_types = this.props.vertices_metadata.map(rec => rec['type']);
-        let no_duplicates = Array.from(new Set(available_types));
+        let available_types = this.props.vertices_metadata.map(_ => _['types']);
+        let no_duplicates = Array.from(new Set(available_types.flat()));
         this.setState({availableStrings: no_duplicates})
     }
 

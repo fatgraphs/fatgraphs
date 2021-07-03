@@ -10,7 +10,7 @@ class LabelVertex extends Component {
     render() {
         return (
             <div className={'label-container'}>
-                <span className={'label-vertex'}>{this.props.label}</span>
+                <span className={'label-vertex whitespace-nowrap'}>{this.props.label}</span>
             </div>
         );
     }

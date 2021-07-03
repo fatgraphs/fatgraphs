@@ -32,7 +32,7 @@ def shift_and_scale(original_values, target_median, target_max):
     shifted_values = original_values - original_median
     scaled_and_shifted_values = shifted_values * (targetMedToMax / medToMax) + target_median
     # TODO define a better minimum
-    MINIMUM = 0.1
+    MINIMUM = 0.000001
     # if MINIMUM > target_max:
     #     raise Exception("Minimum is greater than target_max, something is wrong.")
     scaled_and_shifted_values = np.clip(scaled_and_shifted_values, MINIMUM, max(2, target_max))

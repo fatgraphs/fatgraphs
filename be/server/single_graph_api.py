@@ -28,7 +28,7 @@ def get_graph_metadata(graph_name):
 
 
 @single_graph_api.route(CONFIGURATIONS['endpoints']['vertices_metadata'] + '/<graph_name>')
-def get_nodes_metadata(graph_name):
+def get_vertices_metadata(graph_name):
     ids = persistence_api.get_labelled_vertices(graph_name)
     ids['st_astext'] = ids['st_astext'].apply(wkt_to_x_y_list).apply(tuple).apply(str)
     ids = ids.rename(columns={'st_astext': 'pos'})
@@ -70,7 +70,11 @@ def get_closest_vertex(graph_name, x, y):
     eth = db_query_result['eth'][0]
     closest_point = wkt_to_x_y_list(db_query_result['st_astext'][0])
     size = db_query_result['size'][0]
+    vertex_labels = db_query_result['labels'][0]
+    vertex_types = db_query_result['types'][0]
     return {'eth': eth,
             'x': closest_point[0],
             'y': closest_point[1],
-            'size': size}
+            'size': size,
+            'types': vertex_types,
+            'labels': vertex_labels}
