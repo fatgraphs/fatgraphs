@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
 
+const configs = require('configurations')
+
 class GraphThumbnail extends Component {
 
     constructor(props) {
@@ -9,8 +11,9 @@ class GraphThumbnail extends Component {
 
     render() {
         return <>
-            <div className={"m-2 p-1 border-4 border-black bg-gray-100 border-opacity-75 cursor-pointer hover:bg-gray-300"}
+            <div className={"m-2 p-1 border-1 border-white cursor-pointer hover:bg-gray-300 text-center"}
                  onClick={this.handleClick}>
+                <img src={configs['endpoints']['base']+"/tokengallery/tile/"+this.props.name+"/0/0/0.png"}/>
                 <p>{this.props.name}</p>
             </div>
         </>;
