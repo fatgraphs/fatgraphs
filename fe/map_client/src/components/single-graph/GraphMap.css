@@ -38,7 +38,10 @@
     background-color: rgba(0, 0, 0, 0);
 }
 .label-vertex {
-    color: lightblue;
+    color: white;
+    background-color: rgba(0,0,0,0.75);
+    padding: 2px;
+    border: 1px solid white;
     position: relative;
     top: 0.5rem;
 }
