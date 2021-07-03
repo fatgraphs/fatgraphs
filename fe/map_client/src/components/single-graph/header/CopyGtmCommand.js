@@ -43,7 +43,8 @@ class CopyGtmCommand extends Component {
             " --med_size " + this.props.graph_metadata.med_vertex_size +
             " --max_size " + this.props.graph_metadata.max_vertex_size +
             " --curvature " + this.props.graph_metadata.curvature +
-            " --mean_t  " + this.props.graph_metadata.tile_based_mean_transparency
+            " --mean_t  " + this.props.graph_metadata.tile_based_mean_transparency +
+            " --labels " + this.props.graph_metadata.labels
         return build;
     }
 }
