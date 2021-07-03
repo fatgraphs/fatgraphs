@@ -6,23 +6,23 @@ from be.utils.utils import calculate_diagonal_square_of_side
 
 
 class EdgeDistributionPlotRenderer:
+
     BIN_FREQUENCY = 50
 
-    def __init__(self, zoom_levels, edge_lengths, edge_transparencies, output_folder, side_graph_space, tile_size):
-        self.side_graph_space = side_graph_space
-        self.zoom_levels = zoom_levels
-        self.edge_lenghts = edge_lengths
-        self.edge_transparencies = edge_transparencies
-        self.output_folder = output_folder
-        self.min_length = int(min(self.edge_lenghts))
-        self.max_length = int(max(self.edge_lenghts))
+    def __init__(self, configurations, visual_layout):
+        self.side_graph_space = visual_layout.max - visual_layout.min
+        self.zoom_levels = configurations['zoom_levels']
+        self.edge_lengths = visual_layout.edge_lengths
+        self.edge_transparencies = visual_layout.edge_transparencies
+        self.output_folder = configurations['output_folder']
+        self.min_length = int(min(self.edge_lengths))
+        self.max_length = int(max(self.edge_lengths))
         self.step = math.ceil((self.max_length - self.min_length) / EdgeDistributionPlotRenderer.BIN_FREQUENCY)
-        self.side_graph_space = side_graph_space
-        self.tile_size = tile_size
+        self.tile_size = configurations['tile_size']
 
     def render(self):
         for zl in range(0, self.zoom_levels):
-            self.generate_distribution_img(list(self.edge_lenghts), zl)
+            self.generate_distribution_img(list(self.edge_lengths), zl)
 
     def generate_distribution_img(self, edge_lengths, zoom_level):
         longest_theoretical_edge_px = calculate_diagonal_square_of_side(self.tile_size)
@@ -65,7 +65,7 @@ class EdgeDistributionPlotRenderer:
             yyy = ax1.twinx()  # instantiate a second axes that shares the same x-axis
             color = 'tab:blue'
             yyy.set_ylabel('Transparency', color=color)  # we already handled the x-label with ax1
-            yyy.scatter(self.edge_lenghts, self.edge_transparencies[zoom_level], color=color)
+            yyy.scatter(self.edge_lengths, self.edge_transparencies[zoom_level], color=color)
             # where = int(np.where(y == max(y))[0][0])
             # yyy.axvline(x=x[where], ymin=0, ymax=max(edge_lengths))
             mean = np.mean(self.edge_transparencies[zoom_level])

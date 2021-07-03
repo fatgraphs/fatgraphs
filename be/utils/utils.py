@@ -209,3 +209,19 @@ def wkt_to_x_y_list(wkt):
     """
     p = wkt.split('(')[-1].split(')')[0].split(' ')
     return [float(p[0]), float(p[1])]
+
+
+def convert_graph_coordinate_to_map(source_x, source_y, target_x, target_y,
+                                    source_x_pixel, source_y_pixel, target_x_pixel, target_y_pixel,
+                                    tile_size, min_coordinate, max_coordinate):
+    """
+    This function is specifically written to work with Rapids apply method: the apply method applies an operation
+    on a GPU frame row by row.
+    """
+    graph_side = max_coordinate - min_coordinate
+    for i, (xs, ys, xt, yt) in enumerate(zip(source_x, source_y, target_x, target_y)):
+        scaling_factor = tile_size / graph_side
+        source_x_pixel[i] = (xs + abs(min_coordinate)) * scaling_factor
+        source_y_pixel[i] = (ys + abs(min_coordinate)) * scaling_factor
+        target_x_pixel[i] = (xt + abs(min_coordinate)) * scaling_factor
+        target_y_pixel[i] = (yt + abs(min_coordinate)) * scaling_factor
