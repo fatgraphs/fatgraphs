@@ -3,6 +3,7 @@ import numpy as np
 from numpy.random import randint
 
 from be.tile_creator.src.graph.token_graph import TokenGraph
+from be.tile_creator.src.layout.visual_layout import VisualLayout
 from be.tile_creator.src.render.edge_distribution_plot_renderer import EdgeDistributionPlotRenderer
 from be.tile_creator.src.render.transparency_calculator import TransparencyCalculator
 from be.tile_creator.test.constants import TEST_DATA, TEST_DIR
@@ -16,22 +17,21 @@ class TestRenderer(unittest.TestCase):
     TILE_SIZE = 256
     transparency_calculator = None
     plot_renderer = None
+    layout = None
 
     @classmethod
     def setUpClass(cls):
-        config = get_final_configurations({'--csv': TEST_DATA, '-z': 4},
-                                          TEST_DIR, "test_graph")
-        cls.transparency_calculator = TransparencyCalculator(cls.SIDE_GRAPH, config)
+        default_config = get_final_configurations({'--csv': TEST_DATA, '-z': 4},
+                                                  TEST_DIR, "test_graph")
+        cls.transparency_calculator = TransparencyCalculator(cls.SIDE_GRAPH, default_config)
         cls.graph = TokenGraph(TEST_DATA, {'dtype': {'amount': object}})
         # fake_edges = list(range(0, cls.LONGEST))
         fake_edges = randint(1, cls.LONGEST, 200)
         fake_edges = np.append(fake_edges, cls.LONGEST)
-        cls.plot_renderer = EdgeDistributionPlotRenderer(4,
-                                                         fake_edges,
-                                                         cls.transparency_calculator.calculate_edge_transparencies(fake_edges),
-                                                         TEST_DIR,
-                                                         cls.SIDE_GRAPH,
-                                                         cls.TILE_SIZE)
+        cls.layout = VisualLayout(cls.graph, default_config)
+        cls.layout.edge_transparencies = cls.transparency_calculator.calculate_edge_transparencies(
+            cls.layout.edge_lengths)
+        cls.plot_renderer = EdgeDistributionPlotRenderer(default_config, cls.layout)
 
     def test_initialisation(cls):
         cls.assertIsNotNone(cls.transparency_calculator)
@@ -39,4 +39,3 @@ class TestRenderer(unittest.TestCase):
 
     def test_it_produces_plot_imgs(cls):
         cls.plot_renderer.render()
-
