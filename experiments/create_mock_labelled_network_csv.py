@@ -1,10 +1,14 @@
+import os
+
 import pandas as pd
 import numpy as np
 
-from be.configuration import LABELS_PATH, MEDIUM_GRAPH_RAW_PATH
+from be.configuration import data_folder
 
 # load the medium graph and substitute some node addresses with addresses present in the label list.
 # This is done because otherwise no node in the medium graph would match a node in the label list.
+MEDIUM_GRAPH_RAW_PATH = os.path.join(data_folder, 'medium.csv')
+LABELS_PATH = os.path.join(data_folder, 'labels.csv')
 
 raw = pd.read_csv(MEDIUM_GRAPH_RAW_PATH, dtype={'amount': object})
 labels = pd.read_csv(LABELS_PATH)
