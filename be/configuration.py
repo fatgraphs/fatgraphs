@@ -1,14 +1,13 @@
+import multiprocessing
 import os
 import json
 
 this_file_dir = os.path.dirname(os.path.realpath(__file__))
 data_folder = os.path.join(this_file_dir, 'data')
 
-LARGE_GRAPH_RAW_PATH = os.path.join(data_folder, 'large.csv')
-MEDIUM_GRAPH_RAW_PATH = os.path.join(data_folder, 'medium.csv')
-SMALL_GRAPH_RAW_PATH = os.path.join(data_folder, 'small.csv')
-MOCK_LABELLED_RAW_PATH = os.path.join(data_folder, 'mock_net_labelled.csv')
-LABELS_PATH = os.path.join(data_folder, 'labels.csv')
+AVAILABLE_CORES = multiprocessing.cpu_count()
+print(f'{AVAILABLE_CORES} cores were detected on your system')
+MAX_CORES = AVAILABLE_CORES - 2  # the parallelization will use at most (AVAILABLE_CORES - CORES_UNUSED) cores
 
 # DB CONFIGURATIONS
 DB_USER_NAME = 'postgres'

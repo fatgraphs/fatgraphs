@@ -1,4 +1,3 @@
-import asyncio
 import math
 import os
 from copy import deepcopy
@@ -6,9 +5,9 @@ from multiprocessing.context import Process
 
 import numpy as np
 from graph_tool.draw import graph_draw
-import pandas as pd
+
+from be.configuration import MAX_CORES
 from be.tile_creator.src.graph.gt_token_graph import GraphToolTokenGraph
-from be.tile_creator.src.render.transparency_calculator import TransparencyCalculator
 
 
 class TilesRenderer:
@@ -22,7 +21,7 @@ class TilesRenderer:
         self.metadata = metadata
         self.configurations = configurations
         self.transparency_calculator = transparency_calculator
-        self.tasks = []
+        self.rendering_processes = []
 
     def render(self):
         rgba = [[1.0] * len(self.edge_transparencies[0])] * 4
@@ -41,7 +40,6 @@ class TilesRenderer:
             for x in range(0, divide_by):
                 for y in range(0, divide_by):
                     tuples.append((x, y))
-
 
             for t in tuples:
                 # TODO: check that width and height are the same: in thoery we implicityl rely on this equality
@@ -63,18 +61,27 @@ class TilesRenderer:
                 # self._render(fit, file_name, edge_colors, vertex_size, edge_size)
 
                 # Parallel code
-                p = Process(target=self._render, args=(fit, file_name, edge_colors, vertex_size, edge_size))
-                self.tasks.append(p)
+                rendering_process = Process(target=self._render,
+                                            args=(fit, file_name, edge_colors, vertex_size, edge_size))
+                self.rendering_processes.append(rendering_process)
 
             # This ensures that vertices and edges maintain the same apparent size when zooming.
             # Without it you would notice that vertices and edges shrink when zooming.
             self.gt_graph.vertex_sizes.a *= 2
             self.gt_graph.edge_thickness.a *= 2
+
         # Parallel code
-        for p in self.tasks:
-            p.start()
-        for p in self.tasks:
-            p.join()
+        started = []
+        for rendering_process in self.rendering_processes:
+
+            if len(started) >= MAX_CORES:
+                started[0].join()
+                started = started[1::]
+            rendering_process.start()
+            started.append(rendering_process)
+
+        for rendering_process in started:
+            rendering_process.join()
 
     def _render(self, fit, file_name, edge_colors, vertex_size, edge_size):
         # if np.isnan(self.gt_graph.vertex_positions.get_2d_array([0, 1])).any() or \
