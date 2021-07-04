@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import Header from "./header/Header";
 import {withRouter} from "react-router-dom";
 import SidePanel from "./SidePanel";
-import GraphMap from "./GraphMap";
+import GraphMap from "./graph-map/GraphMap";
 import {fetch_recent_tags, fetchGraphMetadata, fetchVerticesMetadata} from "../../API_layer";
 import SearchBar from "./search-bar/SearchBar";
 import {symmetricDifference} from "../../utils/Utils";
