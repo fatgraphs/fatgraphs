@@ -9,9 +9,9 @@ class DeleatableTag extends Component {
 
     render() {
         return (
-            <div className={'border-black ml-1 border-2 p-2 flex flex-row items-center'}
+            <div className={'border-black ml-1 border-2 p-2 flex flex-row items-center relative'}
                  onClick={this.remove}>
-                <div className={'w-5 mr-1 border-red-600 border-2 bg-red-100 text-center'}>x</div>
+                <div className={'absolute -top-3 -right-3 h-5 w-5 leading-4 justify-center mr-1 border-red-600 border-2 bg-red-100 text-center'}>x</div>
                 <span>{this.props.tag}</span>
             </div>
         );

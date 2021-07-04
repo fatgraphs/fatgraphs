@@ -2,7 +2,7 @@ from be.configuration import DB_USER_NAME, DB_PASSWORD, DB_URL, DB_NAME, METADAT
 from be.persistency.db_connection import DbConnection
 from be.persistency.implementation import Implementation, to_geopandas
 from geoalchemy2 import Geometry
-from sqlalchemy import String
+from sqlalchemy import String, ARRAY
 import pandas as pd
 
 """
@@ -83,18 +83,24 @@ class PersistenceAPI:
         geopandas_frame = pd.concat([s, t], axis=0).drop_duplicates()
 
         # labels & type for those that have it
-        merge = geopandas_frame.merge(vertices_labels.vertices_labels[['vertex', 'label', 'type']],
+        merge = geopandas_frame.merge(vertices_labels.vertices_labels[['vertex', 'labels', 'types']],
                                       how='left',
                                       left_on='id',
                                       right_on='vertex')
-        first = merge.groupby('id', as_index=False).first().drop(columns=['vertex'])
+
+        merge = merge.drop(columns=['vertex'])
 
         # id to eth address
         id_to_eth = id_to_eth.rename(columns={'vertex': 'id', 'address': 'eth'})
-        all_in_one_frame = first.merge(id_to_eth, on='id')
+        all_in_one_frame = merge.merge(id_to_eth, on='id')
 
+        # TODO: this is a quick fix, understand why they need to be reordered.
+        # Consider keeping layout.vertex_sizes as a pandas frame instead of a list so merge can  be used
+        all_in_one_frame = all_in_one_frame.sort_values(['id']).reset_index(drop=True)
         all_in_one_frame['size'] = layout.vertex_sizes
-        column_types = {'pos': Geometry('POINT', srid=SRID)}
+        column_types = {'pos': Geometry('POINT', srid=SRID),
+                        'types': ARRAY(String, dimensions=1),
+                        'labels': ARRAY(String, dimensions=1)}
         self.impl.save_frame_to_new_table(table_name, all_in_one_frame, column_types)
 
     def create_edge_table(self):
@@ -130,3 +136,5 @@ class PersistenceAPI:
 
 # only one instance
 persistence_api = PersistenceAPI(f'postgresql://{DB_USER_NAME}:{DB_PASSWORD}@{DB_URL}/{DB_NAME}')
+
+
