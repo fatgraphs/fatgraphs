@@ -23,6 +23,7 @@ class GraphMap extends React.Component {
             center: 'world',
             myMap: null,
             closest_vertex: undefined,
+            zoom: 0
         }
         this.bindOnClickCallback = this.bindOnClickCallback.bind(this)
         this.bindOnZoomCallback = this.bindOnZoomCallback.bind(this)
