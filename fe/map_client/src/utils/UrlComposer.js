@@ -30,6 +30,14 @@ class UrlComposer {
             graph_name +
             '/{z}/{x}/{y}.png?{randint}'
     }
+
+    static matching_vertices(graph_name, tag_object) {
+        return configs['endpoints']['base'] +
+            configs['endpoints']['matching_vertex'] + "/" +
+            graph_name + "/" +
+            tag_object['tag_type'] + "/" +
+            tag_object['tag'];
+    }
 }
 
 export default UrlComposer;

@@ -3,11 +3,12 @@
     "base": "http://127.0.0.1:5000",
     "available_graphs": "/tokengallery/graphs",
     "tile": "/tokengallery/tile",
-    "vertices_metadata": "/tokengallery/vertices-metadata",
+    "matching_vertex": "/tokengallery/matching-vertex",
     "graph_metadata": "/tokengallery/graph-metadata",
     "edge_distributions": "/tokengallery/edge_distributions",
     "proximity_click": "/tokengallery/proximity-click",
-    "user_recent_tags": "/tokengallery/recent-tag"
+    "user_recent_tags": "/tokengallery/recent-tag",
+    "autocompletion_terms": "/tokengallery/autocompletion"
   },
   "graphs_home": "be/graph-maps",
   "vertices_metadata_file_name": "vertices_metadata.csv",

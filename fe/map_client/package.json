@@ -31,6 +31,7 @@
     "sass-loader": "^11.0.1",
     "style-loader": "^2.0.0",
     "tailwindcss": "^2.0.4",
+    "underscore": "^1.13.1",
     "webpack": "^5.26.3",
     "webpack-cli": "^4.5.0",
     "webpack-dev-server": "^3.11.2"

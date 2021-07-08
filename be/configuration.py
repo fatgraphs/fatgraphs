@@ -6,7 +6,7 @@ this_file_dir = os.path.dirname(os.path.realpath(__file__))
 data_folder = os.path.join(this_file_dir, 'data')
 
 AVAILABLE_CORES = multiprocessing.cpu_count()
-print(f'{AVAILABLE_CORES} cores were detected on your system')
+# print(f'{AVAILABLE_CORES} cores were detected on your system')
 MAX_CORES = AVAILABLE_CORES - 2  # the parallelization will use at most (AVAILABLE_CORES - CORES_UNUSED) cores
 
 # DB CONFIGURATIONS
@@ -17,6 +17,12 @@ DB_NAME = 'test'
 METADATA_TABLE_NAME = lambda graph_name: graph_name + "_metadata"
 VERTEX_TABLE_NAME = lambda graph_name: graph_name + "_vertex"
 USER_TABLE = 'tg_user'
+
+LABELS_TABLE = 'tg_labels'
+LABELS_TABLE_ETH = 'eth'
+LABELS_TABLE_LABEL = 'label'
+LABELS_TABLE_TYPE = 'type'
+
 
 #GIS CONFIGURATIONS
 SRID = 3857

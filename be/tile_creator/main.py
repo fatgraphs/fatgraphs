@@ -1,4 +1,3 @@
-from be.tile_creator.src.graph.gt_token_graph import GraphToolTokenGraph
 from be.persistency.persistence_api import persistence_api
 from be.tile_creator.src.graph.gt_token_graph import GraphToolTokenGraph
 from be.tile_creator.src.graph.token_graph import TokenGraph
@@ -17,7 +16,7 @@ def main(configurations):
 
     visual_layout = VisualLayout(graph, configurations)
 
-    vertices_metadata = VerticesLabels(configurations, graph.address_to_id, visual_layout.vertex_positions)
+    vertices_metadata = VerticesLabels(configurations, graph.address_to_id)
 
     transparency_calculator = TransparencyCalculator(visual_layout.max - visual_layout.min,
                                                      configurations)
@@ -33,7 +32,7 @@ def main(configurations):
     metadata = TokenGraphMetadata(graph, visual_layout, configurations)
 
     persistence_api.create_metadata_table(metadata)
-    persistence_api.create_vertex_table(metadata.get_graph_name(), visual_layout, vertices_metadata,
+    persistence_api.create_vertex_table(metadata.get_graph_name(), visual_layout,
                                         graph.address_to_id)
 
     gt_graph = GraphToolTokenGraph(graph.edge_ids_to_amount, visual_layout, metadata, configurations['curvature'])

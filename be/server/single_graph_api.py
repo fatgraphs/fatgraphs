@@ -27,12 +27,25 @@ def get_graph_metadata(graph_name):
     return metadata_dictionary
 
 
-@single_graph_api.route(CONFIGURATIONS['endpoints']['vertices_metadata'] + '/<graph_name>')
-def get_vertices_metadata(graph_name):
-    ids = persistence_api.get_labelled_vertices(graph_name)
-    ids['st_astext'] = ids['st_astext'].apply(wkt_to_x_y_list).apply(tuple).apply(str)
-    ids = ids.rename(columns={'st_astext': 'pos'})
-    response = ids.to_dict(orient='records')
+@single_graph_api.route(CONFIGURATIONS['endpoints']['matching_vertex']
+                        + '/<graph_name>/<search_method>/<search_query>')
+def get_matching_vertices(graph_name, search_method, search_query):
+    """
+    :param graph_name:
+    :param search_method: what field to use in the search
+    :param search_query: what value to match against
+    :return: Returns a list of vertices (objects with position, eth, label and type)
+    matching the search method (e.g. type == dex)
+    """
+    if search_method not in ['type', 'label', 'eth']:
+        raise Exception("search method is not valid.")
+    ids = persistence_api.get_labelled_vertices(graph_name, search_method, search_query)
+    if ids.empty:
+        response = []
+    else:
+        ids['st_astext'] = ids['st_astext'].apply(wkt_to_x_y_list).apply(tuple).apply(str)
+        ids = ids.rename(columns={'st_astext': 'pos'})
+        response = ids.to_dict(orient='records')
     return {'response': response}
 
 
@@ -70,8 +83,12 @@ def get_closest_vertex(graph_name, x, y):
     eth = db_query_result['eth'][0]
     closest_point = wkt_to_x_y_list(db_query_result['st_astext'][0])
     size = db_query_result['size'][0]
-    vertex_labels = db_query_result['labels'][0]
-    vertex_types = db_query_result['types'][0]
+    metadata = persistence_api.get_labelled_vertices(graph_name, 'eth', eth)
+    vertex_types = []
+    vertex_labels = []
+    if not metadata.empty:
+        vertex_types = list(metadata['type'].values)
+        vertex_labels = list(metadata['label'].values)
     return {'eth': eth,
             'x': closest_point[0],
             'y': closest_point[1],

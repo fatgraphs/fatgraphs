@@ -3,11 +3,8 @@ import './GraphMap.css';
 import L from 'leaflet';
 import UrlComposer from "../../../utils/UrlComposer";
 import {fetchClosestPoint} from "../../../API_layer";
-import {symmetricDifference} from "../../../utils/Utils";
-import LabelVertex from "./LabelVertex";
-import ReactDOMServer from 'react-dom/server';
 import ClickClosestVertex from "./ClickClosestVertex";
-import {to_graph_coordinate, to_map_coordinate} from "../../../utils/CoordinatesUtil";
+import {to_graph_coordinate} from "../../../utils/CoordinatesUtil";
 import SelectedVertices from "./SelectedVertices";
 
 let configs = require('../../../../../../configurations.json');
@@ -30,7 +27,6 @@ class GraphMap extends React.Component {
     }
 
     render() {
-
         return <div>
             <div>
                 <div>Zoom level: {this.state.zoom}</div>
@@ -54,7 +50,7 @@ class GraphMap extends React.Component {
         const myMap = this.bindLeafletMapToHtml();
 
         this.clickClosestVertex = new ClickClosestVertex(myMap, this.props.graph_metadata)
-        this.selectedVertices = new SelectedVertices(myMap, this.props.graph_metadata, this.props.vertices_metadata)
+        this.selectedVertices = new SelectedVertices(myMap, this.props.graph_metadata)
 
         this.centerView(myMap);
 
@@ -123,7 +119,6 @@ class GraphMap extends React.Component {
 }
 
 GraphMap.propTypes = {};
-
 GraphMap.defaultProps = {};
 
 export default GraphMap;

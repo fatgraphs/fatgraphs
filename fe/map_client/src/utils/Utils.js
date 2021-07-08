@@ -2,6 +2,8 @@ import L from "leaflet";
 import TextLabelMap from "../components/single-graph/graph-map/LabelVertex";
 import ReactDOMServer from "react-dom/server";
 import React from "react";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faTag} from "@fortawesome/free-solid-svg-icons";
 
 export function symmetricDifference(a, b) {
     /**
@@ -72,19 +74,29 @@ export function removeElement(overlay_element, map) {
 }
 
 export function draw_text_label(eth, pos, labels, types) {
-        // console.log("draw_text_label >>>>")
-        // console.log(types.join(' '))
-        let h = <div>
-            {types.map((typ, index) => <TextLabelMap key={index} label={typ}/>)}
-        </div>
 
-        let test_html = ReactDOMServer.renderToString(h)
-        let icon = L.divIcon({
-            html: test_html,
-            className: ''
-        });
-        let marker = L.marker(pos, {icon: icon});
-        marker.bindPopup(_make_vertex_popup(
-            eth, labels, types)).openPopup();
-        return marker
-    }
+    let h = <div>
+        {types.map((typ, index) => <TextLabelMap key={index} label={typ}/>)}
+    </div>
+
+    let test_html = ReactDOMServer.renderToString(h)
+    let icon = L.divIcon({
+        html: test_html,
+        className: ''
+    });
+    let marker = L.marker(pos, {icon: icon});
+    marker.bindPopup(_make_vertex_popup(
+        eth, labels, types)).openPopup();
+    return marker
+}
+
+export const type_to_icon = {
+    label: <FontAwesomeIcon
+        className={'m-1'}
+        icon={faTag}/>,
+    type: <div
+        className={'flex border-black border-2 rounded-full h-4 w-4 m-1 font-bold text-xs justify-center items-center p-2'}>T</div>,
+    eth: <div
+        className={'flex border-black border-2 h-4 w-8 m-1 text-xs justify-center items-center p-2'}>ETH</div>
+
+}

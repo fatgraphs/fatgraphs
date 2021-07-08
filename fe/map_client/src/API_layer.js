@@ -55,8 +55,8 @@ export function fetchGraphMetadata(graph_name) {
         })
 }
 
-export function fetchVerticesMetadata(graph_name) {
-    let url = UrlComposer.verticesMetadata(graph_name);
+export function fetchAutocompletionTerms() {
+    let url = configs['endpoints']['base'] + configs['endpoints']['autocompletion_terms']
     return fetch(url)
         .then(response =>
             response.json())
@@ -66,14 +66,14 @@ export function fetchVerticesMetadata(graph_name) {
 
 }
 
-export function post_recent_tag(tag) {
+export function post_recent_tag(tag_object) {
     let url = configs['endpoints']['base'] + configs['endpoints']['user_recent_tags'];
     return fetch(url, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify(tag)
+        body: JSON.stringify(tag_object)
     })
         .then(response =>
             response.json())
@@ -90,6 +90,19 @@ export function fetch_recent_tags(){
         .then(response =>
             response.json())
         .then(data => {
+            return data
+        })
+}
+
+export function fetch_matching_vertices(graph_name, tag_object){
+    let url = UrlComposer.matching_vertices(graph_name, tag_object);
+    return fetch(url)
+        .then(response => {
+            console.log(response)
+            return response.json()
+        })
+        .then(data => {
+            console.log(data)
             return data
         })
 }

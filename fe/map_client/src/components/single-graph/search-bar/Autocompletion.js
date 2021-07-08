@@ -1,48 +1,50 @@
 import React, {Component} from 'react';
 import {bool, array, string} from "prop-types";
 import AddableTag from "./AddableTag";
+import {MyContext} from "../../../Context";
 
 class Autocompletion extends Component {
+
+    static contextType = MyContext
 
     constructor(props) {
         super(props);
         this.state = {
-            availableStrings: [],
+            autocomplete_terms: []
         }
     }
 
-    async componentDidMount() {
-        let available_types = this.props.vertices_metadata.map(_ => _['types']);
-        let no_duplicates = Array.from(new Set(available_types.flat()));
-        this.setState({availableStrings: no_duplicates})
+    componentDidMount() {
+        let autocomplete_terms = this.context['autocomplete'];
+        this.setState({
+            autocomplete_terms: autocomplete_terms,
+        })
     }
-
 
     render() {
         let regex = new RegExp('.*' + this.props.current_input.toLowerCase() + '.*');
-        const matchedStrings = this.state.availableStrings.filter(s => s.toLowerCase().match(regex));
 
-
+        const matches = this.state.autocomplete_terms.filter(s => s['tag'].toLowerCase().match(regex));
+        // we use the hidden  property to avoid re-building this long list (slow)
         return (
-            matchedStrings.length > 0 && this.props.visible ?
-                <div className={'relative z-50'}>
-                    <div
+                <div
+                    hidden={matches.length == 0 || ! this.props.visible}
+                    className={'relative z-50'}>
+                    <ul
                         className={'border-black border-2 p-2 flex flex-col absolute top-0 left-0 ml-1 bg-gray-100 w-48 h-48 overflow-y-auto'}>
-                        {this.props.recentTags.map((str, i) => <AddableTag
+                        {this.props.recentTags.map((term, i) => <AddableTag
                             key={i}
-                            tag={str}
+                            tag={term}
                             addTagCallback={this.props.addTagCallback}
                             bg_color={'bg-green-100'}/>)}
-                        {matchedStrings.map((str, i) => <AddableTag
+                        {matches.map((term, i) => <AddableTag
                             key={i + 5}
-                            tag={str}
+                            tag={term}
                             addTagCallback={this.props.addTagCallback}/>
                         )}
-                    </div>
-                </div> :
-                <div/>
-        )
-            ;
+                    </ul>
+                </div>
+        );
     }
 }
 
@@ -50,12 +52,10 @@ Autocompletion.propTypes = {
     current_input: string.isRequired,
     graph_name: string.isRequired,
     visible: bool.isRequired,
-    vertices_metadata: array.isRequired
 };
 
 Autocompletion.defaultProps = {
     current_input: ''
 };
-
 
 export default Autocompletion;

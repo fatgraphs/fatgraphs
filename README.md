@@ -66,7 +66,7 @@ If you now issue a `\dt` command you should see a spatial table that was create.
 
 ### Local DB set-up
 The configuration of the local db is done by settings the relevant variables in be/configuration.py.
-The defaults are a postgres db called `test`, reachable via localhost by a user called 'potgres' with password 1234.
+The defaults are a postgres db called `test`, reachable via localhost by a user called 'postgres' with password 1234.
 You can overwrite those default to match you system configuration by changing the relevant variables in be/configuration.py
 
 Launch a psql session with your desired username and issue the following command:
@@ -75,6 +75,11 @@ Switch to the newly created db with:
 `\connect test (or your chosen db name)`
 Install the extension:
 `CREATE EXTENSION POSTGIS;`
+
+Run `labels_ingestion.py` to put a table with the provided labels and types into the above-created database.
+The script `labels_ingestion.py` takes as argument a path to the csv file with the labels, check the code of `labels_ingestion.py`
+to see what are the required columns.
+
 You should be ready to go.
 
 #### Postgres useful cmd commands

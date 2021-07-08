@@ -14,9 +14,15 @@ def interact_with_recent_tags():
         return {}
     if request.method == 'GET':
         tags = persistence_api.get_recent_tags()
-        response = tags.to_dict(orient='record')
-        tags = response[0]['last_search_tags'].split(' ')
-        return {'response': tags}
+        tags = tags.to_dict(orient='record')
+        tags = tags[0]['last_search_tags']
+        if(len(tags) < 1):
+            response = [[], []]
+        else:
+            zipped = list(zip(tags[0], tags[1]))
+            response = list(map(lambda e: {'tag_type': e[1], 'tag': e[0]}, zipped))
+
+        return {'response': response}
     if request.method == 'OPTIONS':
         # preflight request
         return {}

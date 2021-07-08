@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
+import * as PropTypes from "prop-types";
 import {func, string} from "prop-types";
+import {type_to_icon} from "../../../utils/Utils";
 
 class AddableTag extends Component {
 
@@ -8,10 +10,11 @@ class AddableTag extends Component {
     }
 
     render() {
+        let tag_type = this.props.tag.tag_type;
+        let tag_value = this.props.tag.tag;
         return (
-            <div
+            <li className={'flex flex-row ' + this.props.bg_color + ' dont-lose-focus'}
                 tabIndex={0}
-                className={this.props.bg_color + ' dont-lose-focus'}
                 onKeyDown={(e) => {
                     if (e.code.toLowerCase() !== 'enter') {
                         return;
@@ -21,20 +24,24 @@ class AddableTag extends Component {
                 onClick={() => {
                     this.props.addTagCallback(this.props.tag)
                 }}>
-                {this.props.tag}
-            </div>
+                {type_to_icon[tag_type]}
+                {tag_value}
+            </li>
         );
     }
 }
 
 AddableTag.propTypes = {
     bg_color: string,
-    tag: string.isRequired,
+    term: PropTypes.shape({
+        tag: string,
+        tagType: PropTypes.oneOf(['label', 'type', 'eth']),
+    }),
     addTagCallback: func.isRequired,
 };
 
 AddableTag.defaultProps = {
-    bg_color: 'odd:bg-white'
+    bg_color: 'odd:bg-white',
 };
 
 export default AddableTag;
