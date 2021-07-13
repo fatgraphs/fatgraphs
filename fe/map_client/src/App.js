@@ -6,7 +6,7 @@ import {HashRouter, Route, Switch} from "react-router-dom";
 import About from "./components/about/About";
 import MainNavBar from "./components/MainNavBar";
 import SingleGraphView from "./components/single-graph/SingleGraphView";
-import {fetchAutocompletionTerms} from "./API_layer";
+import {fetchAutocompletionTerms} from "./APILayer";
 import {MyContext} from "./Context";
 
 class App extends Component {
@@ -14,17 +14,15 @@ class App extends Component {
     constructor() {
         super();
         this.state = {
-            autocomplete: {}
+            autocompleteTerms: {}
         }
     }
 
     async componentDidMount() {
         document.title = "Token GraphGallery.js"
         let autocomplete_response = await fetchAutocompletionTerms();
-        console.log('autocomplete')
-        console.log(autocomplete_response)
         this.setState({
-            autocomplete: autocomplete_response['response']
+            autocompleteTerms: autocomplete_response['response']
         })
     }
 
@@ -33,7 +31,7 @@ class App extends Component {
             <HashRouter>
                 <MainNavBar/>
 
-                <MyContext.Provider value={{autocomplete: this.state.autocomplete}}>
+                <MyContext.Provider value={{autocompleteTerms: this.state.autocompleteTerms}}>
                     <Switch>
                         <Route exact path="/" component={Gallery}>
                         </Route>
@@ -41,7 +39,7 @@ class App extends Component {
                         <Route path="/about" component={About}>
                         </Route>
 
-                        <Route path="/graph/:graph_name">
+                        <Route path="/graph/:graphName">
                             <SingleGraphView/>
                         </Route>
 

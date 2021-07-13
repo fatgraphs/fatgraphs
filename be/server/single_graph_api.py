@@ -3,95 +3,103 @@ import os
 from flask import Blueprint, request, safe_join, send_from_directory
 from werkzeug.routing import IntegerConverter
 from be.configuration import CONFIGURATIONS, VERTEX_TABLE_NAME
-from be.persistency.persistence_api import persistence_api
-from be.utils.utils import wkt_to_x_y_list
+from be.persistency.persistence_api import persistenceApi
+from be.utils.utils import wktToXYList
 
 
 class SignedIntConverter(IntegerConverter):
     regex = r'-?\d+'
 
 
-single_graph_api = Blueprint('single_graph_api', __name__)
+singleGraphApi = Blueprint('singleGraphApi', __name__)
 
-def check_graph_exists():
-    graph_name = request.view_args['graph_name']
-    if not persistence_api.is_graph_in_db(graph_name):
-        raise Exception(f'It looks like the graph: {graph_name} was not correctly saved in the db.\n'
+
+def checkGraphExists():
+    graphName = request.view_args['graphName']
+    if not persistenceApi.isGraphInDb(graphName):
+        raise Exception(f'It looks like the graph: {graphName} was not correctly saved in the db.\n'
                         f'some or all db tables are missing, or have the wrong name.')
 
 
-@single_graph_api.route(CONFIGURATIONS['endpoints']['graph_metadata'] + '/<graph_name>')
-def get_graph_metadata(graph_name):
-    metadata_frame = persistence_api.get_graph_metadata(graph_name)
-    metadata_dictionary = metadata_frame.to_dict(orient='records')[0]
-    return metadata_dictionary
+@singleGraphApi.route(CONFIGURATIONS['endpoints']['graphMetadata'] + '/<graphName>')
+def getGraphMetadata(graphName):
+    metadataFrame = persistenceApi.getGraphMetadata(graphName)
+    metadataDictionary = metadataFrame.to_dict(orient='records')[0]
+    return metadataDictionary
 
 
-@single_graph_api.route(CONFIGURATIONS['endpoints']['matching_vertex']
-                        + '/<graph_name>/<search_method>/<search_query>')
-def get_matching_vertices(graph_name, search_method, search_query):
+@singleGraphApi.route(CONFIGURATIONS['endpoints']['matchingVertex']
+                        + '/<graphName>/<searchMethod>/<searchQuery>')
+def getMatchingVertices(graphName, searchMethod, searchQuery):
     """
     :param graph_name:
     :param search_method: what field to use in the search
     :param search_query: what value to match against
     :return: Returns a list of vertices (objects with position, eth, label and type)
-    matching the search method (e.g. type == dex)
+    matching the search method (e.g. type == dex).
+    For each eth matching the provided conditions it ALSO FETCHES ALL THE LABELS AND TYPES (which you may not have asked for).
     """
-    if search_method not in ['type', 'label', 'eth']:
+    if searchMethod not in ['type', 'label', 'eth']:
         raise Exception("search method is not valid.")
-    ids = persistence_api.get_labelled_vertices(graph_name, search_method, search_query)
+    ids = persistenceApi.getLabelledVertices(graphName, searchMethod, searchQuery)
+    ids = ids.drop_duplicates()  # TODO remove duplicates before this point
     if ids.empty:
         response = []
     else:
-        ids['st_astext'] = ids['st_astext'].apply(wkt_to_x_y_list).apply(tuple).apply(str)
+        for eth in ids['eth']:
+            vertices = persistenceApi.getLabelledVertices(graphName, 'eth', eth)
+            ids = ids.append(vertices)
+
+        ids['st_astext'] = ids['st_astext'].apply(wktToXYList).apply(tuple).apply(str)
         ids = ids.rename(columns={'st_astext': 'pos'})
+
+        ids = ids.drop_duplicates()
         response = ids.to_dict(orient='records')
     return {'response': response}
 
 
-@single_graph_api.route(
-    CONFIGURATIONS['endpoints']['tile'] + '/<string:graph_name>/<signed_int:z>/<signed_int:x>/<signed_int:y>.png')
-def get_tile(graph_name, z, x, y):
+@singleGraphApi.route(
+    CONFIGURATIONS['endpoints']['tile'] + '/<string:graphName>/<signed_int:z>/<signed_int:x>/<signed_int:y>.png')
+def getTile(graphName, z, x, y):
     # TODO move the imgs in the DB
     # print("recevied: " + str(z) + " " + str(x) + " " + str(y))
 
-    tile_name = 'z_' + str(z) + 'x_' + str(x) + 'y_' + str(y) + '.png'
-    source = os.path.join(CONFIGURATIONS['graphs_home'], graph_name)
-    join = safe_join(source, tile_name)
-    if os.path.isfile(os.path.join(source, tile_name)):
+    tileName = 'z_' + str(z) + 'x_' + str(x) + 'y_' + str(y) + '.png'
+    source = os.path.join(CONFIGURATIONS['graphsHome'], graphName)
+    join = safe_join(source, tileName)
+    if os.path.isfile(os.path.join(source, tileName)):
         return send_from_directory("../..", join, mimetype='image/jpeg')
     else:
         return 'Not present'
 
 
-@single_graph_api.route(CONFIGURATIONS['endpoints']['edge_distributions'] + '/<graph_name>/<zoom_level>')
-def get_distributions(graph_name, zoom_level):
+@singleGraphApi.route(CONFIGURATIONS['endpoints']['edgeDistributions'] + '/<graphName>/<zoomLevel>')
+def getDistributions(graphName, zoomLevel):
     # TODO move the imgs in the DB
-    path_join = os.path.join(CONFIGURATIONS['graphs_home'], graph_name)
-    distribution_file_names = list(filter(lambda x: 'distribution' in x, os.listdir(path_join)))
-    distribution_file_name = list(filter(lambda x: str(zoom_level) in x, distribution_file_names))[0]
+    pathJoin = os.path.join(CONFIGURATIONS['graphsHome'], graphName)
+    distributionFileNames = list(filter(lambda x: 'distribution' in x, os.listdir(pathJoin)))
+    distributionFileName = list(filter(lambda x: str(zoomLevel) in x, distributionFileNames))[0]
 
-    file = os.path.join(CONFIGURATIONS['graphs_home'], graph_name, distribution_file_name)
+    file = os.path.join(CONFIGURATIONS['graphsHome'], graphName, distributionFileName)
     return send_from_directory("../..", file, mimetype='image/jpeg')
 
 
-@single_graph_api.route(
-    CONFIGURATIONS['endpoints']['proximity_click'] + '/<graph_name>/<float(signed=True):x>/<float(signed=True):y>')
-def get_closest_vertex(graph_name, x, y):
+@singleGraphApi.route(
+    CONFIGURATIONS['endpoints']['proximityClick'] + '/<graphName>/<float(signed=True):x>/<float(signed=True):y>')
+def getClosestVertex(graphName, x, y):
     # return str(x) + str(y) + str(graph_name)
-    db_query_result = persistence_api.get_closest_vertex(x, y, graph_name)
-    eth = db_query_result['eth'][0]
-    closest_point = wkt_to_x_y_list(db_query_result['st_astext'][0])
-    size = db_query_result['size'][0]
-    metadata = persistence_api.get_labelled_vertices(graph_name, 'eth', eth)
-    vertex_types = []
-    vertex_labels = []
+    dbQueryResult = persistenceApi.getClosestVertex(x, y, graphName)
+    eth = dbQueryResult['eth'][0]
+    closestPointPos = wkt_to_x_y_list(dbQueryResult['st_astext'][0])
+    size = dbQueryResult['size'][0]
+    metadata = persistenceApi.getLabelledVertices(graphName, 'eth', eth).drop_duplicates()
+    vertexTypes = []
+    vertexLabels = []
     if not metadata.empty:
-        vertex_types = list(metadata['type'].values)
-        vertex_labels = list(metadata['label'].values)
+        vertexTypes = list(metadata['type'].values)
+        vertexLabels = list(metadata['label'].values)
     return {'eth': eth,
-            'x': closest_point[0],
-            'y': closest_point[1],
+            'pos': closestPointPos,
             'size': size,
-            'types': vertex_types,
-            'labels': vertex_labels}
+            'types': vertexTypes,
+            'labels': vertexLabels}

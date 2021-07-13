@@ -4,13 +4,14 @@ import DescriptionTable from "../../../generic_components/DescriptionTable";
 import EdgeTransparencyPlots from "./EdgeTransparencyPlots";
 
 class GraphNavBar extends Component {
+
     constructor(props) {
         super(props);
     }
 
     render() {
-        let keys = Object.getOwnPropertyNames(this.props.graph_metadata);
-        let values = Object.values(this.props.graph_metadata).map((e) => String(e))
+        let keys = Object.getOwnPropertyNames(this.props.graphMetadata);
+        let values = Object.values(this.props.graphMetadata).map((e) => String(e))
         return (
         <div>
             <nav>
@@ -36,8 +37,8 @@ class GraphNavBar extends Component {
                     />
                 </Route>
                 <Route path={`${this.props.match.path}/edge-length-distribution`}>
-                   <EdgeTransparencyPlots graph_name={this.props.graph_metadata.graph_name}
-                                          zoom_levels={this.props.graph_metadata.zoom_levels}
+                   <EdgeTransparencyPlots graphName={this.props.graphMetadata.graphName}
+                                          zoomLevels={this.props.graphMetadata.zoomLevels}
                    />
                 </Route>
             </Switch>

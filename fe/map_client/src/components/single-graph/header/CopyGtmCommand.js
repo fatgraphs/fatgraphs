@@ -6,7 +6,6 @@ class CopyGtmCommand extends Component {
 
     constructor(props) {
         super(props);
-        console.log(this.props.graph_metadata);
         this.copyGtmCommand = this.copyGtmCommand.bind(this)
         this.generateGtmCommand = this.generateGtmCommand.bind(this)
     }
@@ -31,20 +30,20 @@ class CopyGtmCommand extends Component {
 
     generateGtmCommand() {
         let build = "./gtm.py" +
-            " -n " + this.props.graph_metadata.graph_name +
-            " --csv " + this.props.graph_metadata.source +
-            " --ts " + this.props.graph_metadata.tile_size +
-            " -z " + this.props.graph_metadata.zoom_levels +
-            " --min_t " + this.props.graph_metadata.min_transparency +
-            " --max_t " + this.props.graph_metadata.max_transparency +
-            " --std " + this.props.graph_metadata.std_transparency_as_percentage +
-            " --med_thick " + this.props.graph_metadata.med_edge_thickness +
-            " --max_thick " + this.props.graph_metadata.max_edge_thickness +
-            " --med_size " + this.props.graph_metadata.med_vertex_size +
-            " --max_size " + this.props.graph_metadata.max_vertex_size +
-            " --curvature " + this.props.graph_metadata.curvature +
-            " --mean_t  " + this.props.graph_metadata.tile_based_mean_transparency +
-            " --labels " + this.props.graph_metadata.labels
+            " -n " + this.props.graphMetadata.graphName +
+            " --csv " + this.props.graphMetadata.source +
+            " --ts " + this.props.graphMetadata.tileSize +
+            " -z " + this.props.graphMetadata.zoomLevels +
+            " --min_t " + this.props.graphMetadata.minTransparency +
+            " --max_t " + this.props.graphMetadata.maxTransparency +
+            " --std " + this.props.graphMetadata.stdTransparencyAsPercentage +
+            " --med_thick " + this.props.graphMetadata.medEdgeThickness +
+            " --max_thick " + this.props.graphMetadata.maxEdgeThickness +
+            " --med_size " + this.props.graphMetadata.medVertexSize +
+            " --max_size " + this.props.graphMetadata.maxVertexSize +
+            " --curvature " + this.props.graphMetadata.curvature +
+            " --mean_t  " + this.props.graphMetadata.tileBasedMeanTransparency +
+            " --labels " + this.props.graphMetadata.labels
         return build;
     }
 }

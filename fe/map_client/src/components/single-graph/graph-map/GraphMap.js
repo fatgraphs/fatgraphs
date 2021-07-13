@@ -1,124 +1,220 @@
 import React from 'react';
-import './GraphMap.css';
 import L from 'leaflet';
 import UrlComposer from "../../../utils/UrlComposer";
-import {fetchClosestPoint} from "../../../API_layer";
-import ClickClosestVertex from "./ClickClosestVertex";
-import {to_graph_coordinate} from "../../../utils/CoordinatesUtil";
-import SelectedVertices from "./SelectedVertices";
+import {fetchMatchingVertices, fetchClosestPoint, postVertexMetadata} from "../../../APILayer";
+import {toGraphCoordinate, toMapCoordinate} from "../../../utils/CoordinatesUtil";
+import {MapContainer, Marker, TileLayer} from 'react-leaflet'
+import {generateLargeRandom} from "../../../utils/Utils";
+import {getCircleIcon, getTextLabelIcon, getVertexPopup} from "./VisualElements";
+import _ from "underscore";
 
 let configs = require('../../../../../../configurations.json');
-
 
 class GraphMap extends React.Component {
 
     constructor(props) {
         super(props);
-        this.clickClosestVertex = undefined;
-        this.selectedVertices = undefined;
         this.state = {
-            center: 'world',
-            myMap: null,
-            closest_vertex: undefined,
+            mapRef: undefined,
+            selectedMetadata: [],
+            closestVertex: undefined,
             zoom: 0
         }
         this.bindOnClickCallback = this.bindOnClickCallback.bind(this)
         this.bindOnZoomCallback = this.bindOnZoomCallback.bind(this)
+        this.bindOnZoomCallback = this.bindOnZoomCallback.bind(this)
+        this.mapCreationCallback = this.mapCreationCallback.bind(this)
+    }
+
+
+    async componentDidUpdate(prevProps, prevState, snapshot) {
+        if (_.isEqual(this.props.selectedMetadata, prevProps.selectedMetadata)) {
+            return
+        }
+        let selectedMetadata = await this.getVerticesMatchingMetadata(this.props.selectedMetadata);
+        this.setState({selectedMetadata: selectedMetadata})
+
     }
 
     render() {
-        return <div>
-            <div>
-                <div>Zoom level: {this.state.zoom}</div>
-                <div id="mapid" className={'z-10'}/>
-            </div>
-        </div>
+        const tileUrl = UrlComposer.tileLayerUrl(this.props.graphName);
+        const position = [this.props.graphMetadata.tileSize / -2.0,
+            this.props.graphMetadata.tileSize / 2.0]
+
+
+        return <MapContainer
+            whenCreated={this.mapCreationCallback}
+            className={'h-96 bg-black z-10'}
+            center={position}
+            zoom={0}
+            scrollWheelZoom={true}
+            noWrap={true}
+            crs={L.CRS.Simple}>
+            <TileLayer
+                attribution='tokengallery 2.0'
+                url={tileUrl}
+                randint={generateLargeRandom()}
+                maxZoom={this.props.graphMetadata['zoomLevels'] - 1}
+                tileSize={this.props.graphMetadata.tileSize}
+            />
+            {this.generateCircleWithPopup(this.state.closestVertex, this.state.zoom)}
+            {this.state.selectedMetadata.map((e, i) => {
+                return this.generateTextLabel(e, this.state.zoom)
+            })
+            }
+        </MapContainer>
     }
 
-    componentDidUpdate() {
-        this.clickClosestVertex.update(this.state.zoom, this.state.closest_vertex)
-        this.selectedVertices.update(this.state.zoom, this.props.selected_tags)
+    async getVerticesMatchingMetadata(metadataObjects) {
+        let verticesMatchingMetadata = []
+        for (const metadataObject of metadataObjects) {
+            let response = await fetchMatchingVertices(this.props.graphMetadata.graphName, metadataObject);
+            verticesMatchingMetadata.push(...response['response'])
+        }
+
+        // the same eth may have multiple types and labels
+        let groupedByEth = _.groupBy(verticesMatchingMetadata, 'eth');
+
+        let markers = []
+
+        for (const eth in groupedByEth) {
+
+            const types = groupedByEth[eth].map(obj => obj.type)
+            const labels = groupedByEth[eth].map(obj => obj.label)
+            const {pos, size} = groupedByEth[eth][0]
+            let mapCoordinate = toMapCoordinate(pos, this.props.graphMetadata)
+
+            markers.push({
+                types: types,
+                labels: labels,
+                pos: mapCoordinate,
+                size: size,
+                eth: eth
+            })
+        }
+        return markers;
     }
 
-    componentDidMount() {
-
-        // uncomment if we need to bound the map
-        // let corner1 = L.latLng(0, 0);
-        // let corner2 = L.latLng(- configs['tile_size'], configs['tile_size']);
-        // let bounds = L.latLngBounds(corner1, corner2); // stops panning (scrolling around)  maxBounds: bounds
-
-        const myMap = this.bindLeafletMapToHtml();
-
-        this.clickClosestVertex = new ClickClosestVertex(myMap, this.props.graph_metadata)
-        this.selectedVertices = new SelectedVertices(myMap, this.props.graph_metadata)
-
-        this.centerView(myMap);
-
-        this.addTileToMap(myMap);
-
-        this.bindOnZoomCallback(myMap);
-
-        this.bindOnClickCallback(myMap);
-
-        this.setState({myMap: myMap})
+    mapCreationCallback(map) {
+        this.centerView(map);
+        this.bindOnZoomCallback(map);
+        this.bindOnClickCallback(map);
+        this.setState({
+            map_ref: map
+        })
     }
 
-    bindLeafletMapToHtml() {
-        const myMap = L.map('mapid', {
-            noWrap: true,
-            crs: L.CRS.Simple,
-        });
-        return myMap;
+    centerView(map) {
+        map.setView(
+            [this.props.graphMetadata.tileSize / -2.0,
+                this.props.graphMetadata.tileSize / 2.0],
+            configs['initialZoom'])
     }
 
-    centerView(myMap) {
-        myMap.setView(
-            [this.props.graph_metadata.tile_size / -2.0,
-                this.props.graph_metadata.tile_size / 2.0],
-            configs['initial_zoom'])
-    }
-
-    addTileToMap(myMap) {
-        const tile_url = UrlComposer.tileLayerUrl(this.props.graph_name);
+    addTileToMap(mapRef) {
+        const tileUrl = UrlComposer.tileLayerUrl(this.props.graphName);
         const layer = L.tileLayer(
-            tile_url,
+            tileUrl,
             {
                 randint: Math.floor(Math.random() * 200000) + 1,
-                maxZoom: this.props.graph_metadata['zoom_levels'] - 1,
+                maxZoom: this.props.graphMetadata['zoomLevels'] - 1,
                 attribution: 'tokengallery 2.0',
-                tileSize: this.props.graph_metadata.tile_size,
+                tileSize: this.props.graphMetadata.tileSize,
                 detectRetina: true
-            }).addTo(myMap);
+            }).addTo(mapRef);
     }
 
 
-    bindOnZoomCallback(myMap) {
-        myMap.on('zoom', function () {
+    bindOnZoomCallback(map) {
+        map.on('zoom', function () {
             this.setState({
-                zoom: myMap.getZoom()
+                zoom: map.getZoom()
             })
         }.bind(this))
     }
 
-    bindOnClickCallback(myMap) {
-        myMap.on('click', function (click_event) {
-
-            let coord = click_event.latlng;
+    bindOnClickCallback(mapRef) {
+        mapRef.on('click', function (clickEvent) {
+            let coord = clickEvent.latlng;
+            // console.log("coord ", coord)
             let lat = coord.lat;
             let lng = coord.lng;
-            // console.log("you clicked the map at latitude: " + lat + " and longitude: " + lng);
-            let pos = to_graph_coordinate([lat, lng], this.props.graph_metadata)
-
-            fetchClosestPoint(this.props.graph_name, pos).then(closest_vertex => {
-                this.setState({closest_vertex: closest_vertex})
-                this.props.set_displayed_address(closest_vertex['eth'])
-            })
+            let pos = toGraphCoordinate([lat, lng], this.props.graphMetadata)
+            console.log('pos ', pos)
+            this.fetchClosestAndUpdate(pos);
 
         }.bind(this));
     }
+
+
+    fetchClosestAndUpdate(pos) {
+        console.log('pos ', pos)
+        fetchClosestPoint(this.props.graphName, pos).then(closestVertex => {
+            closestVertex['pos'] = toMapCoordinate(closestVertex['pos'], this.props.graphMetadata)
+            this.setState({closestVertex: closestVertex})
+            this.props.setDisplayedAddress(closestVertex['eth'])
+        })
+    }
+
+    generateCircleWithPopup(markerObject, zoom) {
+        if (markerObject !== undefined) {
+            let {types, labels, pos, size, eth} = markerObject
+            let iconSize = size * (2 ** zoom);
+            let icon = getCircleIcon('rounded-full border-green-500 bg-green-100 bg-opacity-70 border-2', [iconSize, iconSize])
+            let labelsString = labels === null ? 'NA' : labels.join(', ');
+            let typesString = types === null ? 'NA' : types.join(', ');
+
+            let popup = getVertexPopup(typesString, labelsString, eth, this.props.graphName, this.addSingleMetadataToVertex(eth), this.props.recentMetadataSearches);
+
+            return (
+                <Marker key={generateLargeRandom()}
+                        position={pos}
+                        icon={icon}
+                >
+                    {popup}
+                </Marker>
+            );
+
+        } else {
+            return <></>
+        }
+    }
+
+
+    generateTextLabel(markerObject, zoom) {
+        if (markerObject !== undefined) {
+            let {types, labels, pos, size, eth} = markerObject
+            let icon = getTextLabelIcon(eth, pos, labels, types)
+            let labelsString = labels === null ? 'NA' : labels.join(', ');
+            let typesString = types === null ? 'NA' : types.join(', ');
+
+            let popup = getVertexPopup(typesString, labelsString, eth, this.props.graphName, this.addSingleMetadataToVertex(eth), this.props.recentMetadataSearches);
+            return (
+                <Marker key={generateLargeRandom()}
+                        position={pos}
+                        icon={icon}>
+                    {popup}
+                </Marker>
+            );
+
+        } else {
+            return <></>
+        }
+
+    }
+
+    addSingleMetadataToVertex(eth) {
+        return async function (e) {
+            await postVertexMetadata(eth, e['metadata_value'], e['metadata_type'])
+        }.bind(this)
+    }
+
+
 }
 
-GraphMap.propTypes = {};
-GraphMap.defaultProps = {};
+GraphMap
+    .propTypes = {};
+GraphMap
+    .defaultProps = {};
 
 export default GraphMap;

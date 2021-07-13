@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {fetchEdgePlots} from "../../../API_layer";
+import {fetchEdgePlots} from "../../../APILayer";
 import {string, number} from "prop-types";
 
 class EdgeTransparencyPlots extends Component {
@@ -12,7 +12,7 @@ class EdgeTransparencyPlots extends Component {
     }
 
     async componentDidMount() {
-        let plots = await fetchEdgePlots(this.props.graph_name, this.props.zoom_levels);
+        let plots = await fetchEdgePlots(this.props.graphName, this.props.zoomLevels);
         this.setState({"plots": plots})
     }
 
@@ -32,8 +32,8 @@ class EdgeTransparencyPlots extends Component {
 }
 
 EdgeTransparencyPlots.propTypes = {
-    graph_name: string.isRequired,
-    zoom_levels: number.isRequired
+    graphName: string.isRequired,
+    zoomLevels: number.isRequired
 }
 
 export default EdgeTransparencyPlots;

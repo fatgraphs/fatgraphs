@@ -54,20 +54,20 @@ class TestVisualLayout(unittest.TestCase):
     def test_pixel_coordinates_are_within_tile_bounds(cls):
         pixel_max = cls.layout.edge_ids_to_positions_pixel.max()
         pixel_min = cls.layout.edge_ids_to_positions_pixel.min()
-        cls.assertTrue(pixel_max['source_x_pixel'] == pixel_max['source_y_pixel'] == pixel_max['target_x_pixel']
-                       == pixel_max['target_y_pixel'])
-        cls.assertTrue(pixel_min['source_x_pixel'] == pixel_min['source_y_pixel'] == pixel_min['target_x_pixel']
-                       == pixel_min['target_y_pixel'])
+        cls.assertTrue(pixel_max['sourceXPixel'] == pixel_max['sourceYPixel'] == pixel_max['targetXPixel']
+                       == pixel_max['targetYPixel'])
+        cls.assertTrue(pixel_min['sourceXPixel'] == pixel_min['sourceYPixel'] == pixel_min['targetXPixel']
+                       == pixel_min['targetYPixel'])
 
     def test_vertex_with_highest_degree_has_largest_size(cls):
         # relying on indices of degrees to correspond to ids
-        index_of_largest_vertex = cls.graph.degrees.idxmax()['out_degree']
+        index_of_largest_vertex = cls.graph.degrees.idxmax()['outDegree']
         largest = cls.layout.vertex_sizes[index_of_largest_vertex]
         cls.assertEqual(largest, cls.layout.vertex_sizes.max())
 
     def test_vertex_with_smallest_degree_has_smallest_size(cls):
         # relying on indices of degrees to correspond to ids
-        index_of_smallest_vertex = cls.graph.degrees.idxmin()['out_degree']
+        index_of_smallest_vertex = cls.graph.degrees.idxmin()['outDegree']
         smallest = cls.layout.vertex_sizes[index_of_smallest_vertex]
         cls.assertEqual(smallest, cls.layout.vertex_sizes.min())
 
@@ -92,8 +92,8 @@ class TestVisualLayout(unittest.TestCase):
         edge_lengths = cls.layout.edge_lengths
         vertex_positions = cls.layout.vertex_positions
         for index, edge in cls.graph.edge_ids_to_amount.iterrows():
-            source = vertex_positions[['x', 'y']].iloc[int(edge.source_id)]
-            target = vertex_positions[['x', 'y']].iloc[int(edge.target_id)]
+            source = vertex_positions[['x', 'y']].iloc[int(edge.sourceId)]
+            target = vertex_positions[['x', 'y']].iloc[int(edge.targetId)]
             source = [source['x'], source['y']]
             target = [target['x'], target['y']]
             expected_edge_length = math.dist(source, target)

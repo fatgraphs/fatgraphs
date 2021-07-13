@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {fetchGraphs} from "../../API_layer";
+import {fetchGraphs} from "../../APILayer";
 import HeaderGraphGallery from "./HeaderGraphGallery";
 import BodyGraphGallery from "./BodyGraphGallery";
 import {MyContext} from "../../Context";
@@ -15,25 +15,23 @@ class Gallery extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            available_graphs: undefined,
+            availableGraphs: undefined,
         }
     }
 
     async componentDidMount() {
         let graphs = await fetchGraphs()
-
         this.setState({
-            available_graphs: graphs,
-
+            availableGraphs: graphs,
         })
     }
 
 
     render() {
-        return this.state.available_graphs ?
+        return this.state.availableGraphs ?
             <div>
                 <HeaderGraphGallery/>
-                <BodyGraphGallery available_graphs={this.state.available_graphs}
+                <BodyGraphGallery availableGraphs={this.state.availableGraphs}
                                   autocompletion={this.state.autocompletion}
                                   className={"flex-1"}/>
             </div> :

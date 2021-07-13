@@ -36,12 +36,12 @@ def result_in_directory_existing(path):
 
 
 def ensure_container_directory_exists():
-    result_in_directory_existing(CONFIGURATIONS['graphs_home'])
+    result_in_directory_existing(CONFIGURATIONS['graphsHome'])
 
 
 def mkdir_for_this_graph(graph_name):
     # TODO load confoguraitons instead of relying on BE
-    path = os.path.join(CONFIGURATIONS['graphs_home'])
+    path = os.path.join(CONFIGURATIONS['graphsHome'])
     path = os.path.join(path, graph_name)
     result_in_directory_existing(path)
     return path
@@ -50,20 +50,20 @@ def mkdir_for_this_graph(graph_name):
 # TODO find a way of ensuring that htis dict keys are the same as defined in configuration.json
 def get_final_configurations(args, graph_path, graph_name):
     configurations = {
-        "output_folder": graph_path,
-        'graph_name': graph_name,
-        "tile_size": int(args.get('--ts', 256)),
-        "zoom_levels": int(args.get('-z', 2)),
-        "min_transparency": float(args.get('--min_t', 0)),
-        "max_transparency": float(args.get('--max_t', 0.1)),
-        "tile_based_mean_transparency": float(args.get('--mean_t', 0.5)),
-        "std_transparency_as_percentage": float(args.get("--std", 0.25)),
-        "max_edge_thickness": float(args.get('--max_thick', 2)),
-        "med_edge_thickness": float(args.get('--med_thick', 0.25)),
-        "max_vertex_size": float(args.get("--max_size", 10)),
-        "med_vertex_size": float(args.get("--med_size", 0.5)),
+        "outputFolder": graph_path,
+        'graphName': graph_name,
+        "tileSize": int(args.get('--ts', 256)),
+        "zoomLevels": int(args.get('-z', 2)),
+        "minTransparency": float(args.get('--minT', 0)),
+        "maxTransparency": float(args.get('--maxT', 0.1)),
+        "tileBasedMeanTransparency": float(args.get('--meanT', 0.5)),
+        "stdTransparencyAsPercentage": float(args.get("--std", 0.25)),
+        "maxEdgeThickness": float(args.get('--maxThick', 2)),
+        "medEdgeThickness": float(args.get('--medThick', 0.25)),
+        "maxVertexSize": float(args.get("--maxSize", 10)),
+        "medVertexSize": float(args.get("--medSize", 0.5)),
         "curvature": float(args.get("--curvature", 0.1)),
-        "bg_color": "black",
+        "bgColor": "black",
         "source": args['--csv'],
         "labels": args.get('--labels', None)
     }

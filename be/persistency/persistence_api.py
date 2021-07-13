@@ -5,7 +5,7 @@ from sqlalchemy import String
 from be.configuration import DB_USER_NAME, DB_PASSWORD, DB_URL, DB_NAME, METADATA_TABLE_NAME, VERTEX_TABLE_NAME, SRID, \
     LABELS_TABLE
 from be.persistency.db_connection import DbConnection
-from be.persistency.implementation import Implementation, to_geopandas
+from be.persistency.implementation import Implementation, toGeopandas
 
 """
 This class exposes the methods that are used to interact with the persistency layer, 
@@ -13,15 +13,15 @@ hiding the detail in the implementaiton.
 """
 
 
-def to_pd_frame(raw_result):
+def toPdFrame(rawResult):
     """
     :param raw_result: the object returned from executing a raw query with sqlAlchemy
     :return: a pandas frame where the column names are the DB column names and the rows are DB records
     """
-    df = pd.DataFrame(raw_result.fetchall())
+    df = pd.DataFrame(rawResult.fetchall())
     if df.empty:
         return df
-    df.columns = raw_result.keys()
+    df.columns = rawResult.keys()
     return df
 
 
@@ -39,114 +39,118 @@ class PersistenceAPI:
         self.connection = DbConnection(connection_string)
         self.impl = Implementation(self.connection)
 
-    def ensure_user_table_exists(self):
+    def ensureUserTableExists(self):
         # TODO assumed one user for now
         """
         If table with  user preferences doesnt exists it creates it.
         It also makes the user_name a primary key.
         """
-        self.impl.ensure_user_data_table()
+        self.impl.ensureUserDataTable()
 
-    def ensure_labels_table_exists(self):
-        self.impl.ensure_labels_table_exists()
+    def ensureLabelsTableExists(self):
+        self.impl.ensureLabelsTableExists()
 
-    def update_recent_tags(self, signle_tag):
+    def updateRecentMetadataSearches(self, metadataObject):
         """
-        Updates the recent tag of the default user.
-        The tags are stored as a string of this shape:
+        Updates the recently searched metadata of the default user.
 
-        "tag1 tag2 tag3 tag4 tag5"
-
-        :param signle_tag:string, it's the latest tag, used by a user
+        :param metadata_object:the latest metadata queried by a user
         :param tag_list_as_string:
         :return:
         """
-        df = self.get_recent_tags()
-        current = df['last_search_tags'].values[0]
-        if len(current) == 0:
-            current = [[], []]
-        current[0].insert(0, signle_tag['tag'])
-        current[1].insert(0, signle_tag['tag_type'])
-        updated = [[], []]
-        updated[0] = current[0][0:5]
-        updated[1] = current[1][0:5]
-        self.impl.update_recent_tags(updated)
+        def insertNewItem(df, metadataObject):
+            current = df['recent_metadata_searches'].values[0]
+            if len(current) == 0:
+                current = [[], []]
+            current[0].insert(0, metadataObject['metadata_value'])
+            current[1].insert(0, metadataObject['metadata_type'])
+            updated = [[], []]
+            updated[0] = current[0][0:5]
+            updated[1] = current[1][0:5]
+            return updated
 
-    def get_recent_tags(self):
-        raw_result = self.impl.get_recent_tags()
-        df = to_pd_frame(raw_result)
+        oldMetadataSearches = self.getRecentMetadataSearches()
+        newMetadataSearches = insertNewItem(oldMetadataSearches, metadataObject)
+        self.impl.updateRecentTags(newMetadataSearches)
+
+    def getRecentMetadataSearches(self):
+        raw_result = self.impl.getRecentTags()
+        df = toPdFrame(raw_result)
         return df
 
-    def create_metadata_table(self, graph_metadata):
-        self.impl.save_graph_metadata(graph_metadata)
+    def createMetadataTable(self, graphMetadata):
+        self.impl.saveGraphMetadata(graphMetadata)
 
-    def create_vertex_table(self, graph_name, layout, id_to_eth):
+    def createVertexTable(self, graphName, layout, idToEth):
         # TODO now only positions ae saved, in the future this table will contain ALL info related to vertices (degree, size, shape, label ...
         # TODO refactor
-        table_name = VERTEX_TABLE_NAME(graph_name)
-        geopandas_frame = to_geopandas(layout.edge_ids_to_positions.to_pandas())
+        tableName = VERTEX_TABLE_NAME(graphName)
+        geopandasFrame = toGeopandas(layout.edgeIdsToPositions.to_pandas())
 
         # all vertex IDS to position
-        s = geopandas_frame[['source_id', 'source_geo']].rename(columns={'source_id': 'id', 'source_geo': 'pos'})
-        t = geopandas_frame[['target_id', 'target_geo']].rename(columns={'target_id': 'id', 'target_geo': 'pos'})
-        geopandas_frame = pd.concat([s, t], axis=0).drop_duplicates()
+        s = geopandasFrame[['sourceId', 'sourceGeo']].rename(columns={'sourceId': 'id', 'sourceGeo': 'pos'})
+        t = geopandasFrame[['targetId', 'targetGeo']].rename(columns={'targetId': 'id', 'targetGeo': 'pos'})
+        geopandasFrame = pd.concat([s, t], axis=0).drop_duplicates()
 
         # id to eth address
-        id_to_eth = id_to_eth.rename(columns={'vertex': 'id', 'address': 'eth'})
-        all_in_one_frame = geopandas_frame.merge(id_to_eth, on='id')
+        idToEth = idToEth.rename(columns={'vertex': 'id', 'address': 'eth'})
+        allInOneFrame = geopandasFrame.merge(idToEth, on='id')
 
         # TODO: this is a quick fix, understand why they need to be reordered.
         # Consider keeping layout.vertex_sizes as a pandas frame instead of a list so merge can  be used
-        all_in_one_frame = all_in_one_frame.sort_values(['id']).reset_index(drop=True)
-        all_in_one_frame['size'] = layout.vertex_sizes
-        column_types = {'pos': Geometry('POINT', srid=SRID)}
-        self.impl.save_frame_to_new_table(table_name, all_in_one_frame, column_types)
+        allInOneFrame = allInOneFrame.sort_values(['id']).reset_index(drop=True)
+        allInOneFrame['size'] = layout.vertexSizes
+        columnTypes = {'pos': Geometry('POINT', srid=SRID)}
+        self.impl.saveFrameToNewTable(tableName, allInOneFrame, columnTypes)
 
-    def create_edge_table(self):
+    def createEdgeTable(self):
         # TODO
         pass
 
-    def get_closest_vertex(self, x, y, graph_name):
-        raw_result = self.impl.get_closest_vertex(x, y, graph_name)
-        df = to_pd_frame(raw_result)
+    def getClosestVertex(self, x, y, graphName):
+        rawResult = self.impl.getClosestVertex(x, y, graphName)
+        df = toPdFrame(rawResult)
         return df
 
-    def get_graph_metadata(self, graph_name):
-        raw_result = self.impl.get_graph_metadata(graph_name)
-        df = to_pd_frame(raw_result)
+    def getGraphMetadata(self, graphName):
+        raw_result = self.impl.getGraphMetadata(graphName)
+        df = toPdFrame(raw_result)
         return df
 
-    def get_labelled_vertices(self, graph_name, search_method, search_query):
-        raw_result = self.impl.get_labelled_vertices(graph_name, search_method, search_query)
-        df = to_pd_frame(raw_result)
+    def getLabelledVertices(self, graphName, searchMethod, searchQuery):
+        rawResult = self.impl.getLabelledVertices(graphName, searchMethod, searchQuery)
+        df = toPdFrame(rawResult)
         return df
 
-    def get_all_types_and_labels(self):
-        raw_result = self.impl.get_distinct_types()
-        df = to_pd_frame(raw_result)
-        raw_result = self.impl.get_distinct_labels()
-        df = to_pd_frame(raw_result).append(df)
+    def getAllTypesAndLabels(self):
+        rawResult = self.impl.getDistinctTypes()
+        df = toPdFrame(rawResult)
+        rawResult = self.impl.getDistinctLabels()
+        df = toPdFrame(rawResult).append(df)
         return df
 
-    def is_graph_in_db(self, graph_name):
+    def isGraphInDb(self, graphName):
         # TODO add edge_table
-        tables_must_exist = [VERTEX_TABLE_NAME(graph_name),
-                             METADATA_TABLE_NAME(graph_name)]
+        tablesMustExist = [VERTEX_TABLE_NAME(graphName),
+                             METADATA_TABLE_NAME(graphName)]
         return all(
             list(map(
-                lambda table_name: self.connection.is_table_present(table_name),
-                tables_must_exist
+                lambda table_name: self.connection.isTablePresent(table_name),
+                tablesMustExist
             ))
         )
 
-    def populate_labels_table(self, frame):
-        self.impl.save_frame_to_new_table(LABELS_TABLE,
+    def populateLabelsTable(self, frame):
+        self.impl.saveFrameToNewTable(LABELS_TABLE,
                                           frame,
                                           {'eth': String,
                                            'label': String,
                                            'type': String},
                                           if_exists_strategy='append')
 
+    def addVertexMetadata(self, eth, metadataValue, metadataType):
+        rawResult = self.impl.addVertexMetadata(eth, metadataValue, metadataType)
+
 
 # only one instance
-persistence_api = PersistenceAPI(f'postgresql://{DB_USER_NAME}:{DB_PASSWORD}@{DB_URL}/{DB_NAME}')
+persistenceApi = PersistenceAPI(f'postgresql://{DB_USER_NAME}:{DB_PASSWORD}@{DB_URL}/{DB_NAME}')

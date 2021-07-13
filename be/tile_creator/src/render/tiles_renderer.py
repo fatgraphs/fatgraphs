@@ -12,78 +12,78 @@ from be.tile_creator.src.graph.gt_token_graph import GraphToolTokenGraph
 
 class TilesRenderer:
 
-    def __init__(self, gt_graph, visual_layout, metadata, transparency_calculator, configurations):
-        if not isinstance(gt_graph, GraphToolTokenGraph):
+    def __init__(self, gtGraph, visualLayout, metadata, transparencyCalculator, configurations):
+        if not isinstance(gtGraph, GraphToolTokenGraph):
             raise TypeError("graph renderer needs an instance of GraphToolTokenGraph as argument")
-        self.gt_graph = gt_graph
-        self.edge_transparencies = visual_layout.edge_transparencies
-        self.vertex_shapes = visual_layout.vertex_shapes
+        self.gtGraph = gtGraph
+        self.edgeTransparencies = visualLayout.edgeTransparencies
+        self.vertexShapes = visualLayout.vertexShapes
         self.metadata = metadata
         self.configurations = configurations
-        self.transparency_calculator = transparency_calculator
-        self.rendering_processes = []
+        self.transparency_calculator = transparencyCalculator
+        self.renderingProcesses = []
 
-    def render(self):
-        rgba = [[1.0] * len(self.edge_transparencies[0])] * 4
+    def renderGraph(self):
+        rgba = [[1.0] * len(self.edgeTransparencies[0])] * 4
 
-        for zoom_level in range(0, self.configurations['zoom_levels']):
-            vertex_size = deepcopy(self.gt_graph.vertex_sizes)
-            edge_size = deepcopy(self.gt_graph.edge_thickness)
+        for zoomLevel in range(0, self.configurations['zoomLevels']):
+            vertexSize = deepcopy(self.gtGraph.vertexSizes)
+            edgeSize = deepcopy(self.gtGraph.edgeThickness)
 
-            rgba[3] = list(self.edge_transparencies[zoom_level].to_numpy())
-            edge_colors = self.gt_graph.edge_transparencies[zoom_level]
-            edge_colors.set_2d_array(np.array(rgba))
+            rgba[3] = list(self.edgeTransparencies[zoomLevel].to_numpy())
+            edgeColors = self.gtGraph.edgeTransparencies[zoomLevel]
+            edgeColors.set_2d_array(np.array(rgba))
 
-            number_of_images = 4 ** zoom_level
-            divide_by = int(math.sqrt(number_of_images))
+            numberOfImages = 4 ** zoomLevel
+            divideBy = int(math.sqrt(numberOfImages))
             tuples = []
-            for x in range(0, divide_by):
-                for y in range(0, divide_by):
+            for x in range(0, divideBy):
+                for y in range(0, divideBy):
                     tuples.append((x, y))
 
             for t in tuples:
                 # TODO: check that width and height are the same: in thoery we implicityl rely on this equality
 
-                min_coordinate = self.metadata.get_min_coordinate()
-                max_coordinate = self.metadata.get_max_coordinate()
-                side = max_coordinate - min_coordinate
+                minCoordinate = self.metadata.getMinCoordinate()
+                maxCoordinate = self.metadata.getMaxCoordinate()
+                side = maxCoordinate - minCoordinate
 
                 fit = (
-                    round(min_coordinate + ((side / divide_by) * t[0]), 2),
-                    round(min_coordinate + ((side / divide_by) * t[1]), 2),
-                    round(side / divide_by, 2),
-                    round(side / divide_by, 2))
+                    round(minCoordinate + ((side / divideBy) * t[0]), 2),
+                    round(minCoordinate + ((side / divideBy) * t[1]), 2),
+                    round(side / divideBy, 2),
+                    round(side / divideBy, 2))
 
-                tile_name = "z_" + str(zoom_level) + "x_" + str(t[0]) + "y_" + str(t[1]) + ".png"
-                file_name = os.path.join(self.configurations['output_folder'], tile_name)
+                tileName = "z_" + str(zoomLevel) + "x_" + str(t[0]) + "y_" + str(t[1]) + ".png"
+                fileName = os.path.join(self.configurations['outputFolder'], tileName)
 
                 # Serial code
                 # self._render(fit, file_name, edge_colors, vertex_size, edge_size)
 
                 # Parallel code
-                rendering_process = Process(target=self._render,
-                                            args=(fit, file_name, edge_colors, vertex_size, edge_size))
-                self.rendering_processes.append(rendering_process)
+                rendering_process = Process(target=self.render,
+                                            args=(fit, fileName, edgeColors, vertexSize, edgeSize))
+                self.renderingProcesses.append(rendering_process)
 
             # This ensures that vertices and edges maintain the same apparent size when zooming.
             # Without it you would notice that vertices and edges shrink when zooming.
-            self.gt_graph.vertex_sizes.a *= 2
-            self.gt_graph.edge_thickness.a *= 2
+            self.gtGraph.vertexSizes.a *= 2
+            self.gtGraph.edgeThickness.a *= 2
 
         # Parallel code
         started = []
-        for rendering_process in self.rendering_processes:
+        for renderingProcess in self.renderingProcesses:
 
             if len(started) >= MAX_CORES:
                 started[0].join()
                 started = started[1::]
-            rendering_process.start()
-            started.append(rendering_process)
+            renderingProcess.start()
+            started.append(renderingProcess)
 
-        for rendering_process in started:
-            rendering_process.join()
+        for renderingProcess in started:
+            renderingProcess.join()
 
-    def _render(self, fit, file_name, edge_colors, vertex_size, edge_size):
+    def render(self, fit, fileName, edgeColors, vertexSize, edgeSize):
         # if np.isnan(self.gt_graph.vertex_positions.get_2d_array([0, 1])).any() or \
         #         np.isnan(vertex_size.a).any() or \
         #         np.isnan(edge_size.a).any():
@@ -92,20 +92,20 @@ class TilesRenderer:
         # print(self.gt_graph.vertex_positions.get_2d_array([0,1]))
         # print(edge_colors.get_2d_array([0,1,2,3]))
 
-        graph_draw(self.gt_graph.g,
-                   pos=self.gt_graph.vertex_positions,
-                   bg_color=self.configurations['bg_color'],
-                   vertex_size=vertex_size,
-                   vertex_shape=self.gt_graph.vertex_shapes,
+        graph_draw(self.gtGraph.g,
+                   pos=self.gtGraph.vertexPositions,
+                   bg_color=self.configurations['bgColor'],
+                   vertex_size=vertexSize,
+                   vertex_shape=self.gtGraph.vertexShapes,
                    vertex_fill_color=[1, 0, 0, 0.8],
-                   output_size=[self.configurations['tile_size'], self.configurations['tile_size']],
-                   output=file_name,
-                   edge_color=edge_colors,
+                   output_size=[self.configurations['tileSize'], self.configurations['tileSize']],
+                   output=fileName,
+                   edge_color=edgeColors,
                    fit_view=fit,
-                   edge_pen_width=edge_size,
+                   edge_pen_width=edgeSize,
                    adjust_aspect=False,
                    fit_view_ink=True,
-                   edge_control_points=self.gt_graph.control_points,
+                   edge_control_points=self.gtGraph.controlPoints,
                    edge_end_marker="none")
         print(fit)
 

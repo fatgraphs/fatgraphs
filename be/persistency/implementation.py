@@ -12,23 +12,23 @@ Implements persistency logic
 """
 
 
-def to_geopandas(pandas_1):
+def toGeopandas(pandasFrame):
     # TODO generalise, parametrize column names for geometries
     """
 
     :param pandas_1: pandas frame
     :return: a geo pandas frame
     """
-    source_geo = gpd.GeoDataFrame(pandas_1,
-                                  geometry=gpd.points_from_xy(pandas_1.source_x, pandas_1.source_y))
-    source_geo = source_geo.rename_geometry('source_geo')
-    target_geo = gpd.GeoDataFrame(pandas_1,
-                                  geometry=gpd.points_from_xy(pandas_1.target_x, pandas_1.target_y))
-    target_geo = target_geo.rename_geometry('target_geo')
-    geopandas_2 = source_geo.merge(target_geo).drop(columns=['source_x', 'source_y', 'target_x', 'target_y'])
-    geopandas_2['source_geo'] = geopandas_2['source_geo'].apply(lambda x: WKTElement(x.wkt, srid=SRID))
-    geopandas_2['target_geo'] = geopandas_2['target_geo'].apply(lambda x: WKTElement(x.wkt, srid=SRID))
-    return geopandas_2
+    sourceGeo = gpd.GeoDataFrame(pandasFrame,
+                                  geometry=gpd.points_from_xy(pandasFrame.sourceX, pandasFrame.sourceY))
+    sourceGeo = sourceGeo.rename_geometry('sourceGeo')
+    targetGeo = gpd.GeoDataFrame(pandasFrame,
+                                  geometry=gpd.points_from_xy(pandasFrame.targetX, pandasFrame.targetY))
+    targetGeo = targetGeo.rename_geometry('targetGeo')
+    geopandas2 = sourceGeo.merge(targetGeo).drop(columns=['sourceX', 'sourceY', 'targetX', 'targetY'])
+    geopandas2['sourceGeo'] = geopandas2['sourceGeo'].apply(lambda x: WKTElement(x.wkt, srid=SRID))
+    geopandas2['targetGeo'] = geopandas2['targetGeo'].apply(lambda x: WKTElement(x.wkt, srid=SRID))
+    return geopandas2
 
 
 class Implementation:
@@ -37,109 +37,108 @@ class Implementation:
     In the case of sqlalchemy (and geoSqlalchemy) such object is a cursor.
     """
 
-    def __init__(self, db_connection):
-        self.connection = db_connection
+    def __init__(self, dbConnection):
+        self.connection = dbConnection
 
-    def save_frame_to_new_table(self, table_name, data_frame, column_types, if_exists_strategy='replace'):
-        data_frame.to_sql(table_name,
-                          self.connection.engine,
-                          index=False,
-                          if_exists=if_exists_strategy,
-                          dtype=column_types)
+    def saveFrameToNewTable(self, tableName, dataFrame, columnTypes, ifExistsStrategy='replace'):
+        dataFrame.to_sql(tableName,
+                        self.connection.engine,
+                        index=False,
+                        if_exists=ifExistsStrategy,
+                        dtype=columnTypes)
 
-    def get_closest_vertex(self, x, y, graph_name):
-        table_name = VERTEX_TABLE_NAME(graph_name)
+    def getClosestVertex(self, x, y, graphName):
+        tableName = VERTEX_TABLE_NAME(graphName)
         query = f'SELECT eth, size, ST_AsText(ST_PointFromWKB(pos)), pos <-> ST_SetSRID(ST_MakePoint({x}, {y}), 3857) AS dist ' \
-                f'FROM {table_name} ORDER BY dist LIMIT 1;'
+                f'FROM {tableName} ORDER BY dist LIMIT 1;'
 
-        result = self.connection.execute_raw_query(query)
+        result = self.connection.executeRawQuery(query)
         return result
 
-    def get_labelled_vertices(self, graph_name, search_method, search_query):
+    def getLabelledVertices(self, graphName, searchMethod, searchQuery):
 
-        query = """SELECT %(labels_table)s.eth, ST_AsText(ST_PointFromWKB(pos)), %(type)s, %(label)s, %(vertex_table)s.size
-                    FROM %(labels_table)s
-                    INNER JOIN  %(vertex_table)s ON  %(vertex_table)s.eth =  %(labels_table)s.eth
-                    WHERE %(search_query)s = %(labels_table)s.%(search_method)s;
+        query = """SELECT %(vertexTable)s.eth, ST_AsText(ST_PointFromWKB(pos)), %(type)s, %(label)s, %(vertexTable)s.size, id
+                    FROM %(labelsTable)s
+                    INNER JOIN  %(vertexTable)s ON  %(vertexTable)s.eth =  %(labelsTable)s.eth
+                    WHERE %(searchQuery)s = %(labelsTable)s.%(searchMethod)s;
         """
 
         execute = self.connection.engine.execute(query,
-                                                 {'labels_table': AsIs(LABELS_TABLE),
-                                                  'type':AsIs(LABELS_TABLE_TYPE),
+                                                 {'labelsTable': AsIs(LABELS_TABLE),
+                                                  'type': AsIs(LABELS_TABLE_TYPE),
                                                   'label': AsIs(LABELS_TABLE_LABEL),
-                                                  'vertex_table': AsIs(VERTEX_TABLE_NAME(graph_name)),
-                                                  'search_query': search_query,
-                                                  'search_method': AsIs(search_method)})
-
-        # query = f'SELECT {LABELS_TABLE}.eth, ST_AsText(ST_PointFromWKB(pos)), {LABELS_TABLE_TYPE}, {LABELS_TABLE_LABEL}, {table_name}.size, id ' \
-        #         f'FROM {LABELS_TABLE} ' \
-        #         f'INNER JOIN {table_name} ON {table_name}.eth = {LABELS_TABLE}.eth '
-        #
-        # if search_method == 'eth':
-        #     query += f'WHERE \'{search_query}\' = {LABELS_TABLE}.{search_method};'
-        # else:
-        #     query += f'WHERE \'{search_query}\' = ANY({LABELS_TABLE}.{search_method});'
-
-        # result = self.connection.execute_raw_query(query)
+                                                  'vertexTable': AsIs(VERTEX_TABLE_NAME(graphName)),
+                                                  'searchQuery': searchQuery,
+                                                  'searchMethod': AsIs(searchMethod)})
         return execute
 
-    def get_distinct_types(self):
-        query = """SELECT DISTINCT type FROM %(table_name)s;"""
-        result = self.connection.engine.execute(query, {'table_name': AsIs(LABELS_TABLE)})
+    def getDistinctTypes(self):
+        query = """SELECT DISTINCT type FROM %(tableName)s;"""
+        result = self.connection.engine.execute(query, {'tableName': AsIs(LABELS_TABLE)})
         return result
 
-    def get_distinct_labels(self):
-        query = """SELECT DISTINCT label FROM %(table_name)s;"""
-        result = self.connection.engine.execute(query, {'table_name': AsIs(LABELS_TABLE)})
+    def getDistinctLabels(self):
+        query = """SELECT DISTINCT label FROM %(tableName)s;"""
+        result = self.connection.engine.execute(query, {'tableName': AsIs(LABELS_TABLE)})
         return result
 
-    def get_graph_metadata(self, graph_name):
-        table_name = METADATA_TABLE_NAME(graph_name)
-        query = f"SELECT * FROM {table_name};"
-        result = self.connection.execute_raw_query(query)
+    def getGraphMetadata(self, graphName):
+        tableName = METADATA_TABLE_NAME(graphName)
+        query = f"SELECT * FROM {tableName};"
+        result = self.connection.executeRawQuery(query)
         return result
 
-    def ensure_user_data_table(self):
-        if not self.connection.is_table_present(USER_TABLE):
-            data_frame = pd.DataFrame(data={'user_name': ['default_user'], 'last_search_tags': ['']})
-            self.save_frame_to_new_table(USER_TABLE, data_frame, {'user_name': String,
-                                                                  'last_search_tags': ARRAY(String, dimensions=2)})
-            self.connection.add_primary_key(USER_TABLE, 'user_name')
+    def ensureUserDataTable(self):
+        if not self.connection.isTablePresent(USER_TABLE):
+            dataFrame = pd.DataFrame(data={'userName': ['defaultUser'], 'recentMetadataSearches': ['']})
+            self.saveFrameToNewTable(USER_TABLE, dataFrame, {'userName': String,
+                                                             'recentMetadataSearches': ARRAY(String, dimensions=2)})
+            self.connection.addPrimaryKey(USER_TABLE, 'userName')
 
-    def ensure_labels_table_exists(self):
-        if not self.connection.is_table_present(LABELS_TABLE):
-            data_frame = pd.DataFrame(data={
+    def ensureLabelsTableExists(self):
+        if not self.connection.isTablePresent(LABELS_TABLE):
+            dataFrame = pd.DataFrame(data={
                 LABELS_TABLE_ETH: [],
                 LABELS_TABLE_LABEL: [],
                 LABELS_TABLE_TYPE: []})
-            self.save_frame_to_new_table(LABELS_TABLE, data_frame, {LABELS_TABLE_ETH: String,
-                                                                    LABELS_TABLE_LABEL: String,
-                                                                    LABELS_TABLE_TYPE: String})
-            self.connection.create_index(LABELS_TABLE, LABELS_TABLE_ETH)
-            self.connection.create_index(LABELS_TABLE, LABELS_TABLE_LABEL)
-            self.connection.create_index(LABELS_TABLE, LABELS_TABLE_TYPE)
+            self.saveFrameToNewTable(LABELS_TABLE, dataFrame, {LABELS_TABLE_ETH: String,
+                                                               LABELS_TABLE_LABEL: String,
+                                                               LABELS_TABLE_TYPE: String})
+            self.connection.createIndex(LABELS_TABLE, LABELS_TABLE_ETH)
+            self.connection.createIndex(LABELS_TABLE, LABELS_TABLE_LABEL)
+            self.connection.createIndex(LABELS_TABLE, LABELS_TABLE_TYPE)
 
-    def get_recent_tags(self):
-        query = f'SELECT last_search_tags FROM {USER_TABLE} WHERE user_name = \'default_user\';'
-        result = self.connection.execute_raw_query(query)
+    def getRecentTags(self):
+        query = f'SELECT recentMetadataSearches FROM {USER_TABLE} WHERE userName = \'defaultUser\';'
+        result = self.connection.executeRawQuery(query)
         return result
 
-    def update_recent_tags(self, tags_tagtypes):
+    def updateRecentTags(self, tagsTagtypes):
 
         query = """
-            INSERT INTO %(table)s (user_name, last_search_tags)
-            VALUES(%(user_name)s, %(values)s)
-            ON CONFLICT (user_name) DO UPDATE
-            SET last_search_tags = EXCLUDED.last_search_tags;
+            INSERT INTO %(table)s (userName, recentMetadataSearches)
+            VALUES(%(userName)s, %(values)s)
+            ON CONFLICT (userName) DO UPDATE
+            SET recentMetadataSearches = EXCLUDED.recentMetadataSearches;
         """
         result = self.connection.engine.execute(query,
                                                 {"table": AsIs(USER_TABLE),
-                                                 "user_name": 'default_user',
-                                                 "values": tags_tagtypes})
+                                                 "userName": 'defaultUser',
+                                                 "values": tagsTagtypes})
         return result
 
-    def save_graph_metadata(self, graph_metadata):
-        graph_name = graph_metadata.get_graph_name()
-        table_name = METADATA_TABLE_NAME(graph_name)
-        metadata_frame = graph_metadata.get_single_frame()
-        self.save_frame_to_new_table(table_name, metadata_frame, {})
+    def saveGraphMetadata(self, graphMetadata):
+        graphName = graphMetadata.getGraphName()
+        tableName = METADATA_TABLE_NAME(graphName)
+        metadataFrame = graphMetadata.getSingleFrame()
+        self.saveFrameToNewTable(tableName, metadataFrame, {})
+
+    def addVertexMetadata(self, eth, metadataValue, metadataType):
+        query = """INSERT INTO %(labelsTable)s VALUES (%(eth)s, %(label)s, %(type)s);
+        """
+        result = self.connection.engine.execute(query,
+                                                {"labelsTable": AsIs(LABELS_TABLE),
+                                                 'eth': eth,
+                                                 'label': metadataValue if metadataType == 'label' else '\'\'',
+                                                 'type': metadataValue if metadataType == 'type' else '\'\''})
+        return result
