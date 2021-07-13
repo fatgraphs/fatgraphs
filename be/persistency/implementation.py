@@ -90,10 +90,10 @@ class Implementation:
 
     def ensureUserDataTable(self):
         if not self.connection.isTablePresent(USER_TABLE):
-            dataFrame = pd.DataFrame(data={'userName': ['defaultUser'], 'recentMetadataSearches': ['']})
-            self.saveFrameToNewTable(USER_TABLE, dataFrame, {'userName': String,
-                                                             'recentMetadataSearches': ARRAY(String, dimensions=2)})
-            self.connection.addPrimaryKey(USER_TABLE, 'userName')
+            dataFrame = pd.DataFrame(data={'user_name': ['default_user'], 'recent_metadata_searches': ['']})
+            self.saveFrameToNewTable(USER_TABLE, dataFrame, {'user_name': String,
+                                                             'recent_metadata_searches': ARRAY(String, dimensions=2)})
+            self.connection.addPrimaryKey(USER_TABLE, 'user_name')
 
     def ensureLabelsTableExists(self):
         if not self.connection.isTablePresent(LABELS_TABLE):
@@ -109,21 +109,21 @@ class Implementation:
             self.connection.createIndex(LABELS_TABLE, LABELS_TABLE_TYPE)
 
     def getRecentTags(self):
-        query = f'SELECT recentMetadataSearches FROM {USER_TABLE} WHERE userName = \'defaultUser\';'
+        query = f'SELECT recent_metadata_searches FROM {USER_TABLE} WHERE user_name = \'default_user\';'
         result = self.connection.executeRawQuery(query)
         return result
 
     def updateRecentTags(self, tagsTagtypes):
 
         query = """
-            INSERT INTO %(table)s (userName, recentMetadataSearches)
+            INSERT INTO %(table)s (user_name, recent_metadata_searches)
             VALUES(%(userName)s, %(values)s)
-            ON CONFLICT (userName) DO UPDATE
-            SET recentMetadataSearches = EXCLUDED.recentMetadataSearches;
+            ON CONFLICT (user_name) DO UPDATE
+            SET recent_metadata_searches = EXCLUDED.recent_metadata_searches;
         """
         result = self.connection.engine.execute(query,
                                                 {"table": AsIs(USER_TABLE),
-                                                 "userName": 'defaultUser',
+                                                 "userName": 'default_user',
                                                  "values": tagsTagtypes})
         return result
 

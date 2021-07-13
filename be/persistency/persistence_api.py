@@ -146,7 +146,7 @@ class PersistenceAPI:
                                           {'eth': String,
                                            'label': String,
                                            'type': String},
-                                          if_exists_strategy='append')
+                                          ifExistsStrategy='append')
 
     def addVertexMetadata(self, eth, metadataValue, metadataType):
         rawResult = self.impl.addVertexMetadata(eth, metadataValue, metadataType)

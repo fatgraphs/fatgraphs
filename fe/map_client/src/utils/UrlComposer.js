@@ -2,11 +2,11 @@ const configs = require('configurations')
 
 class UrlComposer {
     static verticesMetadata(graphName){
-        return configs['endpoints']['base'] + configs['endpoints']['vertices_metadata'] + "/" + graphName
+        return configs['endpoints']['base'] + configs['endpoints']['verticesMetadata'] + "/" + graphName
     }
 
     static graphMetadata(graphName){
-        return configs['endpoints']['base'] + configs['endpoints']['graph_metadata'] + "/" + graphName
+        return configs['endpoints']['base'] + configs['endpoints']['graphMetadata'] + "/" + graphName
     }
 
     static proximityClick(graphName, x, y){
@@ -16,7 +16,7 @@ class UrlComposer {
         if(! typeof y === 'number' || Number.isInteger(y)){
             throw "You need to pass a float"
         }
-        return configs['endpoints']['base'] + configs['endpoints']['proximity_click'] + "/" + graphName + "/" + x + "/" + y
+        return configs['endpoints']['base'] + configs['endpoints']['proximityClick'] + "/" + graphName + "/" + x + "/" + y
     }
 
     /**
@@ -33,7 +33,7 @@ class UrlComposer {
 
     static matchingVertices(graphName, metadataObject) {
         return configs['endpoints']['base'] +
-            configs['endpoints']['matching_vertex'] + "/" +
+            configs['endpoints']['matchingVertex'] + "/" +
             graphName + "/" +
             metadataObject['metadata_type'] + "/" +
             metadataObject['metadata_value'];
@@ -41,7 +41,7 @@ class UrlComposer {
 
     static addVertexMetadata(eth, metadataValue, metadataType) {
         return configs['endpoints']['base'] +
-            configs['endpoints']['add_vertex_metadata'] + "/" +
+            configs['endpoints']['addVertexMetadata'] + "/" +
             eth + "/" +
             metadataValue + "/" +
             metadataType;

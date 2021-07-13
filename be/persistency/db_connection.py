@@ -22,7 +22,7 @@ class DbConnection:
             con.execute(f'ALTER TABLE {tableName} ADD PRIMARY KEY ({key});')
 
     def createIndex(self, tableName, columnName):
-        if not self.is_column_present(tableName, columnName):
+        if not self.isColumnPresent(tableName, columnName):
             raise Exception(f'Trying to create an index on a column ({columnName}) '
                             f'that is not present on the specified table ({tableName}')
         with self.engine.connect() as con:

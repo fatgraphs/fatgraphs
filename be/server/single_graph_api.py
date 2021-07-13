@@ -90,7 +90,7 @@ def getClosestVertex(graphName, x, y):
     # return str(x) + str(y) + str(graph_name)
     dbQueryResult = persistenceApi.getClosestVertex(x, y, graphName)
     eth = dbQueryResult['eth'][0]
-    closestPointPos = wkt_to_x_y_list(dbQueryResult['st_astext'][0])
+    closestPointPos = wktToXYList(dbQueryResult['st_astext'][0])
     size = dbQueryResult['size'][0]
     metadata = persistenceApi.getLabelledVertices(graphName, 'eth', eth).drop_duplicates()
     vertexTypes = []

@@ -19,7 +19,7 @@ export function fetchClosestPoint(graphName, graphCoordinate) {
 }
 
 export function fetchGraphs() {
-    let url = configs['endpoints']['base'] + configs['endpoints']['available_graphs'];
+    let url = configs['endpoints']['base'] + configs['endpoints']['availableGraphs'];
    return doRequest(url, {});
 }
 
@@ -27,7 +27,7 @@ export function fetchEdgePlots(graphName, maxZoom) {
     let fetches = []
     for (let zoomLevel = 0; zoomLevel < maxZoom; zoomLevel++) {
         let nameZoom = "/" + graphName + "/" + zoomLevel + "?" + Math.floor(Math.random() * 2000) + 1;
-        let url = configs['endpoints']['base'] + configs['endpoints']['edge_distributions'] + nameZoom;
+        let url = configs['endpoints']['base'] + configs['endpoints']['edgeDistributions'] + nameZoom;
         fetches.push(fetch(url)
             .then(response => {
                 return response.blob();
@@ -49,12 +49,12 @@ export function fetchGraphMetadata(graphName) {
 }
 
 export function fetchAutocompletionTerms() {
-    let url = configs['endpoints']['base'] + configs['endpoints']['autocompletion_terms']
+    let url = configs['endpoints']['base'] + configs['endpoints']['autocompletionTerms']
     return doRequest(url, {});
 }
 
 export function postRecentMetadata(metadataObject) {
-    let url = configs['endpoints']['base'] + configs['endpoints']['user_recent_metadata_searches'];
+    let url = configs['endpoints']['base'] + configs['endpoints']['userRecentMetadataSearches'];
     let init = {
         method: 'POST',
         headers: {
@@ -66,7 +66,7 @@ export function postRecentMetadata(metadataObject) {
 }
 
 export function fetchRecentMetadataSearches(){
-    let url = configs['endpoints']['base'] + configs['endpoints']['user_recent_metadata_searches'];
+    let url = configs['endpoints']['base'] + configs['endpoints']['userRecentMetadataSearches'];
     return doRequest(url, {});
 }
 

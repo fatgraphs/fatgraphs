@@ -14,8 +14,8 @@ def interactWithRecentMetadataSearches():
         return {}
     if request.method == 'GET':
         recentMetadataSearches = persistenceApi.getRecentMetadataSearches()
-        recentMetadataSearches = recentMetadataSearches.toDict(orient='record')
-        recentMetadataSearches = recentMetadataSearches[0]['recentMetadataSearches']
+        recentMetadataSearches = recentMetadataSearches.to_dict(orient='record')
+        recentMetadataSearches = recentMetadataSearches[0]['recent_metadata_searches']
         if len(recentMetadataSearches) < 1:
             response = [[], []]
         else:
