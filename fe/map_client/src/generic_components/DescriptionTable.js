@@ -12,24 +12,21 @@ class DescriptionTable extends Component {
     }
 
     render() {
-        let outerStyle = 'flex flex-row flex-wrap';
+        let outerStyle = 'flex flex-row flex-wrap ';
         let innerStyle = 'flex flex-row odd:bg-gray-100';
-        if(this.props.stackVertically !== undefined && this.props.stackVertically){
-            outerStyle = 'flex flex-col flex-wrap';
+        if (this.props.stackVertically !== undefined && this.props.stackVertically) {
+            outerStyle = 'flex flex-col flex-wrap ';
             innerStyle = 'flex flex-col odd:bg-gray-100';
         }
         return (
-            <div className={this.props.className + ' overflow-x-auto'}>
-                <dl className={outerStyle}>
-                    {this.props.keys.map((key, index) => {
-                        return <div key={index} className={innerStyle}>
-                            <dt>{key + ':'}</dt>
-                            <dd>{this.props.values[index]}</dd>
+            <dl className={outerStyle + this.props.className + ' overflow-x-auto'}>
+                {this.props.keys.map((key, index) => {
+                    return <div key={index} className={innerStyle}>
+                        <dt>{key + ':'}</dt>
+                        <dd>{this.props.values[index]}</dd>
                     </div>;
                 })}
-                </dl>
-            </div>
-        );
+            </dl>)
     }
 }
 

@@ -9,7 +9,8 @@ class GraphTitle extends Component {
 
     render() {
         return (
-            <div className={this.props.className}>
+            <div className={this.props.className }>
+                Graph name:
                 <h3 className={'text-2xl'}>{this.props.graphMetadata.graphName}</h3>
             </div>
         );
@@ -17,4 +18,4 @@ class GraphTitle extends Component {
 
 }
 
-export default withRouter(GraphTitle);
+export default withRouter(GraphTitle)

@@ -4,8 +4,7 @@ import {Link} from "react-router-dom";
 class MainNavBar extends Component {
     render() {
         return (
-            <div className={'p-4'}>
-                <nav>
+                <nav className={'p-4'}>
                     <ul className={'flex flex-row'}>
                         <li className={'ml-2'}>
                             <Link to="/">Home</Link>
@@ -15,7 +14,6 @@ class MainNavBar extends Component {
                         </li>
                     </ul>
                 </nav>
-            </div>
         );
     }
 }

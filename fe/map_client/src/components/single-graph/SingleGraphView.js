@@ -8,7 +8,6 @@ import GraphMap from "./graph-map/GraphMap";
 import SidePanel from "./SidePanel";
 import GraphMapHeader from "./header/GraphTitle";
 import CopyGtmCommand from "./header/CopyGtmCommand";
-import CenteredElement from "../../generic_components/CenteredElement";
 
 class SingleGraphView extends Component {
 
@@ -51,12 +50,11 @@ class SingleGraphView extends Component {
                 <div
                     className={'grid grid-rows-tokenGraphLayout grid-cols-tokenGraphLayout grid-cols-3 gap-1 p-4 h-full'}>
 
-                    <CenteredElement>
-                        Graph name:
-                        <GraphMapHeader
-                            className={'col-span-1 row-span-1'}
-                            graphMetadata={this.state.graphMetadata}/>
-                    </CenteredElement>
+
+                    <GraphMapHeader
+                        className={'col-span-1 row-span-1 text-center p-2'}
+                        graphMetadata={this.state.graphMetadata}/>
+
 
                     <SearchBar
                         className={'col-span-1 row-span-1'}
@@ -65,11 +63,11 @@ class SingleGraphView extends Component {
                         recentMetadataSearches={this.state.recentMetadataSearches}
                         placeholder={'SEARCH BY NODE TYPE/LABEL'}/>
 
-                    <CenteredElement>
-                        <CopyGtmCommand
-                            className={'col-span-1 row-span-1'}
-                            graphMetadata={this.state.graphMetadata}/>
-                    </CenteredElement>
+
+                    <CopyGtmCommand
+                        className={'col-span-1 row-span-1'}
+                        graphMetadata={this.state.graphMetadata}/>
+
 
                     <SidePanel
                         className={'col-span-1 row-span-1'}
