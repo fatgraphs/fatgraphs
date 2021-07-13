@@ -1,82 +1,74 @@
 import React, {Component} from 'react';
-import Header from "./header/Header";
 import {withRouter} from "react-router-dom";
-import SidePanel from "./SidePanel";
-import GraphMap from "./graph-map/GraphMap";
-import {fetch_recent_tags, fetchGraphMetadata} from "../../API_layer";
-import SearchBar from "./search-bar/SearchBar";
+import {fetchGraphMetadata, fetchRecentMetadataSearches} from "../../APILayer";
 import _ from 'underscore';
+import SearchBar from "./search-bar/SearchBar";
+import {MyContext} from "../../Context";
+import GraphMap from "./graph-map/GraphMap";
+import SidePanel from "./SidePanel";
+import GraphMapHeader from "./header/GraphMapHeader";
 
 class SingleGraphView extends Component {
+
+    static contextType = MyContext
 
     constructor(props) {
         super(props);
         this.state = {
-            graph_metadata: undefined,
-            is_marker_visible: false,
-            address_displayed_currently: undefined,
-            selected_tags: [],
-            recentTags: []
+            graphMetadata: undefined,
+            isMarkerVisible: false,
+            addressDisplayedCurrently: undefined,
+            selectedMetadata: [],
+            recentMetadataSearches: []
         }
-        this.toggle_markers = this.toggle_markers.bind(this)
-        this.set_displayed_address = this.set_displayed_address.bind(this)
-        this.set_selected_tags = this.set_selected_tags.bind(this)
+        this.setDisplayedAddress = this.setDisplayedAddress.bind(this)
     }
 
     async componentDidMount() {
-        let graphMetadata = await fetchGraphMetadata(this.props.match.params.graph_name);
-        let recentTags = await fetch_recent_tags();
+        let graphMetadata = await fetchGraphMetadata(this.props.match.params.graphName);
+        let recentMetadataSearches = await fetchRecentMetadataSearches();
         this.setState({
-            graph_metadata: graphMetadata,
-            recentTags: recentTags['response']
+            graphMetadata: graphMetadata,
+            recentMetadataSearches: recentMetadataSearches['response']
         })
     }
 
     async componentDidUpdate() {
-        let recentTags = await fetch_recent_tags();
-        if (_.isEqual(this.state.recentTags, recentTags['response'])) {
+        let recentMetadataSearches = await fetchRecentMetadataSearches();
+        if (_.isEqual(this.state.recentMetadataSearches, recentMetadataSearches['response'])) {
             return
         }
-        this.setState({recentTags: recentTags['response']})
+        this.setState({recentMetadataSearches: recentMetadataSearches['response']})
     }
 
     render() {
-        if (this.state.graph_metadata === undefined) {
+        if (this.state.graphMetadata === undefined) {
             return <div>Loading . . . </div>
         } else {
             return (
                 <div className={'flex flex-col p-2'}>
                     <SearchBar
-                        graph_name={this.props.match.params.graph_name}
-                        set_selected_tags={this.set_selected_tags}
-                        vertices_metadata={this.state.vertices_metadata}
-                        recentTags={this.state.recentTags}/>
-                    <Header graph_metadata={this.state.graph_metadata}/>
-                    <div className={'flex flex-col lg:flex-row'}>
-                        <GraphMap graph_metadata={this.state.graph_metadata}
-                                  vertices_metadata={this.state.vertices_metadata}
-                                  graph_name={this.props.match.params.graph_name}
-                                  is_marker_visible={this.state.is_marker_visible}
-                                  set_displayed_address={this.set_displayed_address}
-                                  selected_tags={this.state.selected_tags}/>
+                        graphName={this.props.match.params.graphName}
+                        selectedMetadataCallback={(selectedMetadata) => this.setState({selectedMetadata: selectedMetadata})}
+                        recentMetadataSearches={this.state.recentMetadataSearches}
+                        placeholder={'SEARCH BY NODE TYPE/LABEL'}/>
+                    <GraphMapHeader graphMetadata={this.state.graphMetadata}/>
+                    <div className={'flex flex-col'}>
+                        <GraphMap graphMetadata={this.state.graphMetadata}
+                                  graphName={this.props.match.params.graphName}
+                                  setDisplayedAddress={this.setDisplayedAddress}
+                                  selectedMetadata={this.state.selectedMetadata}
+                                  recentMetadataSearches={this.state.recentMetadataSearches}/>
                         <SidePanel
-                            address_displayed_currently={this.state.address_displayed_currently}/>
+                            addressDisplayedCurrently={this.state.addressDisplayedCurrently}/>
                     </div>
                 </div>
             );
         }
     }
 
-    toggle_markers() {
-        this.setState({is_marker_visible: !this.state['is_marker_visible']})
-    }
-
-    set_displayed_address(address) {
-        this.setState({address_displayed_currently: address})
-    }
-
-    async set_selected_tags(selected_tags) {
-        this.setState({selected_tags: selected_tags})
+    setDisplayedAddress(address) {
+        this.setState({addressDisplayedCurrently: address})
     }
 }
 

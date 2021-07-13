@@ -1,6 +1,4 @@
 from graph_tool import Graph
-import pandas as pd
-from be.tile_creator.src.graph.token_graph import TokenGraph
 
 
 class GraphToolTokenGraph:
@@ -9,32 +7,32 @@ class GraphToolTokenGraph:
     An instacne of GraphToolTokenGraph contains all the static information needed to render a graph.
     '''
 
-    def __init__(self, edge_ids_to_amount, visual_layout, metadata, edge_curvature):
+    def __init__(self, edgeIdsToAmount, visualLayout, metadata, edgeCurvature):
         self.metadata = metadata
-        self.edge_curvature = edge_curvature if edge_curvature < 0 else -1 * edge_curvature
+        self.edgeCurvature = edgeCurvature if edgeCurvature < 0 else -1 * edgeCurvature
         self.g = Graph(directed=True)
-        self._add_edges(edge_ids_to_amount)
-        self.vertex_positions = self.g.new_vertex_property("vector<float>",
-                                                      vals=visual_layout.vertex_positions[["x", "y"]].values)
-        self.edge_length = self.g.new_edge_property("float", vals=visual_layout.edge_lengths)
-        self.vertex_sizes = self.g.new_vertex_property('float', vals=visual_layout.vertex_sizes)
-        self.vertex_shapes = self.g.new_vertex_property('string', vals=visual_layout.vertex_shapes)
-        self.edge_thickness = self.g.new_edge_property("float", vals=visual_layout.edge_thickness)
-        self._make_bezier_points()
+        self.addEdges(edgeIdsToAmount)
+        self.vertexPositions = self.g.new_vertex_property("vector<float>",
+                                                      vals=visualLayout.vertexPositions[["x", "y"]].values)
+        self.edgeLength = self.g.new_edge_property("float", vals=visualLayout.edgeLengths)
+        self.vertexSizes = self.g.new_vertex_property('float', vals=visualLayout.vertexSizes)
+        self.vertexShapes = self.g.new_vertex_property('string', vals=visualLayout.vertexShapes)
+        self.edgeThickness = self.g.new_edge_property("float", vals=visualLayout.edgeThickness)
+        self.makeBezierPoints()
         # edge transparency needs to be populated at run-time
-        self.edge_transparencies = []
-        for zl in range(0, metadata.get_zoom_levels()):
-            self.edge_transparencies.append(self.g.new_edge_property("vector<float>"))
+        self.edgeTransparencies = []
+        for zl in range(0, metadata.getZoomLevels()):
+            self.edgeTransparencies.append(self.g.new_edge_property("vector<float>"))
 
-    def _make_bezier_points(self):
-        self.control_points = self.g.new_edge_property('vector<float>')
+    def makeBezierPoints(self):
+        self.controlPoints = self.g.new_edge_property('vector<float>')
         for v in self.g.vertices():
             for e in v.out_edges():
-                curvature = self.edge_length[e] * self.edge_curvature
-                self.control_points[e] = [0, 0, 0.25, curvature, 0.75, curvature, 1, 0]
+                curvature = self.edgeLength[e] * self.edgeCurvature
+                self.controlPoints[e] = [0, 0, 0.25, curvature, 0.75, curvature, 1, 0]
 
-    def _add_edges(self, edge_ids_to_amount):
-        data = edge_ids_to_amount.rename(columns={'source_id': 'source', 'target_id': 'target'})
+    def addEdges(self, edgeIdsToAmount):
+        data = edgeIdsToAmount.rename(columns={'sourceId': 'source', 'targetId': 'target'})
         # hashed = False ensure that vertex values correspond to vertex indices
         self.g.add_edge_list(
             data[["source", "target"]].values,

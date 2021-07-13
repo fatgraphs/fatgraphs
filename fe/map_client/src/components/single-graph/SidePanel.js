@@ -10,14 +10,14 @@ class SidePanel extends React.Component {
 
     render() {
 
-        let address = this.props.address_displayed_currently === undefined
+        let address = this.props.addressDisplayedCurrently === undefined
             ? "Nothing selected"
-            : this.props.address_displayed_currently
+            : this.props.addressDisplayedCurrently
 
 
         return <div className={'border-2'}>
             <DescriptionTable
-                stack_vertically={true}
+                stackVertically={true}
                 keys={['Address']}
                 values={[address]}>
             </DescriptionTable>

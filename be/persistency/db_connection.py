@@ -7,50 +7,50 @@ Allows execution of raw sql queries
 """
 
 
-class DbConnection():
+class DbConnection:
 
-    def __init__(self, connection_string):
-        self.engine = create_engine(connection_string)
+    def __init__(self, connectionString):
+        self.engine = create_engine(connectionString)
 
-    def execute_raw_query(self, query):
-        query_text = text(query)
-        result = self.engine.execute(query_text)
+    def executeRawQuery(self, query):
+        queryText = text(query)
+        result = self.engine.execute(queryText)
         return result
 
-    def add_primary_key(self, table_name, key):
+    def addPrimaryKey(self, tableName, key):
         with self.engine.connect() as con:
-            con.execute(f'ALTER TABLE {table_name} ADD PRIMARY KEY ({key});')
+            con.execute(f'ALTER TABLE {tableName} ADD PRIMARY KEY ({key});')
 
-    def create_index(self, table_name, column_name):
-        if not self.is_column_present(table_name, column_name):
-            raise Exception(f'Trying to create an index on a column ({column_name}) '
-                            f'that is not present on the specified table ({table_name}')
+    def createIndex(self, tableName, columnName):
+        if not self.isColumnPresent(tableName, columnName):
+            raise Exception(f'Trying to create an index on a column ({columnName}) '
+                            f'that is not present on the specified table ({tableName}')
         with self.engine.connect() as con:
-            query = """CREATE INDEX %(index_name)s ON %(table_name)s(%(column_name)s)"""
-            con.execute(query, {"index_name": AsIs(column_name + '_index'),
-                                "table_name": AsIs(table_name),
-                                "column_name": AsIs(column_name)})
+            query = """CREATE INDEX %(indexName)s ON %(tableName)s(%(columnName)s)"""
+            con.execute(query, {"indexName": AsIs(columnName + '_index'),
+                                "tableName": AsIs(tableName),
+                                "columnName": AsIs(columnName)})
 
-    def is_table_present(self, table_name):
+    def isTablePresent(self, tableName):
         '''
 
-        :param table_name:
+        :param tableName:
         :return: True if the engine contains table with an equal name
         '''
-        return inspect(self.engine).has_table(table_name)
+        return inspect(self.engine).has_table(tableName)
 
-    def is_column_present(self, table_name, column_name):
+    def isColumnPresent(self, tableName, columnName):
         """
-        :param table_name:
-        :param column_name:
+        :param tableName:
+        :param columnName:
         :return: True if  the table contains a column with the specified name
         """
-        if not self.is_table_present(table_name):
+        if not self.isTablePresent(tableName):
             return False
         with self.engine.connect() as con:
             query = """ SELECT column_name 
                         FROM information_schema.columns 
-                        WHERE table_name=%(table_name)s and column_name=%(column_name)s;"""
+                        WHERE table_name=%(tableName)s and column_name=%(columnName)s;"""
 
-            result = con.execute(query, {'table_name': table_name, 'column_name': column_name})
+            result = con.execute(query, {'tableName': tableName, 'columnName': columnName})
             return result.rowcount != 0

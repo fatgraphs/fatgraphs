@@ -6,15 +6,12 @@ class BodyGraphGallery extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {
-            available_graphs: props.available_graphs,
-        }
         this.openGraph = this.openGraph.bind(this);
     }
 
     render() {
         return <div className={'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 2xl:grid-cols-9'}>
-            {this.state.available_graphs.map((value, index) => {
+            {this.props.availableGraphs.map((value, index) => {
                 return <GraphThumbnail name={value}
                                        key={index}
                                        open={this.openGraph}/>

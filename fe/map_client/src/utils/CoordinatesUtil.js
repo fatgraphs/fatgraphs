@@ -7,29 +7,29 @@ export function parseTuple(t) {
     return JSON.parse("[" + t.replace(/\(/g, "[").replace(/\)/g, "]") + "]")[0];
 }
 
-export function to_map_coordinate(coordinate, graph_metadata) {
-    let graph_coord = coordinate;
+export function toMapCoordinate(coordinate, graphMetadata) {
+    let graphCoord = coordinate;
     if (!Array.isArray(coordinate)) {
-        graph_coord = parseTuple(coordinate)
+        graphCoord = parseTuple(coordinate)
     }
-    let pos = _convert_graph_coordinate_to_map(
-        graph_coord,
-        graph_metadata['min'],
-        graph_metadata['max'],
-        graph_metadata['tile_size']);
+    let pos = convertGraphCoordinateToMap(
+        graphCoord,
+        graphMetadata['min'],
+        graphMetadata['max'],
+        graphMetadata['tileSize']);
     return pos;
 }
 
-export function to_graph_coordinate(coordinate, graph_metadata) {
-    let map_coord = coordinate;
+export function toGraphCoordinate(coordinate, graphMetadata) {
+    let mapCoord = coordinate;
     if (!Array.isArray(coordinate)) {
-        map_coord = parseTuple(coordinate)
+        mapCoord = parseTuple(coordinate)
     }
-    let pos = _convert_map_coordinate_to_graph(
-        map_coord,
-        graph_metadata['min'],
-        graph_metadata['max'],
-        graph_metadata['tile_size']);
+    let pos = convertMapCoordinateToGraph(
+        mapCoord,
+        graphMetadata['min'],
+        graphMetadata['max'],
+        graphMetadata['tileSize']);
     return pos;
 }
 
@@ -43,25 +43,24 @@ export function to_graph_coordinate(coordinate, graph_metadata) {
  * @param g_max same as g_min but the largest number
  * @param tile_size tile size used when generating the graph tiles
  */
-function _convert_graph_coordinate_to_map(graph_coordinate, g_min, g_max, tile_size) {
+function convertGraphCoordinateToMap(graphCoordinate, gMin, gMax, tileSize) {
     // console.log("graph_coordinate" + graph_coordinate)
     // console.log(g_min)
     // console.log(g_max)
-    let graph_side = g_max - g_min
+    let graphSide = gMax - gMin
     // console.log("graph sixe: " + graph_side)
-    let map_x = -1 * (graph_coordinate[1] + Math.abs(g_min)) * tile_size / graph_side
-    let map_y = (graph_coordinate[0] + Math.abs(g_min)) * tile_size / graph_side
+    let mapX = -1 * (graphCoordinate[1] + Math.abs(gMin)) * tileSize / graphSide
+    let mapY = (graphCoordinate[0] + Math.abs(gMin)) * tileSize / graphSide
     // console.log([-map_y, map_x])
-    return [map_x, map_y]
+    return [mapX, mapY]
 }
 
 /**
  * Inverse of _convert_graph_coordinate_to_map
  */
-function _convert_map_coordinate_to_graph(map_coordinate, g_min, g_max, tile_size) {
-    let graph_side = g_max - g_min
-    let graph_x = (map_coordinate[1] * graph_side / tile_size) - Math.abs(g_min)
-    let graph_y = -(map_coordinate[0] * graph_side / tile_size) - Math.abs(g_min)
-    // console.log([-map_y, map_x])
-    return [graph_x, graph_y]
+function convertMapCoordinateToGraph(mapCoordinate, gMin, gMax, tileSize) {
+    let graphSide = gMax - gMin
+    let graphX = (mapCoordinate[1] * graphSide / tileSize) - Math.abs(gMin)
+    let graphY = -(mapCoordinate[0] * graphSide / tileSize) - Math.abs(gMin)
+    return [graphX, graphY]
 }

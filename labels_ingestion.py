@@ -2,12 +2,12 @@
 
 import sys
 import pandas as pd
-from be.persistency.persistence_api import persistence_api
+from be.persistency.persistence_api import persistenceApi
 
 REQUIRED_COLUMNS = ['address', 'label', 'type']
 
 if __name__ == "__main__":
-    persistence_api.ensure_labels_table_exists()
+    persistenceApi.ensureLabelsTableExists()
     if len(sys.argv) != 2:
         raise Exception("The ingestion script needs to be called with exactly one argument: the path to the labels.csv")
     raw_path = sys.argv[1]
@@ -19,6 +19,6 @@ if __name__ == "__main__":
 
     address_label_type = raw_labels[REQUIRED_COLUMNS].rename(columns={'address': 'eth'})
 
-    persistence_api.populate_labels_table(address_label_type)
+    persistenceApi.populateLabelsTable(address_label_type)
 
     print("Labels correctly added to the db")

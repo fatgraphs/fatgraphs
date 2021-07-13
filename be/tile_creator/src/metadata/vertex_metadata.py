@@ -1,5 +1,5 @@
 from be.configuration import LABELS_TABLE_TYPE
-from be.persistency.persistence_api import persistence_api
+from be.persistency.persistence_api import persistenceApi
 
 
 class VerticesLabels:
@@ -13,8 +13,8 @@ class VerticesLabels:
     def generate_shapes(self):
         # TODO this changes to triangles all vertices that are in the label list.
         # Change it to be exchanges.
-        dex = persistence_api.get_labelled_vertices(self.configurations['graph_name'], LABELS_TABLE_TYPE, 'dex')
-        idex = persistence_api.get_labelled_vertices(self.configurations['graph_name'], LABELS_TABLE_TYPE, 'idex')
+        dex = persistenceApi.getLabelledVertices(self.configurations['graphName'], LABELS_TABLE_TYPE, 'dex')
+        idex = persistenceApi.getLabelledVertices(self.configurations['graphName'], LABELS_TABLE_TYPE, 'idex')
         vertices = dex.append(idex)
         vertex_shapes = ['circle'] * len(self.address_to_id)
         for vertex in vertices['id'].values:

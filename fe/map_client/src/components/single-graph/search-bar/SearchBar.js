@@ -1,9 +1,10 @@
 import React, {Component} from 'react';
-import DeleatableTag from "./DeleatableTag";
+import ClosableMetadata from "./ClosableMetadata";
 import Autocompletion from "./Autocompletion";
-import {post_recent_tag} from "../../../API_layer";
 import {MyContext} from "../../../Context";
 import _ from 'underscore';
+import {array, bool, func, string} from "prop-types";
+import {postRecentMetadata} from "../../../APILayer";
 
 class SearchBar extends Component {
 
@@ -12,136 +13,133 @@ class SearchBar extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            tags_selected: [],
-            current_input: "",
+            metadataSelected: [],
+            currentInput: "",
             showAutocompletion: false,
-            search_input_element: undefined
+            searchInputElement: undefined
         }
-        this.closeTagCallback = this.closeTagCallback.bind(this)
-        this.addTagCallback = this.addTagCallback.bind(this)
-        this.handleChange = this.handleChange.bind(this)
-        this.onFocus = this.onFocus.bind(this)
+        this.closeMetadataCallback = this.closeMetadataCallback.bind(this)
+        this.addMetadataCallback = this.addMetadataCallback.bind(this)
         this.onBlur = this.onBlur.bind(this)
     }
 
     render() {
+        let displaySelectedMetadata = <>{
+            this.props.showSelected ?
+                this.state.metadataSelected
+                    .map((metadata, i) =>
+                        <ClosableMetadata
+                            metadata={metadata}
+                            closeCallback={this.closeMetadataCallback}
+                            key={i}/>
+                    ) :
+                <></>
+        }</>;
+
         return (
             <div className={'flex flex-row flex-wrap position-relative h-12'}>
 
-                {/* DISPLAY SELECTED TAGS */}
-                {this.state.tags_selected
-                    .map((tag, i) =>
-                        <DeleatableTag
-                            tag={tag}
-                            closeCallback={this.closeTagCallback}
-                            key={i}/>
-                    )}
+                {displaySelectedMetadata}
 
-
-                {/* this logic is to deal with the user pressing enter
+                {/* logic to deal with the user pressing enter
                 as opposed to the user clicking on the item they want to add*/}
                 <form
-
-                    onSubmit={() => {
-                        let currentInput = this.state.current_input;
-                        if(currentInput.substring(0, 2) === '0x'){
-                            this.addTagCallback({
-                                tag: currentInput,
-                                tag_type: 'eth'})
-                            return
-                        }
-                        if (this.context['types'].includes(currentInput)) {
-                            this.addTagCallback({
-                                tag: currentInput,
-                                tag_type: 'type'})
-                            return
-                        }
-                        if (this.context['labels'].includes(currentInput)) {
-                            this.addTagCallback({
-                                tag: currentInput,
-                                tag_type: 'label'})
-                            return
-                        }
-                        this.setState({
-                            current_input: '',
-                            showAutocompletion: false
-                        })
-                        this.state.search_input_element.blur()
-                    }}
+                    onSubmit={() => this.pressedEnterCallback(this.state.currentInput)}
                     onBlur={this.onBlur}
                     className={'h-12 w-60'}>
                     <label>
                         <input className={'p-2 focus:outline-none'}
-                               ref={inputEl => (this.state.search_input_element = inputEl)}
-                               placeholder={'SEARCH BY NODE TYPE/LABEL'}
                                type="text"
-                               value={this.state.current_input}
-                               onChange={this.handleChange}
-                               onFocus={this.onFocus}
+                               ref={inputEl => (this.state.searchInputElement = inputEl)}
+                               placeholder={this.props.placeholder}
+                               value={this.state.currentInput}
+                               onChange={(event) => {
+                                   this.setState({currentInput: event.target.value})
+                               }}
+                               onFocus={() => {
+                                   this.setState({showAutocompletion: true})
+                               }}
                         />
                     </label>
 
                     <Autocompletion
-                        visible={this.state.showAutocompletion} //this.state.showAutocompletion
-                        current_input={this.state.current_input}
-                        addTagCallback={this.addTagCallback}
-                        graph_name={this.props.graph_name}
-                        recentTags={this.props.recentTags}
+                        shouldRender={this.state.showAutocompletion}
+                        currentInput={this.state.currentInput}
+                        addMetadataCallback={this.addMetadataCallback}
+                        graphName={this.props.graphName}
+                        recentMetadata={this.props.recentMetadataSearches}
                     />
                 </form>
             </div>
         );
     }
 
-    handleChange(event) {
-        this.setState({current_input: event.target.value})
+    pressedEnterCallback(currentInput) {
+        if (currentInput.substring(0, 2) === '0x') {
+            this.addMetadataCallback({
+                metadataValue: currentInput,
+                metadataType: 'eth'
+            })
+            return
+        }
+
+        // we only have free text from the user, we need to figure if it's a type or a label
+        let match = this.context['autocompleteTerms'].find((e) => e['metadata_value'] === currentInput);
+        if (match) {
+            this.addMetadataCallback(match)
+        }
     }
 
-    addTagCallback(tag_object) {
+    addMetadataCallback(metadataObject) {
         this.setState(oldState => {
-            this.state.search_input_element.blur()
-            let tags_now = [...oldState.tags_selected, tag_object];
+            this.state.searchInputElement.blur()
+            let metadataNow = [...oldState.metadataSelected, metadataObject];
 
             // Update the quicklist
-            if (!this.props.recentTags.some(t => _.isEqual(t, tag_object))) {
-                post_recent_tag(tag_object)
+            if (!this.props.recentMetadataSearches.some(t => _.isEqual(t, metadataObject))) {
+                postRecentMetadata(metadataObject)
             }
 
             // Update parent component
-            this.props.set_selected_tags(tags_now)
+            this.props.selectedMetadataCallback(metadataNow)
 
             return ({
-                tags_selected: tags_now,
-                current_input: '',
+                metadataSelected: metadataNow,
+                currentInput: '',
                 showAutocompletion: false
             });
         })
 
     }
 
-
-    closeTagCallback(tag_object) {
-        let tags_now = this.state.tags_selected.filter(tag => ! _.isEqual(tag, tag_object));
-        this.setState({tags_selected: tags_now})
-        this.props.set_selected_tags(tags_now)
+    closeMetadataCallback(metadataObject) {
+        let metadataNow = this.state.metadataSelected.filter(m => !_.isEqual(m, metadataObject));
+        this.setState({metadataSelected: metadataNow})
+        this.props.selectedMetadataCallback(metadataNow)
     }
 
     onBlur(e) {
-        if (e.relatedTarget !== null && e.relatedTarget.className.includes('dont-lose-focus')) {
+        let wasAutocompleteTermClicked = e.relatedTarget !== null && e.relatedTarget.className.includes('dont-lose-focus');
+        if (wasAutocompleteTermClicked) {
             return
         }
-        setTimeout(function () {
-            this.setState({
-                showAutocompletion: false
-            })
-        }.bind(this), 50)
-    }
-
-    onFocus(e) {
+        // the user clicked somewhere else on the map
         this.setState({
-            showAutocompletion: true
+            showAutocompletion: false
         })
     }
 }
+
+SearchBar.propTypes = {
+    graphName: string.isRequired,
+    placeholder: string.isRequired,
+    recentMetadataSearches: array.isRequired,
+    showSelected: bool,
+    selectedMetadataCallback: func.isRequired
+};
+
+SearchBar.defaultProps = {
+    showSelected: true
+};
 
 export default SearchBar;

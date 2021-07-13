@@ -1,42 +1,50 @@
 const configs = require('configurations')
 
 class UrlComposer {
-    static verticesMetadata(graph_name){
-        return configs['endpoints']['base'] + configs['endpoints']['vertices_metadata'] + "/" + graph_name
+    static verticesMetadata(graphName){
+        return configs['endpoints']['base'] + configs['endpoints']['verticesMetadata'] + "/" + graphName
     }
 
-    static graphMetadata(graph_name){
-        return configs['endpoints']['base'] + configs['endpoints']['graph_metadata'] + "/" + graph_name
+    static graphMetadata(graphName){
+        return configs['endpoints']['base'] + configs['endpoints']['graphMetadata'] + "/" + graphName
     }
 
-    static proximityClick(graph_name, x, y){
+    static proximityClick(graphName, x, y){
         if(! typeof x === 'number' || Number.isInteger(x)){
             throw "You need to pass a float"
         }
         if(! typeof y === 'number' || Number.isInteger(y)){
             throw "You need to pass a float"
         }
-        return configs['endpoints']['base'] + configs['endpoints']['proximity_click'] + "/" + graph_name + "/" + x + "/" + y
+        return configs['endpoints']['base'] + configs['endpoints']['proximityClick'] + "/" + graphName + "/" + x + "/" + y
     }
 
     /**
      * Returns the URL to fetch tiles. The random int purpose is to force the broswer to NOT CACHE.
-     * @param graph_name
+     * @param graphName
      * @returns {string}
      */
-    static tileLayerUrl(graph_name) {
+    static tileLayerUrl(graphName) {
         return configs['endpoints']['base'] +
             configs['endpoints']['tile'] + "/" +
-            graph_name +
+            graphName +
             '/{z}/{x}/{y}.png?{randint}'
     }
 
-    static matching_vertices(graph_name, tag_object) {
+    static matchingVertices(graphName, metadataObject) {
         return configs['endpoints']['base'] +
-            configs['endpoints']['matching_vertex'] + "/" +
-            graph_name + "/" +
-            tag_object['tag_type'] + "/" +
-            tag_object['tag'];
+            configs['endpoints']['matchingVertex'] + "/" +
+            graphName + "/" +
+            metadataObject['metadata_type'] + "/" +
+            metadataObject['metadata_value'];
+    }
+
+    static addVertexMetadata(eth, metadataValue, metadataType) {
+        return configs['endpoints']['base'] +
+            configs['endpoints']['addVertexMetadata'] + "/" +
+            eth + "/" +
+            metadataValue + "/" +
+            metadataType;
     }
 }
 

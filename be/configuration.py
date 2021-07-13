@@ -27,11 +27,11 @@ LABELS_TABLE_TYPE = 'type'
 #GIS CONFIGURATIONS
 SRID = 3857
 
-def _load_configurations():
+def load_configurations():
     join = os.path.join(this_file_dir, "../configurations.json")
     configs = open(join, "r")
     r = configs.read()
     return json.loads(r)
 
 
-CONFIGURATIONS = _load_configurations()
+CONFIGURATIONS = load_configurations()
