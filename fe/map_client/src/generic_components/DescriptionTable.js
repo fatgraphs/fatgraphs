@@ -13,13 +13,13 @@ class DescriptionTable extends Component {
 
     render() {
         let outerStyle = 'flex flex-row flex-wrap';
-        let innerStyle = 'flex flex-row mr-4 mt-4 odd:bg-gray-100';
+        let innerStyle = 'flex flex-row odd:bg-gray-100';
         if(this.props.stackVertically !== undefined && this.props.stackVertically){
             outerStyle = 'flex flex-col flex-wrap';
-            innerStyle = 'flex flex-col mr-4 mt-4 odd:bg-gray-100';
+            innerStyle = 'flex flex-col odd:bg-gray-100';
         }
         return (
-            <div>
+            <div className={this.props.className + ' overflow-x-auto'}>
                 <dl className={outerStyle}>
                     {this.props.keys.map((key, index) => {
                         return <div key={index} className={innerStyle}>

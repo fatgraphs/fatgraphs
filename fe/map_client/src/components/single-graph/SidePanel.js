@@ -1,6 +1,5 @@
 import * as React from "react";
 import DescriptionTable from "../../generic_components/DescriptionTable";
-import ToggleBar from "../../generic_components/ToggleBar";
 
 class SidePanel extends React.Component {
 
@@ -15,13 +14,12 @@ class SidePanel extends React.Component {
             : this.props.addressDisplayedCurrently
 
 
-        return <div className={'border-2'}>
-            <DescriptionTable
+        return<DescriptionTable
+                className={this.props.className}
                 stackVertically={true}
                 keys={['Address']}
                 values={[address]}>
             </DescriptionTable>
-        </div>
     }
 
 }

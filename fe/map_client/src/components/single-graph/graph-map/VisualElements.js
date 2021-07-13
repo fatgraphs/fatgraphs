@@ -49,7 +49,7 @@ export function getVertexPopup(typesString, labelsString, eth, graphName, callBa
 
 export const TYPE_ICONS = {
     label: <FontAwesomeIcon
-        className={'m-1'}
+        className={'m-1 block'}
         icon={faTag}/>,
     type: <div
         className={'flex border-black border-2 rounded-full h-4 w-4 m-1 font-bold text-xs justify-center items-center p-2'}>T</div>,

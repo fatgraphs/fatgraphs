@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import ClosableMetadata from "./ClosableMetadata";
+import ClosableElement from "./ClosableElement";
 import Autocompletion from "./Autocompletion";
 import {MyContext} from "../../../Context";
 import _ from 'underscore';
@@ -28,7 +28,7 @@ class SearchBar extends Component {
             this.props.showSelected ?
                 this.state.metadataSelected
                     .map((metadata, i) =>
-                        <ClosableMetadata
+                        <ClosableElement
                             metadata={metadata}
                             closeCallback={this.closeMetadataCallback}
                             key={i}/>
@@ -37,44 +37,46 @@ class SearchBar extends Component {
         }</>;
 
         return (
-            <div className={'flex flex-row flex-wrap position-relative h-12'}>
+            <div className={'flex flex-col justify-center p-2 overflow-y-auto ' + this.props.className}>
+                <div className={'flex flex-row flex-wrap justify-start overflow-y-auto'}>
+                    <form
+                        onSubmit={() => this.pressedEnterCallback(this.state.currentInput)}
+                        onBlur={this.onBlur}
+                        className={'w-60'}>
+                        <label>
+                            <input className={'p-2 focus:outline-none'}
+                                   type="text"
+                                   ref={inputEl => (this.state.searchInputElement = inputEl)}
+                                   placeholder={this.props.placeholder}
+                                   value={this.state.currentInput}
+                                   onChange={(event) => {
+                                       this.setState({currentInput: event.target.value})
+                                   }}
+                                   onFocus={() => {
+                                       this.setState({showAutocompletion: true})
+                                   }}
+                            />
+                        </label>
+                    </form>
 
-                {displaySelectedMetadata}
+                    {displaySelectedMetadata}
 
-                {/* logic to deal with the user pressing enter
-                as opposed to the user clicking on the item they want to add*/}
-                <form
-                    onSubmit={() => this.pressedEnterCallback(this.state.currentInput)}
-                    onBlur={this.onBlur}
-                    className={'h-12 w-60'}>
-                    <label>
-                        <input className={'p-2 focus:outline-none'}
-                               type="text"
-                               ref={inputEl => (this.state.searchInputElement = inputEl)}
-                               placeholder={this.props.placeholder}
-                               value={this.state.currentInput}
-                               onChange={(event) => {
-                                   this.setState({currentInput: event.target.value})
-                               }}
-                               onFocus={() => {
-                                   this.setState({showAutocompletion: true})
-                               }}
-                        />
-                    </label>
-
-                    <Autocompletion
-                        shouldRender={this.state.showAutocompletion}
-                        currentInput={this.state.currentInput}
-                        addMetadataCallback={this.addMetadataCallback}
-                        graphName={this.props.graphName}
-                        recentMetadata={this.props.recentMetadataSearches}
-                    />
-                </form>
+                </div>
+                <Autocompletion
+                    shouldRender={this.state.showAutocompletion}
+                    currentInput={this.state.currentInput}
+                    addMetadataCallback={this.addMetadataCallback}
+                    graphName={this.props.graphName}
+                    recentMetadata={this.props.recentMetadataSearches}
+                />
             </div>
         );
     }
 
     pressedEnterCallback(currentInput) {
+        // logic to deal with the user pressing enter
+        // as opposed to the user clicking on the item they want to add
+
         if (currentInput.substring(0, 2) === '0x') {
             this.addMetadataCallback({
                 metadataValue: currentInput,

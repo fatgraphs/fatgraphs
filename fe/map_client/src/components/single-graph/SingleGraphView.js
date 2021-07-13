@@ -6,7 +6,9 @@ import SearchBar from "./search-bar/SearchBar";
 import {MyContext} from "../../Context";
 import GraphMap from "./graph-map/GraphMap";
 import SidePanel from "./SidePanel";
-import GraphMapHeader from "./header/GraphMapHeader";
+import GraphMapHeader from "./header/GraphTitle";
+import CopyGtmCommand from "./header/CopyGtmCommand";
+import CenteredElement from "../../generic_components/CenteredElement";
 
 class SingleGraphView extends Component {
 
@@ -46,22 +48,44 @@ class SingleGraphView extends Component {
             return <div>Loading . . . </div>
         } else {
             return (
-                <div className={'flex flex-col p-2'}>
+                <div
+                    className={'grid grid-rows-tokenGraphLayout grid-cols-tokenGraphLayout grid-cols-3 gap-1 p-4 h-full'}>
+
+                    <CenteredElement>
+                        Graph name:
+                        <GraphMapHeader
+                            className={'col-span-1 row-span-1'}
+                            graphMetadata={this.state.graphMetadata}/>
+                    </CenteredElement>
+
                     <SearchBar
+                        className={'col-span-1 row-span-1'}
                         graphName={this.props.match.params.graphName}
                         selectedMetadataCallback={(selectedMetadata) => this.setState({selectedMetadata: selectedMetadata})}
                         recentMetadataSearches={this.state.recentMetadataSearches}
                         placeholder={'SEARCH BY NODE TYPE/LABEL'}/>
-                    <GraphMapHeader graphMetadata={this.state.graphMetadata}/>
-                    <div className={'flex flex-col'}>
-                        <GraphMap graphMetadata={this.state.graphMetadata}
-                                  graphName={this.props.match.params.graphName}
-                                  setDisplayedAddress={this.setDisplayedAddress}
-                                  selectedMetadata={this.state.selectedMetadata}
-                                  recentMetadataSearches={this.state.recentMetadataSearches}/>
-                        <SidePanel
-                            addressDisplayedCurrently={this.state.addressDisplayedCurrently}/>
-                    </div>
+
+                    <CenteredElement>
+                        <CopyGtmCommand
+                            className={'col-span-1 row-span-1'}
+                            graphMetadata={this.state.graphMetadata}/>
+                    </CenteredElement>
+
+                    <SidePanel
+                        className={'col-span-1 row-span-1'}
+                        addressDisplayedCurrently={this.state.addressDisplayedCurrently}/>
+
+                    <GraphMap
+                        className={'col-span-1 row-span-1'}
+                        graphMetadata={this.state.graphMetadata}
+                        graphName={this.props.match.params.graphName}
+                        setDisplayedAddress={this.setDisplayedAddress}
+                        selectedMetadata={this.state.selectedMetadata}
+                        recentMetadataSearches={this.state.recentMetadataSearches}/>
+
+                    <SidePanel
+                        className={'col-span-1 row-span-1'}
+                        addressDisplayedCurrently={this.state.addressDisplayedCurrently}/>
                 </div>
             );
         }

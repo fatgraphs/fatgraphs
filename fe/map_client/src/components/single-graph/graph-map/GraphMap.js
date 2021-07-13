@@ -44,7 +44,7 @@ class GraphMap extends React.Component {
 
         return <MapContainer
             whenCreated={this.mapCreationCallback}
-            className={'h-96 bg-black z-10'}
+            className={'h-full bg-black z-10 ' + this.props.className}
             center={position}
             zoom={0}
             scrollWheelZoom={true}

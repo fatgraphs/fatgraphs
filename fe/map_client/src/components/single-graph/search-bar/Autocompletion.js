@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {bool, string} from "prop-types";
-import AddableMetadata from "./AddableMetadata";
+import AddableElement from "./AddableElement";
 import {MyContext} from "../../../Context";
 
 class Autocompletion extends Component {
@@ -26,19 +26,19 @@ class Autocompletion extends Component {
 
         return (
             matchingAutocompleteTerms.length > 0 && this.props.shouldRender ?
-            <div className={'relative z-50'}>
+            <div className={'fixed z-50'}>
                 <ul
                     onScroll={this.handleScroll}
                     className={'border-black border-2 p-2 flex flex-col absolute top-0 left-0 ml-1 bg-gray-100 w-48 h-72 overflow-y-auto'}>
                     {/* Quicklist metadata  */}
-                    {this.props.recentMetadata.map((term, i) => <AddableMetadata
+                    {this.props.recentMetadata.map((term, i) => <AddableElement
                         key={i}
                         metadata={term}
                         addMetadataCallback={this.props.addMetadataCallback}
                         bgColor={'bg-green-100'}/>)}
                     {/*  Other metadata  */}
                     {matchingAutocompleteTerms.map((term, i) => {
-                        return <AddableMetadata
+                        return <AddableElement
                         key={i + 5}
                         metadata={term}
                         addMetadataCallback={this.props.addMetadataCallback}/>

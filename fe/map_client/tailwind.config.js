@@ -1,15 +1,22 @@
 module.exports = {
-  important: true,
-  purge: [],
-  darkMode: false, // or 'media' or 'class'
-  theme: {
-    extend: {},
-  },
-  variants: {
-    extend: {
-      backgroundColor: ['odd'],
-      fontSize: ['active'],
+    important: true,
+    purge: [],
+    darkMode: false,
+    theme: {
+        extend: {
+            gridTemplateColumns: {
+                'tokenGraphLayout': 'minmax(0, 0.15fr) minmax(0, 0.7fr) minmax(0, 0.15fr)'
+            },
+            gridTemplateRows: {
+                'tokenGraphLayout': 'minmax(0, 0.10fr) minmax(0, 0.90fr)'
+            }
+        },
     },
-  },
-  plugins: [],
+    variants: {
+        extend: {
+            backgroundColor: ['odd'],
+            fontSize: ['active'],
+        },
+    },
+    plugins: [],
 }
