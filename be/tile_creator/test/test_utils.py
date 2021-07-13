@@ -2,15 +2,15 @@ import os
 import unittest
 
 from be.tile_creator.test.constants import IMG_SIMILARITY_DIR
-from be.utils.utils import compare_images, is_image
+from be.utils.utils import compareImages, isImage
 
 
 class TestUtils(unittest.TestCase):
 
 
     def setUp(self) -> None:
-        self.different_threshold = 0.5
-        self.similar_threshold = 0.72
+        self.differentThreshold = 0.5
+        self.similarThreshold = 0.72
 
 
     # TODO test other utils
@@ -22,27 +22,27 @@ class TestUtils(unittest.TestCase):
         """
         dirs = [os.path.join(IMG_SIMILARITY_DIR, path) for path in os.listdir(IMG_SIMILARITY_DIR) if os.path.isdir(path)]
         for dir in dirs:
-            files = [os.path.join(dir, path) for path in os.listdir(dir) if is_image(path)]
+            files = [os.path.join(dir, path) for path in os.listdir(dir) if isImage(path)]
             yes_scores = []
             no_scores = []
             for img1 in files:
                 for img2 in files:
-                    similarity_score = compare_images(img1, img2)
-                    comparing_yes_instances = 'yes' in img1 and 'yes' in img2
-                    comparing_no_instances = 'no' in img1 and 'no' in img2
-                    comparing_the_same_no_instance = img1 == img2
-                    comparing_yes_vs_no = not comparing_yes_instances and not comparing_no_instances
-                    if comparing_yes_instances or comparing_the_same_no_instance:
-                        yes_scores.append(similarity_score)
-                        if similarity_score < self.similar_threshold:
+                    similarityScore = compareImages(img1, img2)
+                    comparingYesInstances = 'yes' in img1 and 'yes' in img2
+                    comparingNoInstances = 'no' in img1 and 'no' in img2
+                    comparingTheSameNoInstance = img1 == img2
+                    comparingYesVsNo = not comparingYesInstances and not comparingNoInstances
+                    if comparingYesInstances or comparingTheSameNoInstance:
+                        yes_scores.append(similarityScore)
+                        if similarityScore < self.similarThreshold:
                             # print("similarity({0}, {1}) < {2}".format(img1, img2, similarity_score))
-                            self.assertGreater(similarity_score, self.similar_threshold,
-                                               "similarity({0}, {1}) < {2}".format(img1, img2, self.similar_threshold))
-                    elif comparing_yes_vs_no:
-                        no_scores.append(similarity_score)
-                        if similarity_score > self.different_threshold:
+                            self.assertGreater(similarityScore, self.similarThreshold,
+                                               "similarity({0}, {1}) < {2}".format(img1, img2, self.similarThreshold))
+                    elif comparingYesVsNo:
+                        no_scores.append(similarityScore)
+                        if similarityScore > self.differentThreshold:
                             # print("similarity({0}, {1}) > {2}".format(img1, img2, similarity_score))
-                            self.assertLess(similarity_score, self.different_threshold,
-                                            "similarity({0}, {1}) > {2}".format(img1, img2, self.different_threshold))
-            # print(min(yes_scores))
+                            self.assertLess(similarityScore, self.differentThreshold,
+                                            "similarity({0}, {1}) > {2}".format(img1, img2, self.differentThreshold))
+            # print(min(yesScores))
             # print(max(no_scores))

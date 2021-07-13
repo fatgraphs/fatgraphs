@@ -63,8 +63,9 @@ class VisualLayout:
         return medianPixelDistance
 
     def ensureLayoutIsSquare(self, minCoordinate, maxCoordinate):
-        self.vertexPositions.iloc[1, 0:3] = [minCoordinate, minCoordinate, self.vertexPositions.iloc[1, 0:3][2]]
-        self.vertexPositions.iloc[2, 0:3] = [maxCoordinate, maxCoordinate, self.vertexPositions.iloc[2, 0:3][2]]
+        lastVertex = self.vertexPositions['vertex'].max()
+        self.vertexPositions.iloc[lastVertex, 0:3] = [minCoordinate, minCoordinate, self.vertexPositions.iloc[lastVertex, 0:3][2]]
+        self.vertexPositions.iloc[lastVertex - 1, 0:3] = [maxCoordinate, maxCoordinate, self.vertexPositions.iloc[lastVertex - 1, 0:3][2]]
 
     def calculateVerticesSize(self, inDegrees, medVertexSize, maxVertexSize):
         targetMedian = self.medianPixelDistance * medVertexSize

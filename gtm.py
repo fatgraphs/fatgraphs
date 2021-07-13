@@ -6,18 +6,16 @@ from be.configuration import CONFIGURATIONS
 from be.tile_creator.main import main
 
 
-def extract_arguments():
+def extractArguments():
     global arguments, values
-    # Get full command-line arguments
-    full_cmd_arguments = sys.argv
-    # Keep all but the first
-    argument_list = full_cmd_arguments[1:]
-    print(argument_list)
-    short_options = "n:z:"
-    long_options = ["csv=", "labels=", "ts=", "min_t=", "max_t=", "std=", "med_thick=", "max_thick=", "med_size=",
+    fullCmdArguments = sys.argv
+    argumentList = fullCmdArguments[1:]
+    print(argumentList)
+    shortOptions = "n:z:"
+    longOptions = ["csv=", "labels=", "ts=", "min_t=", "max_t=", "std=", "med_thick=", "max_thick=", "med_size=",
                     "max_size=", "curvature=", "mean_t="]
     try:
-        arguments, values = getopt.getopt(argument_list, short_options, long_options)
+        arguments, values = getopt.getopt(argumentList, shortOptions, longOptions)
     except getopt.error as err:
         # Output error, and return with an error code
         print(str(err))
@@ -25,30 +23,30 @@ def extract_arguments():
     return dict(arguments)
 
 
-def get_cwd():
-    this_file_dir = os.path.dirname(os.path.realpath(__file__))
-    return this_file_dir
+def getCwd():
+    thisFileDir = os.path.dirname(os.path.realpath(__file__))
+    return thisFileDir
 
 
-def result_in_directory_existing(path):
+def resultInDirectoryExisting(path):
     if not os.path.exists(path):
         os.mkdir(path)
 
 
-def ensure_container_directory_exists():
-    result_in_directory_existing(CONFIGURATIONS['graphsHome'])
+def ensureContainerDirectoryExists():
+    resultInDirectoryExisting(CONFIGURATIONS['graphsHome'])
 
 
-def mkdir_for_this_graph(graph_name):
+def mkdirForThisGraph(graph_name):
     # TODO load confoguraitons instead of relying on BE
     path = os.path.join(CONFIGURATIONS['graphsHome'])
     path = os.path.join(path, graph_name)
-    result_in_directory_existing(path)
+    resultInDirectoryExisting(path)
     return path
 
 # default value as second arg og 'get'
 # TODO find a way of ensuring that htis dict keys are the same as defined in configuration.json
-def get_final_configurations(args, graph_path, graph_name):
+def getFinalConfigurations(args, graph_path, graph_name):
     configurations = {
         "outputFolder": graph_path,
         'graphName': graph_name,
@@ -71,16 +69,16 @@ def get_final_configurations(args, graph_path, graph_name):
 
 
 if __name__ == "__main__":
-    args = extract_arguments()
-    ensure_container_directory_exists()
+    args = extractArguments()
+    ensureContainerDirectoryExists()
 
     # graph names should be lower case and don't contain spaces
     graph_name = args["-n"].lower()
     graph_name = '_'.join(graph_name.split(' '))
 
-    graph_path = mkdir_for_this_graph(graph_name)
+    graph_path = mkdirForThisGraph(graph_name)
 
     # default value as second arg og 'get'
     # TODO find a way of ensuring that htis dict keys are the same as defined in configuration.json
-    configurations = get_final_configurations(args, graph_path, graph_name)
+    configurations = getFinalConfigurations(args, graph_path, graph_name)
     main(configurations)

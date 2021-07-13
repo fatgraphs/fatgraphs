@@ -5,13 +5,11 @@ from be.tile_creator.src.graph.gt_token_graph import GraphToolTokenGraph
 from be.tile_creator.src.graph.token_graph import TokenGraph
 from be.tile_creator.src.layout.visual_layout import VisualLayout
 from be.tile_creator.src.metadata.token_graph_metadata import TokenGraphMetadata
-from be.tile_creator.src.metadata.vertex_metadata import VerticesLabels
 from be.tile_creator.test.constants import TEST_DATA, TEST_DIR
-from gtm import get_final_configurations
+from gtm import getFinalConfigurations
 
 
 class TestGraphToolGraph(unittest.TestCase):
-
     graph = None
     layout = None
     gtg = None
@@ -19,13 +17,13 @@ class TestGraphToolGraph(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.graph = TokenGraph(TEST_DATA, {'dtype': {'amount': object}})
-        default_config = get_final_configurations({'--csv': TEST_DATA}, TEST_DIR, "test_graph")
-        cls.layout = VisualLayout(cls.graph, default_config)
-        metadata = TokenGraphMetadata(cls.graph, cls.layout, default_config)
-        cls.gtg = GraphToolTokenGraph(cls.graph.edge_ids_to_amount,
+        defaultConfig = getFinalConfigurations({'--csv': TEST_DATA}, TEST_DIR, "test_graph")
+        cls.layout = VisualLayout(cls.graph, defaultConfig)
+        metadata = TokenGraphMetadata(cls.graph, cls.layout, defaultConfig)
+        cls.gtg = GraphToolTokenGraph(cls.graph.edgeIdsToAmount,
                                       cls.layout,
                                       metadata,
-                                      default_config['curvature'])
+                                      defaultConfig['curvature'])
 
     def test_init(cls):
         cls.assertIsNotNone(cls.gtg)
@@ -37,7 +35,7 @@ class TestGraphToolGraph(unittest.TestCase):
         We require that following the edge clockwise points to the direction of the transfer.
         :return:
         """
-        cls.assertLess(cls.gtg.edge_curvature, 0)
+        cls.assertLess(cls.gtg.edgeCurvature, 0)
 
     def test_edges_are_in_right_order(cls):
         """
@@ -53,19 +51,16 @@ class TestGraphToolGraph(unittest.TestCase):
         4       100
         """
 
-        def _extract_edges_from_gt_graph():
-            edges_graph_tool = list(cls.gtg.g.edges())
-            edges_list_of_lists = list(map(lambda e: [int(e.source()), int(e.target())], edges_graph_tool))
-            edges_numpy_2d = np.array(edges_list_of_lists)
-            edges_pandas = pd.DataFrame(edges_numpy_2d).rename(columns={0: 'source', 1: 'target'})
-            return edges_pandas
+        def extractEdgesFromGtGraph():
+            edgesGraphTool = list(cls.gtg.g.edges())
+            edgesListOfLists = list(map(lambda e: [int(e.source()), int(e.target())], edgesGraphTool))
+            edgesNumpy2d = np.array(edgesListOfLists)
+            edgesPandas = pd.DataFrame(edgesNumpy2d).rename(columns={0: 'source', 1: 'target'})
+            return edgesPandas
 
-        graph_tool_edges = _extract_edges_from_gt_graph()
+        graphToolEdges = extractEdgesFromGtGraph()
         # by definition we order the edges PRIMARILY on the source vertex id
-        cls.assertTrue(graph_tool_edges['source'].is_monotonic)
+        cls.assertTrue(graphToolEdges['source'].is_monotonic)
         #  we order the edges secondarily on target id,
         # here we group each target vertex by source, then each of those subgroups of targets should be monotonically  increasing
-        cls.assertTrue(graph_tool_edges.groupby(by='source').target.is_monotonic_increasing.all())
-
-
-
+        cls.assertTrue(graphToolEdges.groupby(by='source').target.is_monotonic_increasing.all())
