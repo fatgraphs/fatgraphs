@@ -12,9 +12,10 @@ class VertexService:
         return closest
 
     @staticmethod
-    def get_matching(meta_type, meta_value) -> List[Vertex]:
+    def get_matching(graph_name: str, meta_type: str, meta_value: str) -> List[Vertex]:
         matches = MetadataService.get_by_type_and_value(meta_type, meta_value)
         eths = list(map(lambda e: e.eth_source, matches))
+        # TODO USE GRAPH NAME
         by_eths = VertexService.get_by_eths(eths)
         return by_eths
 
