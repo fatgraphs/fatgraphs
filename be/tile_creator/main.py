@@ -1,3 +1,5 @@
+import requests
+
 from be.persistency.persistence_api import persistenceApi
 from be.tile_creator.src.graph.gt_token_graph import GraphToolTokenGraph
 from be.tile_creator.src.graph.token_graph import TokenGraph
@@ -7,7 +9,6 @@ from be.tile_creator.src.metadata.vertex_metadata import VerticesLabels
 from be.tile_creator.src.render.edge_distribution_plot_renderer import EdgeDistributionPlotRenderer
 from be.tile_creator.src.render.tiles_renderer import TilesRenderer
 from be.tile_creator.src.render.transparency_calculator import TransparencyCalculator
-
 
 def main(configurations):
     graph = TokenGraph(configurations['source'], {'dtype': {'amount': float}})
@@ -29,8 +30,13 @@ def main(configurations):
 
 
     metadata = TokenGraphMetadata(graph, visualLayout, configurations)
+    # TODO usernaem not hardcoded
+    frame = metadata.getSingleFrame()
+    frame['owner'] = 'default_user'
+    body = frame.to_dict(orient='record')[0]
+    requests.post("http://localhost:5000/tokengallery/graph/create",  json=body)
 
-    persistenceApi.createMetadataTable(metadata)
+
     persistenceApi.createVertexTable(metadata.getGraphName(), visualLayout,
                                         graph.addressToId)
 

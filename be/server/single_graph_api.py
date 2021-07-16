@@ -14,7 +14,7 @@ class SignedIntConverter(IntegerConverter):
 singleGraphApi = Blueprint('singleGraphApi', __name__)
 
 
-def checkGraphExists():
+def check_graph_exists():
     graphName = request.view_args['graphName']
     if not persistenceApi.isGraphInDb(graphName):
         raise Exception(f'It looks like the graph: {graphName} was not correctly saved in the db.\n'
@@ -22,15 +22,15 @@ def checkGraphExists():
 
 
 @singleGraphApi.route(CONFIGURATIONS['endpoints']['graphMetadata'] + '/<graphName>')
-def getGraphMetadata(graphName):
-    metadataFrame = persistenceApi.getGraphMetadata(graphName)
+def get_graph_metadata(graphName):
+    metadataFrame = persistenceApi.get_graph_metadata(graphName)
     metadataDictionary = metadataFrame.to_dict(orient='records')[0]
     return metadataDictionary
 
 
 @singleGraphApi.route(CONFIGURATIONS['endpoints']['matchingVertex']
                         + '/<graphName>/<searchMethod>/<searchQuery>')
-def getMatchingVertices(graphName, searchMethod, searchQuery):
+def get_matching_vertices(graphName, searchMethod, searchQuery):
     """
     :param graph_name:
     :param search_method: what field to use in the search
@@ -60,7 +60,7 @@ def getMatchingVertices(graphName, searchMethod, searchQuery):
 
 @singleGraphApi.route(
     CONFIGURATIONS['endpoints']['tile'] + '/<string:graphName>/<signed_int:z>/<signed_int:x>/<signed_int:y>.png')
-def getTile(graphName, z, x, y):
+def get_tile(graphName, z, x, y):
     # TODO move the imgs in the DB
     # print("recevied: " + str(z) + " " + str(x) + " " + str(y))
 

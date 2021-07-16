@@ -18,8 +18,11 @@ export function fetchClosestPoint(graphName, graphCoordinate) {
     return doRequest(url, {});
 }
 
-export function fetchGraphs() {
-    let url = configs['endpoints']['base'] + configs['endpoints']['availableGraphs'];
+export function fetchGraphs(userName) {
+    let configElement = configs['endpoints']['availableGraphs'];
+    let s = configElement.replace(/{userName}/g, userName);
+    let url = configs['endpoints']['base'] +
+        s;
    return doRequest(url, {});
 }
 

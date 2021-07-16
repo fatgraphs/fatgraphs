@@ -7,7 +7,7 @@ from werkzeug.routing import IntegerConverter, FloatConverter
 
 from be.configuration import CONFIGURATIONS, LABELS_TABLE_TYPE, LABELS_TABLE_LABEL
 from be.persistency.persistence_api import persistenceApi
-from be.server.single_graph_api import singleGraphApi, checkGraphExists
+from be.server.single_graph_api import singleGraphApi, check_graph_exists
 from be.server.user_data_api import userDataApi
 
 
@@ -23,7 +23,7 @@ cors = CORS(app)
 app.register_blueprint(singleGraphApi)
 app.register_blueprint(userDataApi)
 app.before_request_funcs = {
-    'singleGraphApi': [checkGraphExists]
+    'singleGraphApi': [check_graph_exists]
 }
 
 persistenceApi.ensureUserTableExists()

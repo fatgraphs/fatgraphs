@@ -1,7 +1,7 @@
 {
   "endpoints": {
-    "base": "http://127.0.0.1:5000",
-    "availableGraphs": "/tokengallery/graphs",
+    "base": "http://127.0.0.1:5000/tokengallery/",
+    "availableGraphs": "graph/byuser/{userName}",
     "tile": "/tokengallery/tile",
     "matchingVertex": "/tokengallery/matching-vertex",
     "graphMetadata": "/tokengallery/graph-metadata",

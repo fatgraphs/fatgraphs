@@ -1,4 +1,8 @@
-# TokenGallery Map 
+# TokenGallery Map
+
+## Conventions
+
+Case: camelCase everywhere possible. Since snake_case is the ocnvention in python we won't use cameCase there.
 
 ## Set Up
 You need to have `npm` installed.
