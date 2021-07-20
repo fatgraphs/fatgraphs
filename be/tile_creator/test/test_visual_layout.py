@@ -14,7 +14,7 @@ class TestVisualLayout(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.graph = TokenGraph(TEST_DATA, {'dtype': {'amount': object}})
-        defaultConfig = getFinalConfigurations({'--csv': TEST_DATA}, TEST_DIR, "test_graph")
+        defaultConfig = getFinalConfigurations({'--csv': TEST_DATA},  "test_graph")
         cls.layout = VisualLayout(cls.graph, defaultConfig)
 
     def test_each_address_has_a_coordinate(cls):

@@ -1,5 +1,6 @@
-from be.configuration import LABELS_TABLE_TYPE
-from be.persistency.persistence_api import persistenceApi
+import json
+
+import requests
 
 
 class VerticesLabels:
@@ -10,13 +11,17 @@ class VerticesLabels:
         self.configurations = configurations
 
 
-    def generate_shapes(self):
+    def generate_shapes(self, graph_id):
         # TODO this changes to triangles all vertices that are in the label list.
         # Change it to be exchanges.
-        dex = persistenceApi.getLabelledVertices(self.configurations['graphName'], LABELS_TABLE_TYPE, 'dex')
-        idex = persistenceApi.getLabelledVertices(self.configurations['graphName'], LABELS_TABLE_TYPE, 'idex')
-        vertices = dex.append(idex)
+        dex_response = requests.get(f"http://localhost:5000/tokengallery/vertex/by/{graph_id}/type/dex")
+        idex_response = requests.get(f"http://localhost:5000/tokengallery/vertex/by/{graph_id}/type/idex")
+        dex = json.loads(dex_response.text)
+        idex = json.loads(idex_response.text)
+        dex.extend(idex)
         vertex_shapes = ['circle'] * len(self.address_to_id)
-        for vertex in vertices['id'].values:
-            vertex_shapes[vertex] = VerticesLabels.EXCHANGE
+        for vertex in dex:
+            match = self.address_to_id[self.address_to_id['address'] == vertex['eth']]
+            index = match['vertex'].values[0]
+            vertex_shapes[index] = VerticesLabels.EXCHANGE
         return vertex_shapes

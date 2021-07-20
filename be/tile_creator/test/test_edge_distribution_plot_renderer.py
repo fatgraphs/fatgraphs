@@ -22,7 +22,13 @@ class TestRenderer(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         defaultConfig = getFinalConfigurations({'--csv': TEST_DATA, '-z': 4},
-                                                  TEST_DIR, "test_graph")
+                                                 "test_graph")
+
+        attr = getattr(defaultConfig, 'outputFolder', None)
+        cls.assertIsNone(cls, attr)
+        defaultConfig['outputFolder'] = TEST_DIR
+
+
         cls.transparencyCalculator = TransparencyCalculator(cls.SIDE_GRAPH, defaultConfig)
         cls.graph = TokenGraph(TEST_DATA, {'dtype': {'amount': object}})
         fakeEdges = randint(1, cls.LONGEST, 200)

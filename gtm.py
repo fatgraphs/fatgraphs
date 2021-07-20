@@ -27,28 +27,10 @@ def getCwd():
     thisFileDir = os.path.dirname(os.path.realpath(__file__))
     return thisFileDir
 
-
-def resultInDirectoryExisting(path):
-    if not os.path.exists(path):
-        os.mkdir(path)
-
-
-def ensureContainerDirectoryExists():
-    resultInDirectoryExisting(CONFIGURATIONS['graphsHome'])
-
-
-def mkdirForThisGraph(graph_name):
-    # TODO load confoguraitons instead of relying on BE
-    path = os.path.join(CONFIGURATIONS['graphsHome'])
-    path = os.path.join(path, graph_name)
-    resultInDirectoryExisting(path)
-    return path
-
-# default value as second arg og 'get'
+# default value as second arg of 'get'
 # TODO find a way of ensuring that htis dict keys are the same as defined in configuration.json
-def getFinalConfigurations(args, graph_path, graph_name):
+def getFinalConfigurations(args, graph_name):
     configurations = {
-        "outputFolder": graph_path,
         'graphName': graph_name,
         "tileSize": int(args.get('--ts', 256)),
         "zoomLevels": int(args.get('-z', 2)),
@@ -70,15 +52,10 @@ def getFinalConfigurations(args, graph_path, graph_name):
 
 if __name__ == "__main__":
     args = extractArguments()
-    ensureContainerDirectoryExists()
 
     # graph names should be lower case and don't contain spaces
-    graph_name = args["-n"].lower()
+    graph_name = args["-n"].lower().strip()
     graph_name = '_'.join(graph_name.split(' '))
 
-    graph_path = mkdirForThisGraph(graph_name)
-
-    # default value as second arg og 'get'
-    # TODO find a way of ensuring that htis dict keys are the same as defined in configuration.json
-    configurations = getFinalConfigurations(args, graph_path, graph_name)
+    configurations = getFinalConfigurations(args, graph_name)
     main(configurations)
