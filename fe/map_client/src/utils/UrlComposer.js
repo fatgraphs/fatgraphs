@@ -1,22 +1,23 @@
 const configs = require('configurations')
 
 class UrlComposer {
-    static verticesMetadata(graphName){
+    static verticesMetadata(graphName) {
         return configs['endpoints']['base'] + configs['endpoints']['verticesMetadata'] + "/" + graphName
     }
 
-    static graphMetadata(graphName){
-        return configs['endpoints']['base'] + configs['endpoints']['graphMetadata'] + "/" + graphName
+    static graph(graphId) {
+        let toParametriseUrlFragment = configs['endpoints']['graphById'];
+        let parametrisedUrlFragment = toParametriseUrlFragment.replace(/{graphId}/g, graphId)
+        return configs['endpoints']['base'] + parametrisedUrlFragment
     }
 
-    static proximityClick(graphName, x, y){
-        if(! typeof x === 'number' || Number.isInteger(x)){
-            throw "You need to pass a float"
-        }
-        if(! typeof y === 'number' || Number.isInteger(y)){
-            throw "You need to pass a float"
-        }
-        return configs['endpoints']['base'] + configs['endpoints']['proximityClick'] + "/" + graphName + "/" + x + "/" + y
+    static closestPoint(graphId, x, y) {
+        let toParametriseUrlFragment = configs['endpoints']['closestPoint'];
+        let parametrisedUrlFragment = toParametriseUrlFragment.replace(/{graphId}/g, String(graphId));
+        parametrisedUrlFragment = parametrisedUrlFragment.replace(/{x}/g, x);
+        parametrisedUrlFragment = parametrisedUrlFragment.replace(/{y}/g, y);
+        console.log("parametrisedUrlFragment " , parametrisedUrlFragment)
+        return configs['endpoints']['base'] + parametrisedUrlFragment
     }
 
     /**
@@ -24,27 +25,46 @@ class UrlComposer {
      * @param graphName
      * @returns {string}
      */
-    static tileLayerUrl(graphName) {
-        return configs['endpoints']['base'] +
-            configs['endpoints']['tile'] + "/" +
-            graphName +
-            '/{z}/{x}/{y}.png?{randint}'
+    static tileLayer(graphId, z, x, y) {
+        let toParametriseUrlFragment = configs['endpoints']['tile'];
+        let parametrisedUrlFragment = toParametriseUrlFragment.replace(/{graphId}/g, graphId)
+        if(z !== undefined && x !== undefined && y !== undefined){
+            parametrisedUrlFragment = parametrisedUrlFragment.replace(/{z}/g, z)
+            parametrisedUrlFragment = parametrisedUrlFragment.replace(/{x}/g, x)
+            parametrisedUrlFragment = parametrisedUrlFragment.replace(/{y}/g, y)
+        }
+        return configs['endpoints']['base'] + parametrisedUrlFragment
     }
 
-    static matchingVertices(graphName, metadataObject) {
-        return configs['endpoints']['base'] +
-            configs['endpoints']['matchingVertex'] + "/" +
-            graphName + "/" +
-            metadataObject['metadata_type'] + "/" +
-            metadataObject['metadata_value'];
+    static matchingVertices(metadataObject, graphId) {
+        let metaType = metadataObject['type'];
+        let toParametriseUrlFragment = configs['endpoints']['matchingVertex'][metaType];
+        let parametrisedUrlFragment = toParametriseUrlFragment.replace(/{value}/g, metadataObject['value'])
+        return configs['endpoints']['base'] + parametrisedUrlFragment + '?graphId=' + graphId
     }
 
-    static addVertexMetadata(eth, metadataValue, metadataType) {
-        return configs['endpoints']['base'] +
-            configs['endpoints']['addVertexMetadata'] + "/" +
-            eth + "/" +
-            metadataValue + "/" +
-            metadataType;
+    static addVertexMetadata() {
+        return configs['endpoints']['base'] + configs['endpoints']['addVertexMetadata'] ;
+    }
+
+    static graphs() {
+        return configs['endpoints']['base'] + configs['endpoints']['availableGraphs'];
+    }
+
+    static autocompletionTerms(page) {
+        let toParametriseUrlFragment = configs['endpoints']['autocompletionTerms'];
+        let parametrisedUrlFragment = toParametriseUrlFragment.replace(/{page}/g, String(page));
+        return configs['endpoints']['base'] + parametrisedUrlFragment
+    }
+
+    static user(userName){
+        let toParametriseUrlFragment = configs['endpoints']['user']
+        let parametrisedUrlFragment = toParametriseUrlFragment.replace(/{userName}/g, userName);
+        return configs['endpoints']['base'] + parametrisedUrlFragment;
+    }
+
+    static recentMetadataSearches(){
+        return configs['endpoints']['base'] + configs['endpoints']['recentMetadataSearches'];
     }
 }
 

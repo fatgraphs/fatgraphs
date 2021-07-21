@@ -13,17 +13,14 @@ function doRequest(url, options) {
         })
 }
 
-export function fetchClosestPoint(graphName, graphCoordinate) {
-    let url = UrlComposer.proximityClick(graphName, graphCoordinate[0], graphCoordinate[1]);
-    return doRequest(url, {});
+export function fetchClosestPoint(graphId, graphCoordinate) {
+    let url = UrlComposer.closestPoint(graphId, graphCoordinate[0], graphCoordinate[1]);
+    return doRequest(url);
 }
 
-export function fetchGraphs(userName) {
-    let configElement = configs['endpoints']['availableGraphs'];
-    let s = configElement.replace(/{userName}/g, userName);
-    let url = configs['endpoints']['base'] +
-        s;
-   return doRequest(url, {});
+export function fetchGraphs() {
+    let url = UrlComposer.graphs()
+    return doRequest(url, {});
 }
 
 export function fetchEdgePlots(graphName, maxZoom) {
@@ -46,20 +43,20 @@ export function fetchEdgePlots(graphName, maxZoom) {
 }
 
 
-export function fetchGraphMetadata(graphName) {
-    let url = UrlComposer.graphMetadata(graphName);
+export function fetchGraph(graphId) {
+    let url = UrlComposer.graph(graphId);
     return doRequest(url, {});
 }
 
-export function fetchAutocompletionTerms() {
-    let url = configs['endpoints']['base'] + configs['endpoints']['autocompletionTerms']
+export function fetchAutocompletionTerms(page) {
+    let url = UrlComposer.autocompletionTerms(page)
     return doRequest(url, {});
 }
 
-export function postRecentMetadata(metadataObject) {
-    let url = configs['endpoints']['base'] + configs['endpoints']['userRecentMetadataSearches'];
+export function postRecentMetadataSearches(metadataObject) {
+    let url = UrlComposer.recentMetadataSearches()
     let init = {
-        method: 'POST',
+        method: 'PUT',
         headers: {
             'Content-Type': 'application/json'
         },
@@ -68,17 +65,36 @@ export function postRecentMetadata(metadataObject) {
     return doRequest(url, init);
 }
 
-export function fetchRecentMetadataSearches(){
-    let url = configs['endpoints']['base'] + configs['endpoints']['userRecentMetadataSearches'];
+export function fetchUser(userName) {
+    let url = UrlComposer.user(userName)
     return doRequest(url, {});
 }
 
-export function fetchMatchingVertices(graphName, metadataObject){
-    let url = UrlComposer.matchingVertices(graphName, metadataObject);
-    return doRequest(url, {});
+export function fetchMatchingVertices(graphId, metadataObject) {
+    let url = UrlComposer.matchingVertices(metadataObject, graphId);
+    return doRequest(url);
 }
 
-export function postVertexMetadata(eth, metadataValue, metadataType){
-    let url = UrlComposer.addVertexMetadata(eth, metadataValue, metadataType);
+export function postVertexMetadata(eth, metadataObject) {
+    let url = UrlComposer.addVertexMetadata();
+    let type = metadataObject['type'];
+    let value = metadataObject['value'];
+    let init = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            "eth": eth,
+            "type": type === 'type' ? value : '',
+            "label": type === 'label' ? value : '',
+            "description": ""
+        })
+    }
+    return doRequest(url, init);
+}
+
+export function fetchRecentMetadata() {
+    let url = UrlComposer.recentMetadataSearches();
     return doRequest(url, {});
 }

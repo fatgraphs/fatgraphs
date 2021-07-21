@@ -22,8 +22,8 @@ class AddableElement extends Component {
                 onClick={() => {
                     this.props.addMetadataCallback(this.props.metadata)
                 }}>
-                {TYPE_ICONS[this.props.metadata['metadata_type']]}
-                { this.props.metadata['metadata_value']}
+                {TYPE_ICONS[this.props.metadata['type']]}
+                { this.props.metadata['value']}
             </li>
         );
     }
@@ -32,8 +32,8 @@ class AddableElement extends Component {
 AddableElement.propTypes = {
     bgColor: string,
     metadata: PropTypes.shape({
-        metadataValue: string,
-        metadataType: PropTypes.oneOf(['label', 'type', 'eth']),
+        value: string,
+        type: PropTypes.oneOf(['label', 'type', 'eth']),
     }),
     addMetadataCallback: func.isRequired,
 };

@@ -24,6 +24,7 @@ class GraphMap extends React.Component {
         this.bindOnZoomCallback = this.bindOnZoomCallback.bind(this)
         this.bindOnZoomCallback = this.bindOnZoomCallback.bind(this)
         this.mapCreationCallback = this.mapCreationCallback.bind(this)
+        this.addSingleMetadataToVertex = this.addSingleMetadataToVertex.bind(this)
     }
 
 
@@ -37,7 +38,7 @@ class GraphMap extends React.Component {
     }
 
     render() {
-        const tileUrl = UrlComposer.tileLayerUrl(this.props.graphName);
+        const tileUrl = UrlComposer.tileLayer(this.props.graphId);
         const position = [this.props.graphMetadata.tileSize / -2.0,
             this.props.graphMetadata.tileSize / 2.0]
 
@@ -68,31 +69,33 @@ class GraphMap extends React.Component {
     async getVerticesMatchingMetadata(metadataObjects) {
         let verticesMatchingMetadata = []
         for (const metadataObject of metadataObjects) {
-            let response = await fetchMatchingVertices(this.props.graphMetadata.graphName, metadataObject);
-            verticesMatchingMetadata.push(...response['response'])
+            let response = await fetchMatchingVertices(this.props.graphId, metadataObject);
+            verticesMatchingMetadata.push(...response)
         }
 
         // the same eth may have multiple types and labels
         let groupedByEth = _.groupBy(verticesMatchingMetadata, 'eth');
 
         let markers = []
-
         for (const eth in groupedByEth) {
-
-            const types = groupedByEth[eth].map(obj => obj.type)
-            const labels = groupedByEth[eth].map(obj => obj.label)
-            const {pos, size} = groupedByEth[eth][0]
-            let mapCoordinate = toMapCoordinate(pos, this.props.graphMetadata)
-
-            markers.push({
-                types: types,
-                labels: labels,
-                pos: mapCoordinate,
-                size: size,
-                eth: eth
-            })
+            this.populateMarkers(groupedByEth, eth, markers);
         }
         return markers;
+    }
+
+    populateMarkers(groupedByEth, eth, markers) {
+        const types = groupedByEth[eth].map(obj => obj.types).flat()
+        const labels = groupedByEth[eth].map(obj => obj.labels).flat()
+        const {pos, size} = groupedByEth[eth][0]
+        let mapCoordinate = toMapCoordinate(pos, this.props.graphMetadata)
+
+        markers.push({
+            types: types,
+            labels: labels,
+            pos: mapCoordinate,
+            size: size,
+            eth: eth
+        })
     }
 
     mapCreationCallback(map) {
@@ -111,20 +114,6 @@ class GraphMap extends React.Component {
             configs['initialZoom'])
     }
 
-    addTileToMap(mapRef) {
-        const tileUrl = UrlComposer.tileLayerUrl(this.props.graphName);
-        const layer = L.tileLayer(
-            tileUrl,
-            {
-                randint: Math.floor(Math.random() * 200000) + 1,
-                maxZoom: this.props.graphMetadata['zoomLevels'] - 1,
-                attribution: 'tokengallery 2.0',
-                tileSize: this.props.graphMetadata.tileSize,
-                detectRetina: true
-            }).addTo(mapRef);
-    }
-
-
     bindOnZoomCallback(map) {
         map.on('zoom', function () {
             this.setState({
@@ -136,24 +125,19 @@ class GraphMap extends React.Component {
     bindOnClickCallback(mapRef) {
         mapRef.on('click', function (clickEvent) {
             let coord = clickEvent.latlng;
-            // console.log("coord ", coord)
             let lat = coord.lat;
             let lng = coord.lng;
             let pos = toGraphCoordinate([lat, lng], this.props.graphMetadata)
-            console.log('pos ', pos)
             this.fetchClosestAndUpdate(pos);
-
         }.bind(this));
     }
 
 
-    fetchClosestAndUpdate(pos) {
-        console.log('pos ', pos)
-        fetchClosestPoint(this.props.graphName, pos).then(closestVertex => {
-            closestVertex['pos'] = toMapCoordinate(closestVertex['pos'], this.props.graphMetadata)
-            this.setState({closestVertex: closestVertex})
-            this.props.setDisplayedAddress(closestVertex['eth'])
-        })
+    async fetchClosestAndUpdate(pos) {
+        let closestVertex = await fetchClosestPoint(this.props.graphId, pos)
+        closestVertex['pos'] = toMapCoordinate(closestVertex['pos'], this.props.graphMetadata)
+        this.setState({closestVertex: closestVertex})
+        this.props.setDisplayedAddress(closestVertex['eth'])
     }
 
     generateCircleWithPopup(markerObject, zoom) {
@@ -164,7 +148,13 @@ class GraphMap extends React.Component {
             let labelsString = labels === null ? 'NA' : labels.join(', ');
             let typesString = types === null ? 'NA' : types.join(', ');
 
-            let popup = getVertexPopup(typesString, labelsString, eth, this.props.graphName, this.addSingleMetadataToVertex(eth), this.props.recentMetadataSearches);
+            let popup = getVertexPopup(typesString,
+                labelsString,
+                eth,
+                this.props.graphName,
+                this.props.graphId,
+                this.addSingleMetadataToVertex(eth),
+                this.props.recentMetadataSearches);
 
             return (
                 <Marker key={generateLargeRandom()}
@@ -188,7 +178,14 @@ class GraphMap extends React.Component {
             let labelsString = labels === null ? 'NA' : labels.join(', ');
             let typesString = types === null ? 'NA' : types.join(', ');
 
-            let popup = getVertexPopup(typesString, labelsString, eth, this.props.graphName, this.addSingleMetadataToVertex(eth), this.props.recentMetadataSearches);
+            let popup = getVertexPopup(typesString,
+                labelsString,
+                eth,
+                this.props.graphName,
+                this.props.graphId,
+                this.addSingleMetadataToVertex(eth),
+                this.props.recentMetadataSearches);
+
             return (
                 <Marker key={generateLargeRandom()}
                         position={pos}
@@ -204,9 +201,10 @@ class GraphMap extends React.Component {
     }
 
     addSingleMetadataToVertex(eth) {
-        return async function (e) {
-            await postVertexMetadata(eth, e['metadata_value'], e['metadata_type'])
-        }.bind(this)
+        return function (metadataObject) {
+            console.log("INNER addSingleMetadataToVertex")
+            postVertexMetadata(eth, metadataObject)
+        }
     }
 
 

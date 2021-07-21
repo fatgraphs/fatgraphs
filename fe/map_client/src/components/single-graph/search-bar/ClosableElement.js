@@ -17,10 +17,10 @@ class ClosableElement extends Component {
                      this.props.closeCallback(this.props.metadata)
                  }}>
 
-                {TYPE_ICONS[this.props.metadata['metadata_type']]}
+                {TYPE_ICONS[this.props.metadata['type']]}
 
                 <div
-                    className={'mr-3'}>{this.props.metadata['metadata_value']}</div>
+                    className={'mr-3'}>{this.props.metadata['value']}</div>
 
                 <FontAwesomeIcon
                     className={'text-red-500 text-2xl'}

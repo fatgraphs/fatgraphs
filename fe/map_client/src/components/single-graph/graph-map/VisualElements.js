@@ -33,7 +33,7 @@ export function getTextLabelIcon(eth, pos, labels, types) {
     return icon
 }
 
-export function getVertexPopup(typesString, labelsString, eth, graphName, callBack, recentMetadataSearches) {
+export function getVertexPopup(typesString, labelsString, eth, graphName, graphId, callBack, recentMetadataSearches) {
     /**
      * The popup when you click on a vertex-marker
      */
@@ -42,6 +42,7 @@ export function getVertexPopup(typesString, labelsString, eth, graphName, callBa
         labelsConcatenated={labelsString}
         eth={eth}
         graphName={graphName}
+        graphId={graphId}
         selectionCallback={callBack}
         recentMetadataSearches={recentMetadataSearches}
     />;

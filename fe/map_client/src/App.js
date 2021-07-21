@@ -14,15 +14,26 @@ class App extends Component {
     constructor() {
         super();
         this.state = {
-            autocompleteTerms: {}
+            autocompleteTerms: []
         }
     }
 
     async componentDidMount() {
         document.title = "Token GraphGallery.js"
-        let autocomplete_response = await fetchAutocompletionTerms();
+        let page = 1
+        let autocomplete_terms = []
+        while(page !== 0){
+             let fetched = await fetchAutocompletionTerms(page);
+             if(fetched.length === 0){
+                 page = 0
+                 break;
+             }
+             autocomplete_terms = [...autocomplete_terms, ...fetched]
+             page += 1
+        }
+
         this.setState({
-            autocompleteTerms: autocomplete_response['response']
+            autocompleteTerms: autocomplete_terms
         })
     }
 
@@ -39,7 +50,7 @@ class App extends Component {
                         <Route path="/about" component={About}>
                         </Route>
 
-                        <Route path="/graph/:graphName">
+                        <Route path="/graph/:graphName/:graphId">
                             <SingleGraphView/>
                         </Route>
 

@@ -3,8 +3,8 @@ import ClosableElement from "./ClosableElement";
 import Autocompletion from "./Autocompletion";
 import {MyContext} from "../../../Context";
 import _ from 'underscore';
-import {array, bool, func, string} from "prop-types";
-import {postRecentMetadata} from "../../../APILayer";
+import {array, bool, func, string, number} from "prop-types";
+import {postRecentMetadataSearches} from "../../../APILayer";
 
 class SearchBar extends Component {
 
@@ -19,7 +19,7 @@ class SearchBar extends Component {
             searchInputElement: undefined
         }
         this.closeMetadataCallback = this.closeMetadataCallback.bind(this)
-        this.addMetadataCallback = this.addMetadataCallback.bind(this)
+        this.searchBarAddMetadataCallback = this.searchBarAddMetadataCallback.bind(this)
         this.onBlur = this.onBlur.bind(this)
     }
 
@@ -65,9 +65,9 @@ class SearchBar extends Component {
                 <Autocompletion
                     shouldRender={this.state.showAutocompletion}
                     currentInput={this.state.currentInput}
-                    addMetadataCallback={this.addMetadataCallback}
-                    graphName={this.props.graphName}
-                    recentMetadata={this.props.recentMetadataSearches}
+                    addMetadataCallback={this.searchBarAddMetadataCallback}
+                    graphId={this.props.graphId}
+                    recentMetadataSearches={this.props.recentMetadataSearches}
                 />
             </div>
         );
@@ -78,7 +78,7 @@ class SearchBar extends Component {
         // as opposed to the user clicking on the item they want to add
 
         if (currentInput.substring(0, 2) === '0x') {
-            this.addMetadataCallback({
+            this.searchBarAddMetadataCallback({
                 metadataValue: currentInput,
                 metadataType: 'eth'
             })
@@ -86,31 +86,29 @@ class SearchBar extends Component {
         }
 
         // we only have free text from the user, we need to figure if it's a type or a label
-        let match = this.context['autocompleteTerms'].find((e) => e['metadata_value'] === currentInput);
+        let match = this.context['autocompleteTerms'].find((e) => e['metaValue'] === currentInput);
         if (match) {
-            this.addMetadataCallback(match)
+            this.searchBarAddMetadataCallback(match)
         }
     }
 
-    addMetadataCallback(metadataObject) {
-        this.setState(oldState => {
-            this.state.searchInputElement.blur()
-            let metadataNow = [...oldState.metadataSelected, metadataObject];
+    searchBarAddMetadataCallback(metadataObject) {
+        this.state.searchInputElement.blur()
+        let metadataNow = [...this.state.metadataSelected, metadataObject];
 
-            // Update the quicklist
-            if (!this.props.recentMetadataSearches.some(t => _.isEqual(t, metadataObject))) {
-                postRecentMetadata(metadataObject)
-            }
+        // Update the quicklist
+        if (!this.props.recentMetadataSearches.some(metaOj => _.isEqual(metaOj, metadataObject))) {
+            postRecentMetadataSearches(metadataObject).then(r => console.log("ffddhbjdhjbdh"))
+        }
 
-            // Update parent component
-            this.props.selectedMetadataCallback(metadataNow)
+        // Update parent component
+        this.props.selectedMetadataCallback(metadataNow)
 
-            return ({
-                metadataSelected: metadataNow,
-                currentInput: '',
-                showAutocompletion: false
-            });
-        })
+        this.setState({
+            metadataSelected: metadataNow,
+            currentInput: '',
+            showAutocompletion: false
+        });
 
     }
 
@@ -134,6 +132,7 @@ class SearchBar extends Component {
 
 SearchBar.propTypes = {
     graphName: string.isRequired,
+    graphId: number.isRequired,
     placeholder: string.isRequired,
     recentMetadataSearches: array.isRequired,
     showSelected: bool,

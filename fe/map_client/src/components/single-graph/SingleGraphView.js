@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {withRouter} from "react-router-dom";
-import {fetchGraphMetadata, fetchRecentMetadataSearches} from "../../APILayer";
+import {fetchGraph, fetchRecentMetadata, fetchUser} from "../../APILayer";
 import _ from 'underscore';
 import SearchBar from "./search-bar/SearchBar";
 import {MyContext} from "../../Context";
@@ -26,20 +26,20 @@ class SingleGraphView extends Component {
     }
 
     async componentDidMount() {
-        let graphMetadata = await fetchGraphMetadata(this.props.match.params.graphName);
-        let recentMetadataSearches = await fetchRecentMetadataSearches();
+        let graphMetadata = await fetchGraph(this.props.match.params.graphId);
+        let recentMetadata = await fetchRecentMetadata();
         this.setState({
             graphMetadata: graphMetadata,
-            recentMetadataSearches: recentMetadataSearches['response']
+            recentMetadataSearches: recentMetadata
         })
     }
 
     async componentDidUpdate() {
-        let recentMetadataSearches = await fetchRecentMetadataSearches();
-        if (_.isEqual(this.state.recentMetadataSearches, recentMetadataSearches['response'])) {
+        let recentMetadataSearches = await fetchRecentMetadata('default_user');
+        if (_.isEqual(this.state.recentMetadataSearches, recentMetadataSearches)) {
             return
         }
-        this.setState({recentMetadataSearches: recentMetadataSearches['response']})
+        this.setState({recentMetadataSearches: recentMetadataSearches})
     }
 
     render() {
@@ -58,6 +58,7 @@ class SingleGraphView extends Component {
 
                     <SearchBar
                         className={'col-span-1 row-span-1'}
+                        graphId={this.props.match.params.graphId}
                         graphName={this.props.match.params.graphName}
                         selectedMetadataCallback={(selectedMetadata) => this.setState({selectedMetadata: selectedMetadata})}
                         recentMetadataSearches={this.state.recentMetadataSearches}
@@ -76,6 +77,7 @@ class SingleGraphView extends Component {
                     <GraphMap
                         className={'col-span-1 row-span-1'}
                         graphMetadata={this.state.graphMetadata}
+                        graphId={this.props.match.params.graphId}
                         graphName={this.props.match.params.graphName}
                         setDisplayedAddress={this.setDisplayedAddress}
                         selectedMetadata={this.state.selectedMetadata}

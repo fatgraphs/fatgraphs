@@ -20,7 +20,7 @@ class Gallery extends Component {
     }
 
     async componentDidMount() {
-        let graphs = await fetchGraphs('default_user')
+        let graphs = await fetchGraphs()
         this.setState({
             availableGraphs: graphs,
         })
