@@ -2,31 +2,31 @@
 
 ## Conventions
 
-Case: camelCase everywhere possible. Since snake_case is the ocnvention in python we won't use cameCase there.
+Case: camelCase everywhere possible. Since snake_case is the ocnvention in python we won't use cameCase in python code.
 
 ## Set Up
 You need to have `npm` installed.
 
 You need a graph.csv file inside data (currently it needs to be called `medium.csv`)
 
-Create an Anaconda environment with the command that matches your specs, generate the command at the following url:
-https://rapids.ai/start.html
+We use rapids libraries, the easiest way to install is to create an Anaconda environment with the command that matches
+your specs, generate the command at the following url: https://rapids.ai/start.html
 
-We will now assume that an Anaconda virtual environment called `rapids-0.18` exists in your system (you can call it something else).
+We will now assume that an Anaconda virtual environment called `rapids-0.18` exists in your system
+(you can call it something else).
 
-Run `conda install -n rapids-0.18 flask flask_cors`
+With the v.env active run
+`pip install -n rapids-0.18 opencv-python flask flask_cors flask_restx sqlalchemy geoalchemy2 psycopg2 flask_accepts`
 Since the tests perform image comparisons between an output and a desired model, we need to have the open-cv library.
-This is somewhat problematic to install, please execute the command below on a terminal with the conda environment active.
-`pip install opencv-python`
-To work with the postgres GIS extension from python you also need the following:
-`pip install sqlalchemy geoalchemy2 psycopg2`
-
+To work with the postgres GIS extension from python you also need geoalchemy and psycopg.
 Your virtual environment should have all the required packages given that default anaconda environments come with many of
-the libraries we need pre-installed. If you notice that something is missing please use conda install to add missing dependencies.
+the libraries we need pre-installed.
+If you notice that something is missing please use pip install to add missing dependencies.
 
 ### Tests
 To run the `tile_creator` tests you need to have the folder `be/tile_creator/test/data` populated with the appropriate files.
-Since those are heavy images and  csv files they have not been commited. Ask the project maintainer to provide them to you.
+Since those are heavy images and  csv files they have not been commited to te repo.
+Ask the project maintainer to provide them to you.
 
 #### Run tests as pre-push hook 
 Copy-paste the below snippet into .git/hooks/pre-push in order to have tests automatically run before each push.
