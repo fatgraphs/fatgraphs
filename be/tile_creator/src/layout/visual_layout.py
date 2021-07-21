@@ -27,15 +27,15 @@ class VisualLayout:
 
         self.ensureLayoutIsSquare(tempMin, tempMax)
         self.edgeIdsToPositions = self.makeEdgeIdsToPositions()
-        self.edgeIdsToPositionsPixel = self.convertToPixelSpace(config['tileSize'], tempMin, tempMax)
+        self.edgeIdsToPositionsPixel = self.convertToPixelSpace(config['tile_size'], tempMin, tempMax)
         self.edgeLengths = self.calculateEdgeLengthsGraphSpace()
         self.medianPixelDistance = self.computeMedianPixelDistance()
-        self.vertexSizes = self.calculateVerticesSize(graph.degrees['inDegree'], config['medVertexSize'],
-                                                      config['maxVertexSize'])
+        self.vertexSizes = self.calculateVerticesSize(graph.degrees['inDegree'], config['med_vertex_size'],
+                                                      config['max_vertex_size'])
         logAmounts = np.log10(
             graph.edgeIdsToAmount['amount'].values + 1)  # amounts can be huge numbers, reduce the range
-        self.edgeThickness = self.calculateEdgesThickness(logAmounts, config['medEdgeThickness'],
-                                                          config['maxEdgeThickness'])
+        self.edgeThickness = self.calculateEdgesThickness(logAmounts, config['med_edge_thickness'],
+                                                          config['max_edge_thickness'])
 
         self.min = tempMin
         self.max = tempMax

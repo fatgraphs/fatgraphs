@@ -29,7 +29,7 @@ class TestRenderer(unittest.TestCase):
 
         attr = getattr(defaultConfig, 'outputFolder', None)
         cls.assertIsNone(cls, attr)
-        defaultConfig['outputFolder'] = TEST_DIR
+        defaultConfig['output_folder'] = TEST_DIR
 
         cls.layout = VisualLayout(cls.graph, defaultConfig)
         metadata = TokenGraphMetadata(cls.graph, cls.layout, defaultConfig)

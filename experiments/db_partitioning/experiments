@@ -1,0 +1,23 @@
+CREATE TABLE measurement (
+    city_id         int not null,
+    peaktemp        int,
+    unitsales       int
+) PARTITION BY LIST (city_id);
+
+
+CREATE TABLE test_table PARTITION OF measurement FOR VALUES IN ('1');
+CREATE TABLE test_table_two PARTITION OF measurement FOR VALUES IN ('3');
+
+
+INSERT INTO test_table VALUES ('1', '2', '3');
+INSERT INTO test_table VALUES ('1', '3', '4');
+
+INSERT INTO test_table_two VALUES ('2', '2', '3');
+INSERT INTO test_table_two VALUES ('2', '3', '4');
+
+# from python the following works
+df = pd.DataFrame(data={'city_id':[1,1,1], 'unitsales':[12,12,12], 'peaktemp':[1,22,3]})
+df.to_sql('measurement', engine, if_exists='append', index=False)
+
+
+CREATE TABLE veronikkk PARTITION OF tg_vertex FOR VALUES IN ('3');

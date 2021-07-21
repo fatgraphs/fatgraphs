@@ -28,6 +28,8 @@ To run the `tile_creator` tests you need to have the folder `be/tile_creator/tes
 Since those are heavy images and  csv files they have not been commited to te repo.
 Ask the project maintainer to provide them to you.
 
+The server tests shouldn't need anything.
+
 #### Run tests as pre-push hook 
 Copy-paste the below snippet into .git/hooks/pre-push in order to have tests automatically run before each push.
 ```
@@ -35,9 +37,9 @@ Copy-paste the below snippet into .git/hooks/pre-push in order to have tests aut
 
 remote="$1"
 url="$2"
-
-source activate <name of your python environment>
-cd ~/tokengallery/be/tile_creator && python -m pytest
+source activate rapids2
+export FLASK_ENV='test'
+cd ~/tokengallery/be && python -m pytest
 ```
 
 ### PostGIS installation

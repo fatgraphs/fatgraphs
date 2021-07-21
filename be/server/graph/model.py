@@ -8,12 +8,10 @@ from be.server.graph.interface import GraphInterface
 class Graph(Base):
 
     __tablename__ = "tg_graphs"
-    __unmutablefields__ = ['owner']
 
     id = Column(Integer(), primary_key=True)
-    owner = Column(String(), ForeignKey('tg_user.name'))
+    output_folder = Column(String(), default='')
     graph_name = Column(String())
-    output_folder = Column(String())
     tile_size = Column(Integer())
     zoom_levels = Column(Integer())
     min_transparency = Column(Float(precision=8))
@@ -36,6 +34,5 @@ class Graph(Base):
 
     def update(self, changes: GraphInterface):
         for key, val in changes.items():
-            if key not in Graph.__unmutablefields__:
-                setattr(self, key, val)
+            setattr(self, key, val)
         return self

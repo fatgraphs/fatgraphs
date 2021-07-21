@@ -11,11 +11,11 @@ from werkzeug.routing import IntegerConverter
 # db = SQLAlchemy()
 from be.server.config import config_by_name
 
-env = os.getenv("FLASK_ENV") or "test"
+env = os.getenv("FLASK_ENV") or "development"
 configs = config_by_name[env]
 
 uri = configs.SQLALCHEMY_DATABASE_URI
-engine = create_engine(uri)
+engine = create_engine(uri, echo=False)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine, expire_on_commit=False)
 Base = declarative_base()
 

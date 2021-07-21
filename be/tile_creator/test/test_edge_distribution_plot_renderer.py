@@ -26,7 +26,7 @@ class TestRenderer(unittest.TestCase):
 
         attr = getattr(defaultConfig, 'outputFolder', None)
         cls.assertIsNone(cls, attr)
-        defaultConfig['outputFolder'] = TEST_DIR
+        defaultConfig['output_folder'] = TEST_DIR
 
 
         cls.transparencyCalculator = TransparencyCalculator(cls.SIDE_GRAPH, defaultConfig)

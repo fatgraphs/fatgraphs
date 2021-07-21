@@ -3,10 +3,9 @@ from flask_accepts import responds, accepts
 from flask_restx import Namespace, Resource
 
 from .model import Vertex
-from .schema import VertexSchema, VertexSchemaPos
+from .schema import VertexSchemaPos
 from .service import VertexService
 from .. import SessionLocal
-from ..metadata.service import MetadataService
 
 api = Namespace("Vertex", description="Single namespace, single entity")  # noqa
 
@@ -15,51 +14,41 @@ api = Namespace("Vertex", description="Single namespace, single entity")  # noqa
 @api.param("graph_id", "Graph Id")
 @api.param("y", "Y coordinate")
 @api.param("x", "X coordinate")
-class VertexClosestResource(Resource):
+class GetClosestVertexWithMetadata(Resource):
 
     @responds(schema=VertexSchemaPos)
-    def get(self, graph_id: str, x: float, y: float) -> Vertex:
+    def get(self, graph_id: int, x: float, y: float) -> Vertex:
         with SessionLocal() as db:
             closest_vertex = VertexService.get_closest(graph_id, x, y, db)
-            metadata = MetadataService.get_by_eth(closest_vertex.eth, db)
-            for m in metadata:
-                existing = getattr(closest_vertex, m.meta_type + 's', [])
-                existing.append(m.meta_value)
-                setattr(closest_vertex, m.meta_type + 's', existing)
-            return closest_vertex
+            metadata = VertexService.attach_metadata(closest_vertex, db)
+            return metadata[0]
 
 
-@api.route("/by/<int:graph_id>/<string:meta_type>/<string:meta_value>")
-@api.param("meta_type", "Type of metadata (e.g. label, type)")
-@api.param("meta_value", "Value of the typee (e.g. 'idex', 'dex' or 'Idex: coordinator'")
-@api.param("graph_id", "Graph Id")
-class VertexTypeValueResource(Resource):
-
+@api.route("/type/<string:type>")
+@api.param("type", "type")
+class GetVerticesByType(Resource):
+    @api.doc(params={'graphId': {'description': 'If you provide a graph id your query will be scoped to that graph only',
+                                 'type': 'int'}})
     @responds(schema=VertexSchemaPos(many=True))
-    def get(self, meta_type: str, meta_value: float, graph_id: int) -> Vertex:
+    def get(self, type: str) -> Vertex:
         with SessionLocal() as db:
-            vertices = VertexService.get_matching(graph_id, meta_type, meta_value, db)
-            for v in vertices:
-                metadata = MetadataService.get_by_eth(v.eth, db)
-                for m in metadata:
-                    existing = getattr(v, m.meta_type + 's', [])
-                    existing.append(m.meta_value)
-                    setattr(v, m.meta_type + 's', existing)
+            graph_id = request.args.get('graphId')
+            vertices = VertexService.get_by_type(graph_id, type, db)
+            vertices = VertexService.attach_metadata(vertices, db)
             return vertices
 
 
-@api.route("/create")
-class VertexResource(Resource):
-
-    # TODO return confirmation message
-    @accepts(schema=VertexSchema(many=True), api=api)
-    @responds(schema=VertexSchema(many=True))
-    def post(self) -> Vertex:
+@api.route("/label/<string:label>")
+@api.param("label", "label")
+class GetVerticesByLabel(Resource):
+    @api.doc(params={'graphId': {'description':  'If you provide a graph id your query will be scoped to that graph only',
+                                 'type': 'int'}})
+    @responds(schema=VertexSchemaPos(many=True))
+    def get(self, label: str) -> Vertex:
         with SessionLocal() as db:
-            vertices = request.parsed_obj
-            graph_id = vertices[0]['graph_id']
-            vertex_table_name = VertexService.get_vertex_table_name(graph_id, db)
-            VertexService.ensure_table_exists(vertex_table_name, db)
-            create = VertexService.create(vertex_table_name, vertices, db)
-            db.commit()
-            return create
+            graph_id = request.args.get('graphId')
+            vertices = VertexService.get_by_label(graph_id, label, db)
+            vertices = VertexService.attach_metadata(vertices, db)
+            # if graph_id is not None:
+            #     vertices = VertexService.attach_position(vertices, graph_id, db)
+            return vertices

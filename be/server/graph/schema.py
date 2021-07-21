@@ -6,7 +6,6 @@ from be.server.utils import CamelCaseSchema
 class GraphSchema(CamelCaseSchema):
 
     id = fields.Integer()
-    owner = fields.String(missing='default_user')
     graph_name = fields.String()
     output_folder = fields.String(missing='')
     tile_size = fields.Integer()

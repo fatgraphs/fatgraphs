@@ -1,10 +1,11 @@
-import math
 import os
 
-import requests
-import json
+from geoalchemy2 import Geometry
 
-from be.configuration import CONFIGURATIONS
+from be.configuration import CONFIGURATIONS, VERTEX_TABLE_NAME, SRID
+from be.server import SessionLocal, engine
+from be.server.graph.service import GraphService
+from be.server.vertex.service import VertexService
 from be.tile_creator.src.graph.gt_token_graph import GraphToolTokenGraph
 from be.tile_creator.src.graph.token_graph import TokenGraph
 from be.tile_creator.src.layout.visual_layout import VisualLayout
@@ -39,51 +40,48 @@ def main(configurations):
         visualLayout.edgeLengths)
 
     print("generating vertices shapes . . .")
-
-
-
     metadata = TokenGraphMetadata(graph, visualLayout, configurations)
-    # TODO usernaem not hardcoded
     frame = metadata.getSingleFrame()
     body = frame.to_dict(orient='record')[0]
-    response = requests.post("http://localhost:5000/tokengallery/graph/create", json=body)
-    response = json.loads(response.text)
 
-    graph_id = response['id']
+    with SessionLocal() as db:
+        from be.server.graph import Graph
 
-    # as soon as we have the idd we can determine the graph folder
-    output_folder = mkdir_for_graph(configurations['graphName'], graph_id)
-    configurations['outputFolder'] =  output_folder
-    response = requests.put(f"http://localhost:5000/tokengallery/graph/{graph_id}", json={'outputFolder': output_folder})
+        # save graph metadata to db
+        new_graph = GraphService.create(body, db)
 
+        # as soon as we have the id we can determine the graph folder
+        graph_id = new_graph.id
+        graph_name = configurations['graph_name']
+        output_folder = mkdir_for_graph(graph_name, graph_id)
+        GraphService.update(new_graph, {'output_folder': output_folder}, db)
+        configurations['output_folder'] = output_folder
 
-    vertices = graph.addressToId.merge(visualLayout.vertexPositions)
-    vertices = vertices.rename(columns={'address': 'eth'})
-    vertices['size'] = visualLayout.vertexSizes
-    vertices['graphId'] = [graph_id] * len(vertices)
-    vertices = vertices.drop(columns=['vertex'])
-    for batch_dex in range(0, math.ceil(len(vertices) / 100)):
-        dex = batch_dex * 100
-        batch = vertices[dex:dex + 100]
-        batch = batch.to_dict(orient='record')
-        requests.post("http://localhost:5000/tokengallery/vertex/create", json=batch)
+        # save vertices
+        vertex_table = VERTEX_TABLE_NAME(graph_name, graph_id)
+        VertexService.ensure_vertex_table_exists(vertex_table, graph_id)
+        vertices = graph.addressToId.merge(visualLayout.vertexPositions)
+        vertices = vertices.rename(columns={'address': 'eth'})
+        vertices['size'] = visualLayout.vertexSizes
+        vertices['graph_id'] = [str(graph_id)] * len(vertices)
+        vertices = vertices.drop(columns=['vertex'])
+        geo_frame = VertexService.make_geoframe(vertices)
+        column_types = {'pos': Geometry('POINT', srid=SRID)}
+        geo_frame.to_sql(vertex_table, engine, if_exists='append', index=False, dtype=column_types)
 
-    # persistenceApi.createVertexTable(metadata.getGraphName(), visualLayout,
-    #                                     graph.addressToId)
+        # change the shape of some nodes
+        vertices_metadata = VerticesLabels(configurations, graph.addressToId)
+        visualLayout.vertexShapes = vertices_metadata.generate_shapes(graph_id, db)
 
-    vertices_metadata = VerticesLabels(configurations, graph.addressToId)
-    visualLayout.vertexShapes = vertices_metadata.generate_shapes(graph_id)
-
+    print("rendering tiles . . .")
     gtGraph = GraphToolTokenGraph(graph.edgeIdsToAmount, visualLayout, metadata, configurations['curvature'])
-
     tilesRenderer = TilesRenderer(gtGraph, visualLayout, metadata, transparencyCalculator, configurations)
+    tilesRenderer.renderGraph()
 
+    # print("rendering edge distributions plots...")
     # edgePlotsRenderer = EdgeDistributionPlotRenderer(configurations, visualLayout)
     # edgePlotsRenderer.render()
 
-    print("rendering tiles . . .")
-
-    tilesRenderer.renderGraph()
 
 
 if __name__ == '__main__':

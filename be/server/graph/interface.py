@@ -13,7 +13,6 @@ class GraphInterface(TypedDict, total=False):
     max_vertex_size: float
     curvature: float
     min_transparency: float
-    owner: str
     source: str
     edges: int
     std_transparency_as_percentage: float

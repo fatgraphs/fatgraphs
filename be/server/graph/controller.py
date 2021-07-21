@@ -10,26 +10,15 @@ from .service import GraphService
 from .model import Graph
 from .. import SessionLocal
 
-api = Namespace("Graph", description="Single namespace, single entity")  # noqa
+api = Namespace("Graph", description="Graphs are saved with their metadata, but the actual vertices and edges are in the vertex and edge endpoints")
 
-
-@api.route("/create")
+@api.route("/")
 class GraphResource(Resource):
 
-    @accepts(schema=GraphSchema, api=api)
-    @responds(schema=GraphSchema)
-    def post(self) -> Graph:
-        with SessionLocal() as db:
-            return GraphService.create(request.parsed_obj, db)
-
-@api.route("/byuser/<string:user_name>")
-@api.param("user_name", "User Name")
-class GraphUserNameResource(Resource):
-
     @responds(schema=GraphSchema(many=True))
-    def get(self, user_name: str) -> List[Graph]:
+    def get(self) -> List[Graph]:
         with SessionLocal() as db:
-            return GraphService.get_by_owner(user_name, db)
+            return GraphService.get_all(db)
 
 
 @api.route("/<int:graph_id>")

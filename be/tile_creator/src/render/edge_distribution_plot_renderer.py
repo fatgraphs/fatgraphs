@@ -11,14 +11,14 @@ class EdgeDistributionPlotRenderer:
 
     def __init__(self, configurations, visualLayout):
         self.sideGraphSpace = visualLayout.max - visualLayout.min
-        self.zoomLevels = configurations['zoomLevels']
+        self.zoomLevels = configurations['zoom_levels']
         self.edgeLengths = visualLayout.edgeLengths
         self.edgeTransparencies = visualLayout.edgeTransparencies
-        self.outputFolder = configurations['outputFolder']
+        self.outputFolder = configurations['output_folder']
         self.minLength = int(min(self.edgeLengths))
         self.maxLength = int(max(self.edgeLengths))
         self.step = math.ceil((self.maxLength - self.minLength) / EdgeDistributionPlotRenderer.BIN_FREQUENCY)
-        self.tileSize = configurations['tileSize']
+        self.tileSize = configurations['tile_size']
 
     def render(self):
         for zl in range(0, self.zoomLevels):

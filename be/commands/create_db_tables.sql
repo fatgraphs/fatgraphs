@@ -1,18 +1,14 @@
 -- TODO: if we seed this way we'll have duplication when defining the interface for the corresponding entity
-CREATE TABLE IF NOT EXISTS tg_user
+CREATE TABLE IF NOT EXISTS tg_search
 (
-    name                     text PRIMARY KEY,
-    recent_metadata_searches text[]
+    id    SERIAL UNIQUE PRIMARY KEY,
+    type  text,
+    value text
 );
-
-INSERT INTO tg_user
-VALUES ('default_user', '{}')
-ON CONFLICT DO NOTHING;
 
 CREATE TABLE IF NOT EXISTS tg_graphs
 (
     id                             SERIAL UNIQUE PRIMARY KEY,
-    owner                          text,
     graph_name                     text,
     output_folder                  text,
     tile_size                      bigint,
@@ -33,23 +29,29 @@ CREATE TABLE IF NOT EXISTS tg_graphs
     min                            real,
     max                            real,
     vertices                       bigint,
-    edges                          bigint,
-    CONSTRAINT fk_owner
-        FOREIGN KEY (owner)
-            REFERENCES tg_user (name)
+    edges                          bigint
 );
 
 
-CREATE TABLE IF NOT EXISTS tg_metadata
+CREATE TABLE IF NOT EXISTS tg_vertex_metadata
 (
-
-    id         SERIAL UNIQUE PRIMARY KEY,
-    eth_source text,
-    eth_target text,
-    meta_type  text, -- e.g. label, type
-    meta_value text, -- e.g. idex, unused, phising
-    entity     text  -- the entity the metadata refers to: e.g. vertex, edge, group of vertices
+    id          SERIAL UNIQUE PRIMARY KEY,
+    eth         text,
+    type        text,
+    label       text,
+    description text
 );
+CREATE INDEX IF NOT EXISTS eth_index ON tg_vertex_metadata (eth);
 
-CREATE INDEX IF NOT EXISTS dex_eth_source ON tg_metadata (eth_source);
-CREATE INDEX IF NOT EXISTS dex_eth_target ON tg_metadata (eth_target);
+
+CREATE TABLE tg_vertex
+(
+    graph_id int not null,
+    eth      text,
+    size     real,
+    pos      Geometry('Point', 3857),
+    CONSTRAINT fk_graph_id
+        FOREIGN KEY (graph_id)
+            REFERENCES tg_graphs (id)
+) PARTITION BY LIST (graph_id);
+

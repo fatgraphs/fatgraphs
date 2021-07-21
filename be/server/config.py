@@ -24,8 +24,18 @@ class DevelopmentConfig(BaseConfig):
     TESTING = False
     SQLALCHEMY_DATABASE_URI = f'postgresql://{DB_USER_NAME}:{DB_PASSWORD}@{DB_URL}/{DB_NAME}'
 
+class TestingConfig(BaseConfig):
+    CONFIG_NAME = "test"
+    API_ROOT = "tokengallery"
+    SECRET_KEY = os.getenv("TEST_SECRET_KEY", "Thanos did nothing wrong")
+    DEBUG = True
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    TESTING = True
+    SQLALCHEMY_DATABASE_URI = f'postgresql://{DB_USER_NAME}:{DB_PASSWORD}@{DB_URL}/tg_test'
+
 
 EXPORT_CONFIGS: List[Type[BaseConfig]] = [
-    DevelopmentConfig
+    DevelopmentConfig,
+    TestingConfig
 ]
 config_by_name = {cfg.CONFIG_NAME: cfg for cfg in EXPORT_CONFIGS}

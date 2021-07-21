@@ -14,8 +14,10 @@ DB_USER_NAME = 'postgres'
 DB_PASSWORD = '1234'
 DB_URL = '127.0.0.1'
 DB_NAME = 'test'
+VERTEX_GLOBAL_TABLE = 'tg_vertex'
 VERTEX_TABLE_NAME = lambda graph_name, graph_id: f"{graph_name}_{graph_id}"
 USER_TABLE = 'tg_user'
+VERTEX_METADATA_TABLE = "tg_vertex_metadata"
 
 LABELS_TABLE = 'tg_labels'
 LABELS_TABLE_ETH = 'eth'

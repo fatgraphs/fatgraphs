@@ -1,8 +1,8 @@
 def register_routes(api, app, root="api"):
     from .graph import register_routes as attach_graph
-    from .user import register_routes as attach_user
+    from .searches import register_routes as attach_user
     from .vertex import register_routes as attach_vertex
-    from .metadata import register_routes as attach_metadata
+    from .vertex_metadata import register_routes as attach_metadata
     from .tile import register_routes as attach_tile
 
     attach_graph(api, app)

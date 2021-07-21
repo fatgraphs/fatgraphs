@@ -31,19 +31,19 @@ def getCwd():
 # TODO find a way of ensuring that htis dict keys are the same as defined in configuration.json
 def getFinalConfigurations(args, graph_name):
     configurations = {
-        'graphName': graph_name,
-        "tileSize": int(args.get('--ts', 256)),
-        "zoomLevels": int(args.get('-z', 2)),
-        "minTransparency": float(args.get('--minT', 0)),
-        "maxTransparency": float(args.get('--maxT', 0.1)),
-        "tileBasedMeanTransparency": float(args.get('--meanT', 0.5)),
-        "stdTransparencyAsPercentage": float(args.get("--std", 0.25)),
-        "maxEdgeThickness": float(args.get('--maxThick', 2)),
-        "medEdgeThickness": float(args.get('--medThick', 0.25)),
-        "maxVertexSize": float(args.get("--maxSize", 10)),
-        "medVertexSize": float(args.get("--medSize", 0.5)),
+        'graph_name': graph_name,
+        "tile_size": int(args.get('--ts', 256)),
+        "zoom_levels": int(args.get('-z', 2)),
+        "min_transparency": float(args.get('--minT', 0)),
+        "max_transparency": float(args.get('--maxT', 0.1)),
+        "tile_based_mean_transparency": float(args.get('--meanT', 0.5)),
+        "std_transparency_as_percentage": float(args.get("--std", 0.25)),
+        "max_edge_thickness": float(args.get('--maxThick', 2)),
+        "med_edge_thickness": float(args.get('--medThick', 0.25)),
+        "max_vertex_size": float(args.get("--maxSize", 10)),
+        "med_vertex_size": float(args.get("--medSize", 0.5)),
         "curvature": float(args.get("--curvature", 0.1)),
-        "bgColor": "black",
+        "bg_color": "black",
         "source": args['--csv'],
         "labels": args.get('--labels', None)
     }

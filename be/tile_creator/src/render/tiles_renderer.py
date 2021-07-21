@@ -26,7 +26,7 @@ class TilesRenderer:
     def renderGraph(self):
         rgba = [[1.0] * len(self.edgeTransparencies[0])] * 4
 
-        for zoomLevel in range(0, self.configurations['zoomLevels']):
+        for zoomLevel in range(0, self.configurations['zoom_levels']):
             vertexSize = deepcopy(self.gtGraph.vertexSizes)
             edgeSize = deepcopy(self.gtGraph.edgeThickness)
 
@@ -55,7 +55,7 @@ class TilesRenderer:
                     round(side / divideBy, 2))
 
                 tileName = "z_" + str(zoomLevel) + "x_" + str(t[0]) + "y_" + str(t[1]) + ".png"
-                fileName = os.path.join(self.configurations['outputFolder'], tileName)
+                fileName = os.path.join(self.configurations['output_folder'], tileName)
 
                 # Serial code
                 # self._render(fit, file_name, edge_colors, vertex_size, edge_size)
@@ -94,11 +94,11 @@ class TilesRenderer:
 
         graph_draw(self.gtGraph.g,
                    pos=self.gtGraph.vertexPositions,
-                   bg_color=self.configurations['bgColor'],
+                   bg_color=self.configurations['bg_color'],
                    vertex_size=vertexSize,
                    vertex_shape=self.gtGraph.vertexShapes,
                    vertex_fill_color=[1, 0, 0, 0.8],
-                   output_size=[self.configurations['tileSize'], self.configurations['tileSize']],
+                   output_size=[self.configurations['tile_size'], self.configurations['tile_size']],
                    output=fileName,
                    edge_color=edgeColors,
                    fit_view=fit,
