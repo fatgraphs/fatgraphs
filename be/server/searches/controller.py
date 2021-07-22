@@ -12,7 +12,7 @@ from .. import SessionLocal
 api = Namespace("Searches", description="Search terms that can be used while exploring the graph")  # noqa
 
 
-@api.route("")
+@api.route("/")
 class RecentSearchTermsResource(Resource):
 
     @responds(schema=SearchTermSchema(many=True))
