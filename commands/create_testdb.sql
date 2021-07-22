@@ -1,0 +1,1 @@
+CREATE DATABASE tg_test OWNER tokengallerist;

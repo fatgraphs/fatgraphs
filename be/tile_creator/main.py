@@ -13,6 +13,8 @@ from be.tile_creator.src.metadata.token_graph_metadata import TokenGraphMetadata
 from be.tile_creator.src.metadata.vertex_metadata import VerticesLabels
 from be.tile_creator.src.render.tiles_renderer import TilesRenderer
 from be.tile_creator.src.render.transparency_calculator import TransparencyCalculator
+from be.utils.utils import make_geoframe
+
 
 def ensure_directory_exists(path):
     if not os.path.exists(path):
@@ -65,7 +67,7 @@ def main(configurations):
         vertices['size'] = visualLayout.vertexSizes
         vertices['graph_id'] = [str(graph_id)] * len(vertices)
         vertices = vertices.drop(columns=['vertex'])
-        geo_frame = VertexService.make_geoframe(vertices)
+        geo_frame = make_geoframe(vertices)
         column_types = {'pos': Geometry('POINT', srid=SRID)}
         geo_frame.to_sql(vertex_table, engine, if_exists='append', index=False, dtype=column_types)
 

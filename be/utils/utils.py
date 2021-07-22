@@ -1,9 +1,13 @@
 import math
-
+import pandas as pd
+import geopandas as gpd
 import cv2
 import numpy as np
 from PIL import Image
+from geoalchemy2 import WKTElement
 from numba import jit
+
+from be.configuration import SRID
 
 ASCII_N = 110
 
@@ -225,3 +229,12 @@ def convertGraphCoordinateToMap(sourceX, sourceY, targetX, targetY,
         sourceYPixel[i] = (ys + abs(minCoordinate)) * scalingFactor
         targetXPixel[i] = (xt + abs(minCoordinate)) * scalingFactor
         targetYPixel[i] = (yt + abs(minCoordinate)) * scalingFactor
+
+
+def make_geoframe(parsed_obj):
+    frame = pd.DataFrame(parsed_obj)
+    geo_frame = gpd.GeoDataFrame(frame, geometry=gpd.points_from_xy(frame.x, frame.y))
+    geo_frame = geo_frame.drop(columns=['x', 'y'])
+    geo_frame = geo_frame.rename_geometry('pos')
+    geo_frame['pos'] = geo_frame['pos'].apply(lambda x: WKTElement(x.wkt, srid=SRID))
+    return geo_frame

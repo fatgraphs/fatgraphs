@@ -1,0 +1,1 @@
+CREATE DATABASE tg_main IF NOT EXISTS OWNER tokengallerist;

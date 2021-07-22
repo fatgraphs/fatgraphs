@@ -1,4 +1,3 @@
--- TODO: if we seed this way we'll have duplication when defining the interface for the corresponding entity
 CREATE TABLE IF NOT EXISTS tg_search
 (
     id    SERIAL UNIQUE PRIMARY KEY,
@@ -44,7 +43,7 @@ CREATE TABLE IF NOT EXISTS tg_vertex_metadata
 CREATE INDEX IF NOT EXISTS eth_index ON tg_vertex_metadata (eth);
 
 
-CREATE TABLE tg_vertex
+CREATE TABLE IF NOT EXISTS tg_vertex
 (
     graph_id int not null,
     eth      text,
