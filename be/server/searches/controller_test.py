@@ -26,7 +26,7 @@ class TestRecentSearchTermsResource:
     )
     def test_get(self, client: FlaskClient):
         with client:
-            results = client.get(f"/tokengallery/{BASE_ROUTE}", follow_redirects=True).get_json()
+            results = client.get(f"/tokengallery/{BASE_ROUTE}/", follow_redirects=True).get_json()
             expected = (
                 SearchTermSchema(many=True)
                 .dump(
@@ -47,7 +47,7 @@ class TestRecentSearchTermsResource:
         with client:
 
             payload = dict(type="Test widget", value="Test purpose")
-            result = client.put(f"/tokengallery/{BASE_ROUTE}", json=payload).get_json()
+            result = client.put(f"/tokengallery/{BASE_ROUTE}/", json=payload).get_json()
             expected = (
                 SearchTermSchema(many=True)
                 .dump([SearchTerm(type=payload["type"], value=payload["value"])])
