@@ -47,6 +47,20 @@ class Vertex(Base):
         db.commit()
         fetchall = to_pd_frame(raw_result)
 
+        return Vertex._map_to_model(fetchall)
+
+
+    @staticmethod
+    def get_by_eth_across_graphs(eth: str, db: object):
+        query = """SELECT graph_id, eth, size, ST_AsText(ST_PointFromWKB(pos)) AS pos  
+        FROM tg_vertex 
+        WHERE eth = %(eth)s;"""
+        raw_result = engine.execute(query, {'eth': eth})
+        fetchall = to_pd_frame(raw_result)
+        return Vertex._map_to_model(fetchall)
+
+    @staticmethod
+    def _map_to_model(fetchall):
         collect = []
         for (i, e) in fetchall.iterrows():
             pos_as_list = wkt_to_x_y_list(e['pos'])

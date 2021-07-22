@@ -80,3 +80,8 @@ class VertexService:
             this_graph_matches = VertexService.get_by_eths(graph_id, global_eths, db)
             return this_graph_matches
         return global_matches
+
+    @staticmethod
+    def get_by_eth_across_graphs(eth, db):
+        return Vertex.get_by_eth_across_graphs(eth, db)
+
