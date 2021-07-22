@@ -12,17 +12,17 @@ class TokenGraphMetadata:
         self.configurations = pd.DataFrame(data=configurationDictionary, index=[0])
 
         self.graphData = pd.DataFrame(data={
-            'medianPixelDistance': layout.medianPixelDistance,
+            'median_pixel_distance': layout.medianPixelDistance,
             'min': layout.min,
             'max': layout.max,
             'vertices': [tokenGraph.addressToId.shape[0]],
             'edges': [tokenGraph.edgeIdsToAmount.shape[0]]})
 
     def getGraphName(self):
-        return self.configurations['graphName'][0]
+        return self.configurations['graph_name'][0]
 
     def getZoomLevels(self):
-        return self.configurations['zoomLevels'][0]
+        return self.configurations['zoom_levels'][0]
 
     def getMinCoordinate(self):
         return self.graphData['min'][0]

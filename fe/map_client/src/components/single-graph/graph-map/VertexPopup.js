@@ -7,9 +7,9 @@ class VertexPopup extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            selectedMetadata: []
+            recentlyAddedMetadata: []
         }
-        this.addMetadataCallback = this.addMetadataCallback.bind(this)
+        this.vertexAddMetadataCallback = this.vertexAddMetadataCallback.bind(this)
     }
 
     render() {
@@ -24,7 +24,8 @@ class VertexPopup extends Component {
                     <SearchBar
                         showSelected={false}
                         graphName={this.props.graphName}
-                        selectedMetadataCallback={this.addMetadataCallback}
+                        graphId={this.props.graphId}
+                        selectedMetadataCallback={this.vertexAddMetadataCallback}
                         recentMetadataSearches={this.props.recentMetadataSearches}
                         placeholder={'ADD METADATA'}/>
                 </>
@@ -34,18 +35,18 @@ class VertexPopup extends Component {
 
     getAddedMetadata() {
         let addition = {'type': ' ', 'label': ' '}
-        if (this.state.selectedMetadata.length > 0) {
-            for (const metadataObject of this.state.selectedMetadata) {
-                addition[metadataObject['metadata_type']] += metadataObject['metadata_value'] + " ";
+        if (this.state.recentlyAddedMetadata.length > 0) {
+            for (const metadataObject of this.state.recentlyAddedMetadata) {
+                addition[metadataObject['type']] += metadataObject['value'] + " ";
             }
         }
         return addition;
     }
 
-    addMetadataCallback(currentSelection){
+    vertexAddMetadataCallback(currentSelection){
         this.props.selectionCallback(currentSelection[currentSelection.length - 1])
         this.setState({
-            selectedMetadata: [...currentSelection]
+            recentlyAddedMetadata: [...currentSelection]
         })
     }
 }

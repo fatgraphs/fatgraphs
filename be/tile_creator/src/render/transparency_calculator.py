@@ -21,12 +21,12 @@ class TransparencyCalculator:
         :param configurations:
         """
         self.graphSide = graphSide
-        self.tileSize = configurations['tileSize']
-        self.zoomLevels = configurations['zoomLevels']
-        self.std = configurations['stdTransparencyAsPercentage']
-        self.tileBasedMean = configurations["tileBasedMeanTransparency"]
-        self.minT = configurations['minTransparency']
-        self.maxT = configurations['maxTransparency']
+        self.tileSize = configurations['tile_size']
+        self.zoomLevels = configurations['zoom_levels']
+        self.std = configurations['std_transparency_as_percentage']
+        self.tileBasedMean = configurations["tile_based_mean_transparency"]
+        self.minT = configurations['min_transparency']
+        self.maxT = configurations['max_transparency']
 
     def calculateEdgeTransparencies(self, edgeLengths):
         longestTheoreticalEdge = calculateDiagonalSquareOfSide(self.graphSide)

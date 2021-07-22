@@ -1,10 +1,10 @@
 import React, {Component} from 'react';
-import ClosableMetadata from "./ClosableMetadata";
+import ClosableElement from "./ClosableElement";
 import Autocompletion from "./Autocompletion";
 import {MyContext} from "../../../Context";
 import _ from 'underscore';
-import {array, bool, func, string} from "prop-types";
-import {postRecentMetadata} from "../../../APILayer";
+import {array, bool, func, string, number} from "prop-types";
+import {postRecentMetadataSearches} from "../../../APILayer";
 
 class SearchBar extends Component {
 
@@ -19,7 +19,7 @@ class SearchBar extends Component {
             searchInputElement: undefined
         }
         this.closeMetadataCallback = this.closeMetadataCallback.bind(this)
-        this.addMetadataCallback = this.addMetadataCallback.bind(this)
+        this.searchBarAddMetadataCallback = this.searchBarAddMetadataCallback.bind(this)
         this.onBlur = this.onBlur.bind(this)
     }
 
@@ -28,7 +28,7 @@ class SearchBar extends Component {
             this.props.showSelected ?
                 this.state.metadataSelected
                     .map((metadata, i) =>
-                        <ClosableMetadata
+                        <ClosableElement
                             metadata={metadata}
                             closeCallback={this.closeMetadataCallback}
                             key={i}/>
@@ -37,46 +37,48 @@ class SearchBar extends Component {
         }</>;
 
         return (
-            <div className={'flex flex-row flex-wrap position-relative h-12'}>
+            <div className={'flex flex-col justify-center p-2 overflow-y-auto ' + this.props.className}>
+                <div className={'flex flex-row flex-wrap justify-start overflow-y-auto'}>
+                    <form
+                        onSubmit={() => this.pressedEnterCallback(this.state.currentInput)}
+                        onBlur={this.onBlur}
+                        className={'w-60'}>
+                        <label>
+                            <input className={'p-2 focus:outline-none'}
+                                   type="text"
+                                   ref={inputEl => (this.state.searchInputElement = inputEl)}
+                                   placeholder={this.props.placeholder}
+                                   value={this.state.currentInput}
+                                   onChange={(event) => {
+                                       this.setState({currentInput: event.target.value})
+                                   }}
+                                   onFocus={() => {
+                                       this.setState({showAutocompletion: true})
+                                   }}
+                            />
+                        </label>
+                    </form>
 
-                {displaySelectedMetadata}
+                    {displaySelectedMetadata}
 
-                {/* logic to deal with the user pressing enter
-                as opposed to the user clicking on the item they want to add*/}
-                <form
-                    onSubmit={() => this.pressedEnterCallback(this.state.currentInput)}
-                    onBlur={this.onBlur}
-                    className={'h-12 w-60'}>
-                    <label>
-                        <input className={'p-2 focus:outline-none'}
-                               type="text"
-                               ref={inputEl => (this.state.searchInputElement = inputEl)}
-                               placeholder={this.props.placeholder}
-                               value={this.state.currentInput}
-                               onChange={(event) => {
-                                   this.setState({currentInput: event.target.value})
-                               }}
-                               onFocus={() => {
-                                   this.setState({showAutocompletion: true})
-                               }}
-                        />
-                    </label>
-
-                    <Autocompletion
-                        shouldRender={this.state.showAutocompletion}
-                        currentInput={this.state.currentInput}
-                        addMetadataCallback={this.addMetadataCallback}
-                        graphName={this.props.graphName}
-                        recentMetadata={this.props.recentMetadataSearches}
-                    />
-                </form>
+                </div>
+                <Autocompletion
+                    shouldRender={this.state.showAutocompletion}
+                    currentInput={this.state.currentInput}
+                    addMetadataCallback={this.searchBarAddMetadataCallback}
+                    graphId={this.props.graphId}
+                    recentMetadataSearches={this.props.recentMetadataSearches}
+                />
             </div>
         );
     }
 
     pressedEnterCallback(currentInput) {
+        // logic to deal with the user pressing enter
+        // as opposed to the user clicking on the item they want to add
+
         if (currentInput.substring(0, 2) === '0x') {
-            this.addMetadataCallback({
+            this.searchBarAddMetadataCallback({
                 metadataValue: currentInput,
                 metadataType: 'eth'
             })
@@ -84,31 +86,29 @@ class SearchBar extends Component {
         }
 
         // we only have free text from the user, we need to figure if it's a type or a label
-        let match = this.context['autocompleteTerms'].find((e) => e['metadata_value'] === currentInput);
+        let match = this.context['autocompleteTerms'].find((e) => e['metaValue'] === currentInput);
         if (match) {
-            this.addMetadataCallback(match)
+            this.searchBarAddMetadataCallback(match)
         }
     }
 
-    addMetadataCallback(metadataObject) {
-        this.setState(oldState => {
-            this.state.searchInputElement.blur()
-            let metadataNow = [...oldState.metadataSelected, metadataObject];
+    searchBarAddMetadataCallback(metadataObject) {
+        this.state.searchInputElement.blur()
+        let metadataNow = [...this.state.metadataSelected, metadataObject];
 
-            // Update the quicklist
-            if (!this.props.recentMetadataSearches.some(t => _.isEqual(t, metadataObject))) {
-                postRecentMetadata(metadataObject)
-            }
+        // Update the quicklist
+        if (!this.props.recentMetadataSearches.some(metaOj => _.isEqual(metaOj, metadataObject))) {
+            postRecentMetadataSearches(metadataObject).then(r => console.log("ffddhbjdhjbdh"))
+        }
 
-            // Update parent component
-            this.props.selectedMetadataCallback(metadataNow)
+        // Update parent component
+        this.props.selectedMetadataCallback(metadataNow)
 
-            return ({
-                metadataSelected: metadataNow,
-                currentInput: '',
-                showAutocompletion: false
-            });
-        })
+        this.setState({
+            metadataSelected: metadataNow,
+            currentInput: '',
+            showAutocompletion: false
+        });
 
     }
 
@@ -132,6 +132,7 @@ class SearchBar extends Component {
 
 SearchBar.propTypes = {
     graphName: string.isRequired,
+    graphId: number.isRequired,
     placeholder: string.isRequired,
     recentMetadataSearches: array.isRequired,
     showSelected: bool,

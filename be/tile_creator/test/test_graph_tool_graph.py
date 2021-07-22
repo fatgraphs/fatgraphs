@@ -17,7 +17,7 @@ class TestGraphToolGraph(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.graph = TokenGraph(TEST_DATA, {'dtype': {'amount': object}})
-        defaultConfig = getFinalConfigurations({'--csv': TEST_DATA}, TEST_DIR, "test_graph")
+        defaultConfig = getFinalConfigurations({'--csv': TEST_DATA},  "test_graph")
         cls.layout = VisualLayout(cls.graph, defaultConfig)
         metadata = TokenGraphMetadata(cls.graph, cls.layout, defaultConfig)
         cls.gtg = GraphToolTokenGraph(cls.graph.edgeIdsToAmount,

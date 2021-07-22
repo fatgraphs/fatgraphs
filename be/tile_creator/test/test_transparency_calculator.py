@@ -24,11 +24,10 @@ class TestTransparencyCalculator(unittest.TestCase):
             for std in cls.stds:
                 for zoom in cls.maxZooms:
                     config = getFinalConfigurations({'--csv': TEST_DATA,
-                                                       "--std": std,
-                                                       '-z': zoom,
-                                                       '--meanT': 2.0},
-                                                      TEST_DIR,
-                                                      "test_graph")
+                                                     "--std": std,
+                                                     '-z': zoom,
+                                                     '--meanT': 2.0},
+                                                    "test_graph")
                     cls.transparencyCalculators.append(TransparencyCalculator(graphSide, config))
 
     def test_initialisation(cls):
@@ -109,6 +108,6 @@ class TestTransparencyCalculator(unittest.TestCase):
                 peakOfGaussian = transparencies[zoom][indexMean - windowSize + 1: indexMean + windowSize]
                 for transparency in peakOfGaussian:
                     cls.assertAlmostEqual(transparency,
-                        max(transparencies[zoom]),
-                        delta=tc.maxT * 0.3,
-                        msg="Failed at zoom {0}".format(zoom))
+                                          max(transparencies[zoom]),
+                                          delta=tc.maxT * 0.3,
+                                          msg="Failed at zoom {0}".format(zoom))

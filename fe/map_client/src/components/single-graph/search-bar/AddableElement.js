@@ -3,7 +3,7 @@ import * as PropTypes from "prop-types";
 import {func, string} from "prop-types";
 import {TYPE_ICONS} from "../graph-map/VisualElements";
 
-class AddableMetadata extends Component {
+class AddableElement extends Component {
 
     constructor(props) {
         super(props);
@@ -22,24 +22,24 @@ class AddableMetadata extends Component {
                 onClick={() => {
                     this.props.addMetadataCallback(this.props.metadata)
                 }}>
-                {TYPE_ICONS[this.props.metadata['metadata_type']]}
-                { this.props.metadata['metadata_value']}
+                {TYPE_ICONS[this.props.metadata['type']]}
+                { this.props.metadata['value']}
             </li>
         );
     }
 }
 
-AddableMetadata.propTypes = {
+AddableElement.propTypes = {
     bgColor: string,
     metadata: PropTypes.shape({
-        metadataValue: string,
-        metadataType: PropTypes.oneOf(['label', 'type', 'eth']),
+        value: string,
+        type: PropTypes.oneOf(['label', 'type', 'eth']),
     }),
     addMetadataCallback: func.isRequired,
 };
 
-AddableMetadata.defaultProps = {
+AddableElement.defaultProps = {
     bgColor: 'odd:bg-white',
 };
 
-export default AddableMetadata;
+export default AddableElement;

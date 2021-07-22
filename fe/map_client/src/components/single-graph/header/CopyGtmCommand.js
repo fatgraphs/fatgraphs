@@ -13,11 +13,13 @@ class CopyGtmCommand extends Component {
     render() {
         return (
 
-            <div className={'hover:cursor-pointer active:text-2xl ml-2'}
+            <div className={'hover:cursor-pointer active:text-2xl p-2 ' + this.props.className}
                  onClick={this.copyGtmCommand}>
-                <p className={'mr-2'}>copy gtm command <FontAwesomeIcon
+                <FontAwesomeIcon
+                    className={'mr-2'}
                     icon={faClipboard}/>
-                </p>
+
+                copy gtm command
             </div>
 
         );

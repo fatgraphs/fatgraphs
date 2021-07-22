@@ -9,7 +9,7 @@ from be.tile_creator.src.layout.visual_layout import VisualLayout
 from be.tile_creator.src.render.tiles_renderer import TilesRenderer
 from be.tile_creator.src.render.transparency_calculator import TransparencyCalculator
 from be.tile_creator.src.metadata.token_graph_metadata import TokenGraphMetadata
-from be.tile_creator.test.constants import TEST_DATA, TEST_OUTPUT_DIR, TEST_REFERENCE_OUTPUT_DIR
+from be.tile_creator.test.constants import TEST_DATA, TEST_OUTPUT_DIR, TEST_REFERENCE_OUTPUT_DIR, TEST_DIR
 from be.utils.utils import compareImages, isImage, ASCII_N, mergeTiles, toCv
 from gtm import getFinalConfigurations
 
@@ -25,8 +25,12 @@ class TestRenderer(unittest.TestCase):
     def setUpClass(cls):
         cls.graph = TokenGraph(TEST_DATA, {'dtype': {'amount': object}})
         defaultConfig = getFinalConfigurations({'--csv': TEST_DATA},
-                                                  TEST_OUTPUT_DIR,
                                                   "test_graph")
+
+        attr = getattr(defaultConfig, 'outputFolder', None)
+        cls.assertIsNone(cls, attr)
+        defaultConfig['output_folder'] = TEST_DIR
+
         cls.layout = VisualLayout(cls.graph, defaultConfig)
         metadata = TokenGraphMetadata(cls.graph, cls.layout, defaultConfig)
         cls.gtg = GraphToolTokenGraph(cls.graph.edgeIdsToAmount,

@@ -2,6 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
+/* html, body and #root are to ensure that the map is always 100% height*/
+html, body {
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  display: block;
+}
+
+#root {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
 h1 {
     @apply text-6xl
 }

@@ -29,12 +29,12 @@ class Gallery extends Component {
 
     render() {
         return this.state.availableGraphs ?
-            <div>
+            <>
                 <HeaderGraphGallery/>
                 <BodyGraphGallery availableGraphs={this.state.availableGraphs}
                                   autocompletion={this.state.autocompletion}
                                   className={"flex-1"}/>
-            </div> :
+            </> :
             <div>Loading . . .</div>
     }
 }

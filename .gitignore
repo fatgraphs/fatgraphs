@@ -58,3 +58,5 @@ be/graph-maps/
 *-checkpoint.ipynb
 
 **/node_modules/*
+
+**/.pytest_cache

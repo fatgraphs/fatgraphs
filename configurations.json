@@ -1,15 +1,19 @@
 {
   "endpoints": {
-    "base": "http://127.0.0.1:5000",
-    "availableGraphs": "/tokengallery/graphs",
-    "tile": "/tokengallery/tile",
-    "matchingVertex": "/tokengallery/matching-vertex",
-    "graphMetadata": "/tokengallery/graph-metadata",
-    "edgeDistributions": "/tokengallery/edge-distributions",
-    "proximityClick": "/tokengallery/proximity-click",
-    "userRecentMetadataSearches": "/tokengallery/recent-metadata",
-    "autocompletionTerms": "/tokengallery/autocompletion",
-    "addVertexMetadata": "/tokengallery/add-vertex-metadata"
+    "base": "http://127.0.0.1:5000/tokengallery/",
+    "availableGraphs": "graph",
+    "autocompletionTerms": "searches/autocomplete-term/{page}",
+    "tile": "tile/{graphId}/{z}/{x}/{y}.png?{randint}",
+    "matchingVertex": {
+      "type": "vertex/type/{value}",
+      "label": "vertex/label/{value}"
+    },
+    "graphById": "graph/{graphId}",
+    "edgeDistributions": "edge-distributions",
+    "closestPoint": "vertex/closest/{graphId}/{x}/{y}",
+    "user": "user/{userName}",
+    "recentMetadataSearches": "searches/",
+    "addVertexMetadata": "vertex-metadata/create"
   },
   "graphsHome": "be/graph-maps",
   "verticesMetadataFileName": "vertices_metadata.csv",
