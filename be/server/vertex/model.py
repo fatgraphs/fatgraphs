@@ -1,21 +1,22 @@
 from typing import List
+
 from geoalchemy2 import Geometry
 from psycopg2._psycopg import AsIs
-from sqlalchemy import Integer, Column, String, Float, ForeignKey
+from sqlalchemy import Column
+from sqlalchemy import Integer, String, Float, ForeignKey
+
 from .. import Base, engine
 from ..utils import to_pd_frame, wkt_to_x_y_list
-from sqlalchemy import  Column
+from ...configuration import VERTEX_GLOBAL_TABLE
 
 
 class Vertex(Base):
-
     __tablename__ = "tg_vertex"
 
     graph_id = Column(Integer(), ForeignKey('tg_graphs.id'))
     eth = Column(String(), primary_key=True)
     size = Column(Float(precision=8))
     pos = Column(Geometry('Point', 3857))
-
 
     @staticmethod
     def get_closest(graph_id: int, x: float, y: float, db):
@@ -39,24 +40,26 @@ class Vertex(Base):
         return v
 
     @staticmethod
-    def get_in_list(eths: List[str], table_name: str, db: object):
-        query = """SELECT graph_id, eth, size, ST_AsText(ST_PointFromWKB(pos)) AS pos FROM %(table_name)s WHERE %(table_name)s.eth IN %(eths)s;
-        """
-        raw_result = engine.execute(query, {'table_name': AsIs(table_name),
-                                         'eths': tuple(eths)})
+    def get(eths: List[str], graph_id: int, db: object):
+
+        query = """SELECT graph_id, eth, size, ST_AsText(ST_PointFromWKB(pos)) AS pos 
+        FROM %(table_name)s 
+        WHERE %(table_name)s.eth IN %(eths)s"""
+
+        substitution = {'table_name': AsIs(VERTEX_GLOBAL_TABLE),
+                             'eths': tuple(eths)}
+
+        if graph_id != None:
+            query = query + """ AND %(table_name)s.graph_id = %(graph_id)s"""
+            substitution['graph_id'] = graph_id
+
+        query = query + ';'
+
+        raw_result = engine.execute(query, substitution)
+
         db.commit()
         fetchall = to_pd_frame(raw_result)
 
-        return Vertex._map_to_model(fetchall)
-
-
-    @staticmethod
-    def get_by_eth_across_graphs(eth: str, db: object):
-        query = """SELECT graph_id, eth, size, ST_AsText(ST_PointFromWKB(pos)) AS pos  
-        FROM tg_vertex 
-        WHERE eth = %(eth)s;"""
-        raw_result = engine.execute(query, {'eth': eth})
-        fetchall = to_pd_frame(raw_result)
         return Vertex._map_to_model(fetchall)
 
     @staticmethod

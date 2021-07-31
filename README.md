@@ -11,6 +11,8 @@ You need a graph.csv file inside data (currently it needs to be called `medium.c
 
 We use rapids libraries, the easiest way to install is to create an Anaconda environment with the command that matches
 your specs, generate the command at the following url: https://rapids.ai/start.html
+To find out your cuda version conider using the command `nvidia-smi`.
+Python version should be python 3.8
 
 We will now assume that an Anaconda virtual environment called `rapids-0.18` exists in your system
 (you can call it something else).

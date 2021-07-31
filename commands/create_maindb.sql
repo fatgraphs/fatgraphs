@@ -1,1 +1,1 @@
-CREATE DATABASE tg_main IF NOT EXISTS OWNER tokengallerist;
+CREATE DATABASE tg_main OWNER tokengallerist;

@@ -79,14 +79,14 @@ class SearchBar extends Component {
 
         if (currentInput.substring(0, 2) === '0x') {
             this.searchBarAddMetadataCallback({
-                metadataValue: currentInput,
-                metadataType: 'eth'
+                value: currentInput,
+                type: 'eth'
             })
             return
         }
 
         // we only have free text from the user, we need to figure if it's a type or a label
-        let match = this.context['autocompleteTerms'].find((e) => e['metaValue'] === currentInput);
+        let match = this.context['autocompleteTerms'].find((e) => e['value'] === currentInput);
         if (match) {
             this.searchBarAddMetadataCallback(match)
         }
