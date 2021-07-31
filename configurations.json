@@ -6,7 +6,8 @@
     "tile": "tile/{graphId}/{z}/{x}/{y}.png?{randint}",
     "matchingVertex": {
       "type": "vertex/type/{value}",
-      "label": "vertex/label/{value}"
+      "label": "vertex/label/{value}",
+      "eth": "vertex/eth/{value}"
     },
     "graphById": "graph/{graphId}",
     "edgeDistributions": "edge-distributions",
