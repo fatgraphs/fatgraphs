@@ -14,8 +14,9 @@ module.exports = {
     resolve: {
         modules: [
             path.resolve(__dirname, "src"),
-            "node_modules"] },
-    devServer: { contentBase: path.join(__dirname, "src") },
+            "node_modules"]
+    },
+    devServer: {contentBase: path.join(__dirname, "src")},
     module: {
         rules: [
             {
@@ -24,12 +25,12 @@ module.exports = {
                 use: ["babel-loader"]
             },
             {
-                test: /\.(css|scss)$/,
-                use: ["style-loader", "css-loader"],
+                test: /\.(jpg|jpeg|png|gif|mp3|svg|woff2|eot|woff|ttf)$/,
+                use: ["file-loader"]
             },
             {
-                test: /\.(jpg|jpeg|png|gif|mp3|svg)$/,
-                use: ["file-loader"]
+                test: /\.(scss|css)$/,
+                use: ['style-loader', 'css-loader', 'sass-loader'],
             },
         ],
     },

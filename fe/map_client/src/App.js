@@ -1,13 +1,14 @@
 import React, {Component} from 'react'
-import './assets/main.css';
 import Gallery from "./components/gallery/GraphGallery";
-
 import {HashRouter, Route, Switch} from "react-router-dom";
 import About from "./components/about/About";
-import MainNavBar from "./components/MainNavBar";
 import SingleGraphView from "./components/single-graph/SingleGraphView";
 import {fetchAutocompletionTerms} from "./APILayer";
 import {MyContext} from "./Context";
+import NavBar from "./components/navbar/NavBar";
+
+import './reactBlueTemplate/src/styles/theme.scss';
+import './main.css'
 
 class App extends Component {
 
@@ -40,14 +41,14 @@ class App extends Component {
     render() {
         return (
             <HashRouter>
-                <MainNavBar/>
+                <NavBar/>
 
                 <MyContext.Provider value={{autocompleteTerms: this.state.autocompleteTerms}}>
                     <Switch>
                         <Route exact path="/" component={Gallery}>
                         </Route>
 
-                        <Route path="/about" component={About}>
+                        <Route path="/map" component={About}>
                         </Route>
 
                         <Route path="/graph/:graphName/:graphId">

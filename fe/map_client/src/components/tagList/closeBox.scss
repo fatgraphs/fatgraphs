@@ -1,0 +1,14 @@
+.closeBox {
+  background-color: rgba(0, 0, 0, 0.24);
+  opacity: .8;
+  padding: 1rem !important;
+  line-height: 21px;
+  height: calc(1.5em + 1rem + 2px); // same as the search bar
+  display: flex;
+  flex-direction: row;
+  justify-content: start;
+  align-items: center;
+  width:fit-content;
+  border-radius: 0% 10% 10% 0% ;
+  margin-bottomtag: 2px;
+}

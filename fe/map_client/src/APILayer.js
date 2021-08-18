@@ -1,4 +1,5 @@
 import UrlComposer from "./utils/UrlComposer";
+import Graph from "./model/graph";
 
 const configs = require("configurations")
 
@@ -15,12 +16,13 @@ function doRequest(url, options) {
 
 export function fetchClosestPoint(graphId, graphCoordinate) {
     let url = UrlComposer.closestPoint(graphId, graphCoordinate[0], graphCoordinate[1]);
-    return doRequest(url);
+    return doRequest(url, {});
 }
 
-export function fetchGraphs() {
+export async function fetchGraphs() {
     let url = UrlComposer.graphs()
-    return doRequest(url, {});
+    let response = await doRequest(url, {});
+    return response.map(raw => new Graph(raw))
 }
 
 export function fetchEdgePlots(graphName, maxZoom) {

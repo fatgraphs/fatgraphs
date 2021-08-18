@@ -1,0 +1,44 @@
+@import '../../reactBlueTemplate/src/styles/app';
+
+.root {
+  display: flex;
+  justify-content: flex-end !important;
+  @media (max-width: breakpoint-max(sm)) {
+    margin-bottom: 50px;
+  }
+
+  ul > li > a {
+    padding: 0.5rem 12px;
+    @media(max-width: 580px) {
+      padding: 0.5rem 6px;
+    }
+  }
+}
+
+.divider {
+  display: block;
+  width: 1px;
+  margin: 7px 14px;
+  background: $icon-color;
+}
+
+.navItem {
+  font-size: 1.5rem;
+  outline: 0;
+  text-align: center;
+
+  &:hover,
+  &:focus {
+    color: $white !important;
+  }
+
+  :global(.glyphicon),
+  :global(.fa) {
+    vertical-align: baseline;
+  }
+}
+
+.inlineTitle {
+  display: inline !important;
+  font-weight: 700 !important;
+}

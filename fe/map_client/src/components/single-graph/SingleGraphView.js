@@ -1,13 +1,15 @@
 import React, {Component} from 'react';
 import {withRouter} from "react-router-dom";
-import {fetchGraph, fetchRecentMetadata, fetchUser} from "../../APILayer";
+import {fetchGraph, fetchMatchingVertices, fetchRecentMetadata} from "../../APILayer";
 import _ from 'underscore';
-import SearchBar from "./search-bar/SearchBar";
 import {MyContext} from "../../Context";
-import GraphMap from "./graph-map/GraphMap";
+import GraphMap from "./GraphMap";
 import SidePanel from "./SidePanel";
-import GraphMapHeader from "./header/GraphTitle";
-import CopyGtmCommand from "./header/CopyGtmCommand";
+import GraphTitle from "./GraphTitle";
+import CopyGtmCommand from "./CopyGtmCommand";
+import s from './singleGraph.module.scss';
+import TagListGraph from "../tagList/tagListGraph";
+import {toMapCoordinate} from "../../utils/CoordinatesUtil";
 
 class SingleGraphView extends Component {
 
@@ -18,11 +20,13 @@ class SingleGraphView extends Component {
         this.state = {
             graphMetadata: undefined,
             isMarkerVisible: false,
-            addressDisplayedCurrently: undefined,
+            closestVertex: undefined,
             selectedMetadata: [],
-            recentMetadataSearches: []
+            recentMetadataSearches: [],
+            metadataObjects: [],
+            markersSelectedMetadata: []
         }
-        this.setDisplayedAddress = this.setDisplayedAddress.bind(this)
+        this.setClosestVertex = this.setClosestVertex.bind(this)
     }
 
     async componentDidMount() {
@@ -34,66 +38,97 @@ class SingleGraphView extends Component {
         })
     }
 
-    async componentDidUpdate() {
-        let recentMetadataSearches = await fetchRecentMetadata('default_user');
-        if (_.isEqual(this.state.recentMetadataSearches, recentMetadataSearches)) {
+    async componentDidUpdate(prevProps, prevState) {
+        // let recentMetadataSearches = await fetchRecentMetadata('default_user');
+        // if (_.isEqual(this.state.recentMetadataSearches, recentMetadataSearches)) {
+        //     return
+        // }
+        // this.setState({recentMetadataSearches: recentMetadataSearches})
+        if (_.isEqual(this.state.selectedMetadata, prevState.selectedMetadata)) {
             return
         }
-        this.setState({recentMetadataSearches: recentMetadataSearches})
+        let markers = await this.getVerticesMatchingMetadata(this.state.selectedMetadata);
+        this.setState({markersSelectedMetadata: markers})
     }
+
+    // className={'grid grid-rows-tokenGraphLayout grid-cols-tokenGraphLayout grid-cols-3 gap-1 p-4 h-full'}>
 
     render() {
         if (this.state.graphMetadata === undefined) {
             return <div>Loading . . . </div>
         } else {
             return (
-                <div
-                    className={'grid grid-rows-tokenGraphLayout grid-cols-tokenGraphLayout grid-cols-3 gap-1 p-4 h-full'}>
+                <div className={s.singleGraphGrid}>
 
-
-                    <GraphMapHeader
-                        className={'col-span-1 row-span-1 text-center p-2'}
+                    <GraphTitle
                         graphMetadata={this.state.graphMetadata}/>
 
-
-                    <SearchBar
-                        className={'col-span-1 row-span-1'}
-                        graphId={this.props.match.params.graphId}
-                        graphName={this.props.match.params.graphName}
-                        selectedMetadataCallback={(selectedMetadata) => this.setState({selectedMetadata: selectedMetadata})}
-                        recentMetadataSearches={this.state.recentMetadataSearches}
-                        placeholder={'SEARCH BY NODE TYPE/LABEL'}/>
+                    <TagListGraph
+                        onChange={(currentSelection) => this.setState({selectedMetadata: currentSelection})}/>
 
 
                     <CopyGtmCommand
-                        className={'col-span-1 row-span-1'}
                         graphMetadata={this.state.graphMetadata}/>
 
 
-                    <SidePanel
-                        className={'col-span-1 row-span-1'}
-                        addressDisplayedCurrently={this.state.addressDisplayedCurrently}/>
+                    <div>
+                        <SidePanel
+                            closestVertex={this.state.closestVertex}
+                            selectedVertices={this.state.markersSelectedMetadata}/>
+                    </div>
 
                     <GraphMap
-                        className={'col-span-1 row-span-1'}
                         graphMetadata={this.state.graphMetadata}
                         graphId={this.props.match.params.graphId}
                         graphName={this.props.match.params.graphName}
-                        setDisplayedAddress={this.setDisplayedAddress}
-                        selectedMetadata={this.state.selectedMetadata}
+                        setDisplayedAddress={this.setClosestVertex}
+                        selectedMetadataMarkers={this.state.markersSelectedMetadata}
                         recentMetadataSearches={this.state.recentMetadataSearches}/>
 
-                    <SidePanel
-                        className={'col-span-1 row-span-1'}
-                        addressDisplayedCurrently={this.state.addressDisplayedCurrently}/>
+                    <SidePanel/>
                 </div>
             );
         }
     }
 
-    setDisplayedAddress(address) {
-        this.setState({addressDisplayedCurrently: address})
+    setClosestVertex(address) {
+        this.setState({closestVertex: address})
     }
+
+    async getVerticesMatchingMetadata(metadataObjects) {
+        let verticesMatchingMetadata = []
+        for (const metadataObject of metadataObjects) {
+            let response = await fetchMatchingVertices(this.props.match.params.graphId, metadataObject);
+            verticesMatchingMetadata.push(...response)
+        }
+
+        // the same eth may have multiple types and labels
+        let groupedByEth = _.groupBy(verticesMatchingMetadata, 'eth');
+
+        let markers = []
+        for (const eth in groupedByEth) {
+            this.populateMarkers(groupedByEth, eth, markers);
+        }
+        return markers
+    }
+
+    populateMarkers(groupedByEth, eth, markers) {
+        const types = groupedByEth[eth].map(obj => obj.types).flat()
+        const labels = groupedByEth[eth].map(obj => obj.labels).flat()
+        const {pos, size} = groupedByEth[eth][0]
+        let mapCoordinate = toMapCoordinate(pos, this.state.graphMetadata)
+
+        markers.push({
+            types: types,
+            labels: labels,
+            pos: mapCoordinate,
+            size: size,
+            eth: eth
+        })
+        // this.setState({markersSelectedMetadata: markers})
+
+    }
+
 }
 
 export default withRouter(SingleGraphView);

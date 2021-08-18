@@ -1,0 +1,43 @@
+@import '../../reactBlueTemplate/src/styles/app';
+
+.root {
+
+}
+
+.overFlow {
+  overflow-x: auto;
+}
+
+.mainTableWidget {
+  :global {
+    .table td {
+      border: none;
+    }
+  }
+}
+
+.myCard {
+  margin: 0.5rem;
+
+  &:hover {
+    background-color: rgba($input-focus-border-color, 0.4) !important;
+  }
+}
+
+.myGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  @media (min-width: breakpoint-min(sm)) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  @media (min-width: breakpoint-min(md)) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  @media (min-width: breakpoint-min(lg)) {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+  @media (min-width: breakpoint-min(xl)) {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}

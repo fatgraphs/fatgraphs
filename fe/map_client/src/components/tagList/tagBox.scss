@@ -1,0 +1,16 @@
+.tagBox {
+  color: rgba(244, 244, 245, 0.9);
+  background-color: #12142B;
+  opacity: .8;
+  padding: 1rem !important;
+  line-height: 21px;
+  height: calc(1.5em + 1rem + 2px); // same as the search bar
+  display: flex;
+  flex-direction: row;
+  justify-content: start;
+  align-items: center;
+  width:fit-content;
+  border-radius: 10% 0% 0% 10%;
+  margin-left: 2px;
+  margin-bottomtag: 2px;
+}

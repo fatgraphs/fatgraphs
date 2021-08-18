@@ -1,5 +1,5 @@
 import * as React from "react";
-import DescriptionTable from "../../generic_components/DescriptionTable";
+import Static from "../../reactBlueTemplate/src/pages/tables/static/Static"
 
 class SidePanel extends React.Component {
 
@@ -9,17 +9,12 @@ class SidePanel extends React.Component {
 
     render() {
 
-        let address = this.props.addressDisplayedCurrently === undefined
-            ? "Nothing selected"
-            : this.props.addressDisplayedCurrently
-
-
-        return<DescriptionTable
-                className={this.props.className}
-                stackVertically={true}
-                keys={['Address']}
-                values={[address]}>
-            </DescriptionTable>
+        return <>
+            <Static
+                title={'Selected Vertices'}
+                closestVertex={this.props.closestVertex}
+                selectedVertices={this.props.markersSelectedMetadata}/>
+        </>
     }
 
 }

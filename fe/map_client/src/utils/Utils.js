@@ -23,3 +23,16 @@ export function generateLargeRandom() {
     return Math.floor(Math.random() * 200000) + 1;
 }
 
+export function truncateEth(string, _len){
+    if (! string) {
+        return ""
+    }
+    let len = _len | 4;
+
+    let prefix = string.slice(0, len)
+    if  (string.slice(0,2).toLowerCase() === '0x'){
+        prefix = string.slice(0, len + 2)
+    }
+    let suffix = string.slice(string.length - len, string.length)
+    return prefix + '...' + suffix;
+}

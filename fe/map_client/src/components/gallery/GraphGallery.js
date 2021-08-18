@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
 import {fetchGraphs} from "../../APILayer";
-import HeaderGraphGallery from "./HeaderGraphGallery";
-import BodyGraphGallery from "./BodyGraphGallery";
 import {MyContext} from "../../Context";
+import GraphList from "./GraphList";
+import TagListGallery from "../tagList/tagListGallery";
 
 class Gallery extends Component {
 
@@ -16,25 +16,30 @@ class Gallery extends Component {
         super(props);
         this.state = {
             availableGraphs: undefined,
+            searchTerms: []
         }
     }
 
     async componentDidMount() {
         let graphs = await fetchGraphs()
         this.setState({
-            availableGraphs: graphs,
+            availableGraphs: graphs
         })
     }
 
 
     render() {
         return this.state.availableGraphs ?
-            <>
-                <HeaderGraphGallery/>
-                <BodyGraphGallery availableGraphs={this.state.availableGraphs}
-                                  autocompletion={this.state.autocompletion}
-                                  className={"flex-1"}/>
-            </> :
+            <div className={`p-3`}>
+
+                <TagListGallery
+                    onChange={(vals) => {
+                        this.setState({searchTerms: vals})
+                    }}/>
+
+                <GraphList
+                    filterTerms={this.state.searchTerms}/>
+            </div> :
             <div>Loading . . .</div>
     }
 }
