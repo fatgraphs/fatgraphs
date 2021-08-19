@@ -16,6 +16,7 @@
     "recentMetadataSearches": "searches/",
     "addVertexMetadata": "vertex-metadata/create"
   },
+  "labelsHome" : "/home/carlo/tokengallery/data/labels.csv",
   "graphsHome": "be/graph-maps",
   "verticesMetadataFileName": "vertices_metadata.csv",
   "graphMetadataFileName": "graph_metadata.csv",

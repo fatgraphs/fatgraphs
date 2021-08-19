@@ -3,7 +3,7 @@ import os
 import json
 
 this_file_dir = os.path.dirname(os.path.realpath(__file__))
-data_folder = os.path.join(this_file_dir, 'data')
+data_folder = os.path.join(this_file_dir, '../data')
 
 AVAILABLE_CORES = multiprocessing.cpu_count()
 # print(f'{AVAILABLE_CORES} cores were detected on your system')

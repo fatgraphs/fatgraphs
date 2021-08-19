@@ -6,6 +6,7 @@ BEGIN
       WHERE  rolname = 'tokengallerist') THEN
 
       CREATE ROLE tokengallerist LOGIN PASSWORD '1234';
+      GRANT pg_read_server_files TO tokengallerist; -- needed to load csv files
    END IF;
 END
 $$;

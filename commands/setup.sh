@@ -1,8 +1,6 @@
 #!/bin/bash
 
 dburl=127.0.0.1
-metadata_ingestion_script=metadata_ingestion.sql
-labels_csv_path=../be/data/labels.csv
 password=1234
 
 # create user
@@ -23,10 +21,9 @@ psql -U postgres -h 127.0.0.1 -d tg_main -c "CREATE EXTENSION IF NOT EXISTS POST
 # create tables
 PGPASSWORD=$password psql -U tokengallerist -h 127.0.0.1 -d tg_main -f create_tables.sql
 
-echo "Preparing $metadata_ingestion_script from $labels_csv_path"
-python prepare_metadata_ingestion_script.py $labels_csv_path $metadata_ingestion_script
+# load labels
+LABELS_HOME=$(python ./read_labels_home.py)
+echo "Loading labels located at: $LABELS_HOME ..."
+PGPASSWORD=$password psql -U tokengallerist -h 127.0.0.1 -d tg_main -v v1="'$LABELS_HOME'" -f load_labels.sql
 
-echo 'Ingesting metadata...'
-PGPASSWORD=$password psql -U tokengallerist -h 127.0.0.1 -d tg_main -f $metadata_ingestion_script >/dev/null
-rm $metadata_ingestion_script
 echo 'Done'
