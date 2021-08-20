@@ -2,8 +2,8 @@ import unittest
 import numpy as np
 from be.tile_creator.src.graph.token_graph import TokenGraph
 from be.tile_creator.src.layout.visual_layout import VisualLayout
-from be.tile_creator.test.constants import TEST_DATA, TEST_DIR, UNIQUE_ADDRESSES, FAKE_NODES, PREPROCESSED_EDGES
-from gtm import getFinalConfigurations
+from be.tile_creator.test.constants import TEST_DATA, UNIQUE_ADDRESSES, FAKE_NODES, PREPROCESSED_EDGES
+from be.gtm import getFinalConfigurations
 import math
 
 class TestVisualLayout(unittest.TestCase):
@@ -74,13 +74,13 @@ class TestVisualLayout(unittest.TestCase):
     def test_edges_with_largest_amount_is_thickest(cls):
         # because of clipping we can get many values that are the largest thickness
         indexesMaxThickness = list(np.where(cls.layout.edgeThickness == cls.layout.edgeThickness.max())[0])
-        indexHighestAmount = cls.graph.edgeIdsToAmount['amount'].idxmax()
+        indexHighestAmount = cls.graph.edge_ids_to_amount['amount'].idxmax()
         cls.assertIn(indexHighestAmount, indexesMaxThickness)
 
     def test_edges_with_smallest_amount_is_thinnest(cls):
         # because of clipping we can get many values that are the smallest thickness
         indexesMinThickness = list(np.where(cls.layout.edgeThickness == cls.layout.edgeThickness.min())[0])
-        indexMinAmount = cls.graph.edgeIdsToAmount['amount'].idxmin()
+        indexMinAmount = cls.graph.edge_ids_to_amount['amount'].idxmin()
         cls.assertIn(indexMinAmount, indexesMinThickness)
 
     def test_edge_lengths_are_right_order(cls):
@@ -91,7 +91,7 @@ class TestVisualLayout(unittest.TestCase):
         """
         edgeLengths = cls.layout.edgeLengths
         vertexPositions = cls.layout.vertexPositions
-        for index, edge in cls.graph.edgeIdsToAmount.iterrows():
+        for index, edge in cls.graph.edge_ids_to_amount.iterrows():
             source = vertexPositions[['x', 'y']].iloc[int(edge.sourceId)]
             target = vertexPositions[['x', 'y']].iloc[int(edge.targetId)]
             source = [source['x'], source['y']]
@@ -101,7 +101,7 @@ class TestVisualLayout(unittest.TestCase):
             cls.assertAlmostEqual(expectedEdgeLength, actualEdgeLength, delta=0.001)
 
     def getPositionFakeNodes(cls):
-        maxId = cls.graph.addressToId['vertex'].max()
+        maxId = cls.graph.address_to_id['vertex'].max()
         maxId2 = maxId - 1
         topLeftVertexPos = list(cls.layout.vertexPositions[maxId:maxId + 1][['x', 'y']].values[0])
         bottomRightVertexPos = list(cls.layout.vertexPositions[maxId2:maxId2 + 1][['x', 'y']].values[0])

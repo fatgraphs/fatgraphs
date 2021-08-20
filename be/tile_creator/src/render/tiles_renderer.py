@@ -12,27 +12,24 @@ from be.tile_creator.src.graph.gt_token_graph import GraphToolTokenGraph
 
 class TilesRenderer:
 
-    def __init__(self, gtGraph, visualLayout, metadata, transparencyCalculator, configurations):
+    def __init__(self, gtGraph, metadata, configurations):
         if not isinstance(gtGraph, GraphToolTokenGraph):
             raise TypeError("graph renderer needs an instance of GraphToolTokenGraph as argument")
         self.gtGraph = gtGraph
-        self.edgeTransparencies = visualLayout.edgeTransparencies
-        self.vertexShapes = visualLayout.vertexShapes
         self.metadata = metadata
         self.configurations = configurations
-        self.transparency_calculator = transparencyCalculator
         self.renderingProcesses = []
 
     def renderGraph(self):
-        rgba = [[1.0] * len(self.edgeTransparencies[0])] * 4
+        # rgba = [[1.0] * len(self.edgeTransparencies[0])] * 4
 
         for zoomLevel in range(0, self.configurations['zoom_levels']):
             vertexSize = deepcopy(self.gtGraph.vertexSizes)
             edgeSize = deepcopy(self.gtGraph.edgeThickness)
 
-            rgba[3] = list(self.edgeTransparencies[zoomLevel].to_numpy())
-            edgeColors = self.gtGraph.edgeTransparencies[zoomLevel]
-            edgeColors.set_2d_array(np.array(rgba))
+            # rgba[3] = list(self.edgeTransparencies[zoomLevel].to_numpy())
+            # edgeColors = self.gtGraph.edgeTransparencies[zoomLevel]
+            # edgeColors.set_2d_array(np.array(rgba))
 
             numberOfImages = 4 ** zoomLevel
             divideBy = int(math.sqrt(numberOfImages))
@@ -62,7 +59,7 @@ class TilesRenderer:
 
                 # Parallel code
                 rendering_process = Process(target=self.render,
-                                            args=(fit, fileName, edgeColors, vertexSize, edgeSize))
+                                            args=(fit, fileName, self.gtGraph.edgeTransparencies[zoomLevel], vertexSize, edgeSize))
                 self.renderingProcesses.append(rendering_process)
 
             # This ensures that vertices and edges maintain the same apparent size when zooming.
@@ -98,6 +95,8 @@ class TilesRenderer:
                    vertex_size=vertexSize,
                    vertex_shape=self.gtGraph.vertexShapes,
                    vertex_fill_color=[1, 0, 0, 0.8],
+                   vertex_color=[1, 1, 1, 0.8],
+                   vertex_pen_width=0.35,
                    output_size=[self.configurations['tile_size'], self.configurations['tile_size']],
                    output=fileName,
                    edge_color=edgeColors,

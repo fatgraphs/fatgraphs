@@ -10,7 +10,6 @@ from be.tile_creator.src.graph.gt_token_graph import GraphToolTokenGraph
 from be.tile_creator.src.graph.token_graph import TokenGraph
 from be.tile_creator.src.layout.visual_layout import VisualLayout
 from be.tile_creator.src.metadata.token_graph_metadata import TokenGraphMetadata
-from be.tile_creator.src.metadata.vertex_metadata import VerticesLabels
 from be.tile_creator.src.render.tiles_renderer import TilesRenderer
 from be.tile_creator.src.render.transparency_calculator import TransparencyCalculator
 from be.utils.utils import make_geoframe
@@ -43,14 +42,13 @@ def main(configurations):
 
     print("generating vertices shapes . . .")
     metadata = TokenGraphMetadata(graph, visualLayout, configurations)
-    frame = metadata.getSingleFrame()
-    body = frame.to_dict(orient='record')[0]
+
 
     with SessionLocal() as db:
         from be.server.graph import Graph
 
         # save graph metadata to db
-        new_graph = GraphService.create(body, db)
+        new_graph = GraphService.create(metadata.get_config_dict(), db)
 
         # as soon as we have the id we can determine the graph folder
         graph_id = new_graph.id
@@ -62,22 +60,24 @@ def main(configurations):
         # save vertices
         vertex_table = VERTEX_TABLE_NAME(graph_name, graph_id)
         VertexService.ensure_vertex_table_exists(vertex_table, graph_id)
-        vertices = graph.addressToId.merge(visualLayout.vertexPositions)
+
+        # this will be there
+        vertices = graph.address_to_id.merge(visualLayout.vertexPositions)
         vertices = vertices.rename(columns={'address': 'eth'})
         vertices['size'] = visualLayout.vertexSizes
         vertices['graph_id'] = [str(graph_id)] * len(vertices)
         vertices = vertices.drop(columns=['vertex'])
+
+        # save as geo frame
         geo_frame = make_geoframe(vertices)
         column_types = {'pos': Geometry('POINT', srid=SRID)}
         geo_frame.to_sql(vertex_table, engine, if_exists='append', index=False, dtype=column_types)
 
-        # change the shape of some nodes
-        vertices_metadata = VerticesLabels(configurations, graph.addressToId)
-        visualLayout.vertexShapes = vertices_metadata.generate_shapes(graph_id, db)
 
     print("rendering tiles . . .")
-    gtGraph = GraphToolTokenGraph(graph.edgeIdsToAmount, visualLayout, metadata, configurations['curvature'])
-    tilesRenderer = TilesRenderer(gtGraph, visualLayout, metadata, transparencyCalculator, configurations)
+    # this will be GraphToolTokenGraph(vertex_data, edge_data, graph_data)
+    gtGraph = GraphToolTokenGraph(graph.edge_ids_to_amount, visualLayout, metadata, configurations['curvature'])
+    tilesRenderer = TilesRenderer(gtGraph, metadata, configurations)
     tilesRenderer.renderGraph()
 
     # print("rendering edge distributions plots...")

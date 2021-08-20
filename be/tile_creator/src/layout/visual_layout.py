@@ -19,29 +19,26 @@ class VisualLayout:
 
         self.vertexPositions = self.runForceAtlas2(graph.gpuFrame)
 
-        tempMax = max(self.vertexPositions[0:-2]['x'].max(), self.vertexPositions[0:-2]['y'].max())
-        tempMin = min(self.vertexPositions[0:-2]['x'].min(), self.vertexPositions[0:-2]['y'].min())
+        self.max = max(self.vertexPositions[0:-2]['x'].max(), self.vertexPositions[0:-2]['y'].max())
+        self.min = min(self.vertexPositions[0:-2]['x'].min(), self.vertexPositions[0:-2]['y'].min())
 
-        # TODO
-        # noverlap
-
-        self.ensureLayoutIsSquare(tempMin, tempMax)
+        self.ensureLayoutIsSquare()
         self.edgeIdsToPositions = self.makeEdgeIdsToPositions()
-        self.edgeIdsToPositionsPixel = self.convertToPixelSpace(config['tile_size'], tempMin, tempMax)
+        self.edgeIdsToPositionsPixel = self.convertToPixelSpace(config['tile_size'], self.min, self.max)
         self.edgeLengths = self.calculateEdgeLengthsGraphSpace()
         self.medianPixelDistance = self.computeMedianPixelDistance()
         self.vertexSizes = self.calculateVerticesSize(graph.degrees['inDegree'], config['med_vertex_size'],
                                                       config['max_vertex_size'])
-        logAmounts = np.log10(
-            graph.edgeIdsToAmount['amount'].values + 1)  # amounts can be huge numbers, reduce the range
-        self.edgeThickness = self.calculateEdgesThickness(logAmounts, config['med_edge_thickness'],
-                                                          config['max_edge_thickness'])
-
-        self.min = tempMin
-        self.max = tempMax
+        self.edgeThickness = self.calculate_edge_thickness(config, graph)
 
         self.edgeTransparencies = {}
-        self.vertexShapes = []
+        self.vertexShapes = self.generate_shapes()
+
+    def calculate_edge_thickness(self, config, graph):
+        logAmounts = np.log10(
+            graph.edge_ids_to_amount['amount'].values + 1)  # amounts can be huge numbers, reduce the range
+        return self.calculateEdgesThickness(logAmounts, config['med_edge_thickness'],
+                                                          config['max_edge_thickness'])
 
     def runForceAtlas2(self, gpuGraph):
         if not isinstance(gpuGraph, cugraph.structure.graph.Graph):
@@ -62,10 +59,11 @@ class VisualLayout:
         medianPixelDistance = np.median(distances.flatten())
         return medianPixelDistance
 
-    def ensureLayoutIsSquare(self, minCoordinate, maxCoordinate):
-        lastVertex = self.vertexPositions['vertex'].max()
-        self.vertexPositions.iloc[lastVertex, 0:3] = [minCoordinate, minCoordinate, self.vertexPositions.iloc[lastVertex, 0:3][2]]
-        self.vertexPositions.iloc[lastVertex - 1, 0:3] = [maxCoordinate, maxCoordinate, self.vertexPositions.iloc[lastVertex - 1, 0:3][2]]
+    def ensureLayoutIsSquare(self):
+        lastVertexId = self.vertexPositions['vertex'].max()
+        penultimum_vertex_id = lastVertexId - 1
+        self.vertexPositions.iloc[lastVertexId, 0:3] = [self.min, self.min, self.vertexPositions.iloc[lastVertexId, 0:3][2]]
+        self.vertexPositions.iloc[penultimum_vertex_id, 0:3] = [self.max, self.max, self.vertexPositions.iloc[penultimum_vertex_id, 0:3][2]]
 
     def calculateVerticesSize(self, inDegrees, medVertexSize, maxVertexSize):
         targetMedian = self.medianPixelDistance * medVertexSize
@@ -87,7 +85,7 @@ class VisualLayout:
 
         vertexXY = vertexXY.rename(columns={'x': 'sourceX', 'y': 'sourceY'})
 
-        graphPositions = self.graph.edgeIdsToAmountCudf \
+        graphPositions = self.graph.edge_ids_to_amount_cudf \
             .merge(vertexXY, left_on=['sourceId'], right_on=['vertex']) \
             .drop(columns=['vertex'])
 
@@ -151,3 +149,16 @@ class VisualLayout:
         layout["x"] = x
         layout["y"] = y
         return layout
+
+    def generate_shapes(self):
+
+        # idex = VertexService.get_by_type(graph_id, 'idex', db)
+        # dex = VertexService.get_by_type(graph_id, 'dex', db)
+
+        # dex.extend(idex)
+        vertex_shapes = ['double_square'] * len(self.graph.address_to_id)
+        # for vertex in dex:
+        #     match = self.address_to_id[self.address_to_id['address'] == vertex.eth]
+        #     index = match['vertex'].values[0]
+        #     vertex_shapes[index] = VerticesLabels.EXCHANGE
+        return vertex_shapes

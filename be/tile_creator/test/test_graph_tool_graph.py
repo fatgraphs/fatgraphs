@@ -5,8 +5,9 @@ from be.tile_creator.src.graph.gt_token_graph import GraphToolTokenGraph
 from be.tile_creator.src.graph.token_graph import TokenGraph
 from be.tile_creator.src.layout.visual_layout import VisualLayout
 from be.tile_creator.src.metadata.token_graph_metadata import TokenGraphMetadata
-from be.tile_creator.test.constants import TEST_DATA, TEST_DIR
-from gtm import getFinalConfigurations
+from be.tile_creator.src.render.transparency_calculator import TransparencyCalculator
+from be.tile_creator.test.constants import TEST_DATA
+from be.gtm import getFinalConfigurations
 
 
 class TestGraphToolGraph(unittest.TestCase):
@@ -19,8 +20,11 @@ class TestGraphToolGraph(unittest.TestCase):
         cls.graph = TokenGraph(TEST_DATA, {'dtype': {'amount': object}})
         defaultConfig = getFinalConfigurations({'--csv': TEST_DATA},  "test_graph")
         cls.layout = VisualLayout(cls.graph, defaultConfig)
+        cls.transparencyCalculators = TransparencyCalculator(cls.layout.max - cls.layout.min, defaultConfig)
+        cls.layout.edgeTransparencies = cls.transparencyCalculators.calculateEdgeTransparencies(
+            cls.layout.edgeLengths)
         metadata = TokenGraphMetadata(cls.graph, cls.layout, defaultConfig)
-        cls.gtg = GraphToolTokenGraph(cls.graph.edgeIdsToAmount,
+        cls.gtg = GraphToolTokenGraph(cls.graph.edge_ids_to_amount,
                                       cls.layout,
                                       metadata,
                                       defaultConfig['curvature'])

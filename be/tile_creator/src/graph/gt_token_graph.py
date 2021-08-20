@@ -1,5 +1,5 @@
 from graph_tool import Graph
-
+import numpy as np
 
 class GraphToolTokenGraph:
     '''
@@ -21,8 +21,12 @@ class GraphToolTokenGraph:
         self.makeBezierPoints()
         # edge transparency needs to be populated at run-time
         self.edgeTransparencies = []
+        rgba = [[1.0] * len(visualLayout.edgeTransparencies[0])] * 4
+
         for zl in range(0, metadata.getZoomLevels()):
             self.edgeTransparencies.append(self.g.new_edge_property("vector<float>"))
+            rgba[3] = list(visualLayout.edgeTransparencies[zl].to_numpy()) # set alpha based on zoom
+            self.edgeTransparencies[zl].set_2d_array(np.array(rgba))
 
     def makeBezierPoints(self):
         self.controlPoints = self.g.new_edge_property('vector<float>')

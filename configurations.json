@@ -19,14 +19,5 @@
   "labelsHome" : "/home/carlo/tokengallery/data/labels.csv",
   "graphsHome": "be/graph-maps",
   "verticesMetadataFileName": "vertices_metadata.csv",
-  "graphMetadataFileName": "graph_metadata.csv",
-  "tileSize": 2048,
-  "zoomLevels": 3,
-  "minTransparency": 0.01,
-  "maxTransparency": 0.1,
-  "stdTransparencyAsPercentage": 0.5,
-  "maxEdgeThickness": 8,
-  "minEdgeThickness": 1,
-  "bgColor": "black",
-  "initialZoom" : 0
+  "graphMetadataFileName": "graph_metadata.csv"
 }

@@ -11,7 +11,7 @@ from be.tile_creator.src.render.transparency_calculator import TransparencyCalcu
 from be.tile_creator.src.metadata.token_graph_metadata import TokenGraphMetadata
 from be.tile_creator.test.constants import TEST_DATA, TEST_OUTPUT_DIR, TEST_REFERENCE_OUTPUT_DIR, TEST_DIR
 from be.utils.utils import compareImages, isImage, ASCII_N, mergeTiles, toCv
-from gtm import getFinalConfigurations
+from be.gtm import getFinalConfigurations
 
 
 class TestRenderer(unittest.TestCase):
@@ -33,15 +33,15 @@ class TestRenderer(unittest.TestCase):
 
         cls.layout = VisualLayout(cls.graph, defaultConfig)
         metadata = TokenGraphMetadata(cls.graph, cls.layout, defaultConfig)
-        cls.gtg = GraphToolTokenGraph(cls.graph.edgeIdsToAmount,
-                                      cls.layout,
-                                      metadata,
-                                      defaultConfig['curvature'])
         cls.transparencyCalculators = TransparencyCalculator(cls.layout.max - cls.layout.min, defaultConfig)
         cls.layout.edgeTransparencies = cls.transparencyCalculators.calculateEdgeTransparencies(
             cls.layout.edgeLengths)
-        cls.tileRenderer = TilesRenderer(cls.gtg, cls.layout, metadata,
-                                          cls.transparencyCalculators, defaultConfig)
+        cls.gtg = GraphToolTokenGraph(cls.graph.edge_ids_to_amount,
+                                      cls.layout,
+                                      metadata,
+                                      defaultConfig['curvature'])
+
+        cls.tileRenderer = TilesRenderer(cls.gtg,  metadata, defaultConfig)
 
     def test_initialisation(cls):
         cls.assertIsNotNone(cls.tileRenderer)
