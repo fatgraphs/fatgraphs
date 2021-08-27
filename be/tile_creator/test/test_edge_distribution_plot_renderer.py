@@ -4,9 +4,9 @@ from numpy.random import randint
 
 from be.tile_creator.src.graph.token_graph import TokenGraph
 from be.tile_creator.src.layout.visual_layout import VisualLayout
+from be.tile_creator.src.new_way.test.fixtures import TEST_DATA, TEST_DIR
 from be.tile_creator.src.render.edge_distribution_plot_renderer import EdgeDistributionPlotRenderer
 from be.tile_creator.src.render.transparency_calculator import TransparencyCalculator
-from be.tile_creator.test.constants import TEST_DATA, TEST_DIR
 from be.utils.utils import calculateDiagonalSquareOfSide
 from be.gtm import getFinalConfigurations
 

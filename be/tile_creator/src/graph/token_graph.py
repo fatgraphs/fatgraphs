@@ -1,8 +1,8 @@
 import cudf
-import cugraph
+from cugraph import Graph
 import pandas as pd
 
-from be.tile_creator.src.preprocessor import DataPreprocessor
+from be.tile_creator.src.new_way.preprocessor import DataPreprocessor
 
 
 class TokenGraph:
@@ -52,7 +52,7 @@ class TokenGraph:
 
 
     def makeGraphGpuFrame(self):
-        graph = cugraph.Graph()
+        graph = Graph()
         graph.from_cudf_edgelist(self.edge_ids_to_amount_cudf, source='sourceId', destination='targetId')
         return graph
 

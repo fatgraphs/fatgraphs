@@ -12,7 +12,7 @@ from be.configuration import SRID
 ASCII_N = 110
 
 
-def shiftAndScale(originalValues, targetMedian, targetMax):
+def shiftAndScale(originalValues, targetMedian, targetMax, MINIMUM = 0.000001):
     """
     Scales a list of values to a new range.
     :param originalValues: list-like object of values that we intend to scale to a different range
@@ -26,8 +26,8 @@ def shiftAndScale(originalValues, targetMedian, targetMax):
     > [ 1, 2.5, 5, 7.5, 10. 12.5, 15, 17.5, 20 ]
 
     """
-
-    originalValues = list(originalValues)
+    if not type(originalValues) == np.ndarray and not type(originalValues) == pd.Series:
+        originalValues = originalValues.get()
 
     originalMedian = np.median(originalValues)
     medToMax = max(list(originalValues)) - originalMedian
@@ -36,7 +36,6 @@ def shiftAndScale(originalValues, targetMedian, targetMax):
     shiftedValues = originalValues - originalMedian
     scaledAndShiftedValues = shiftedValues * (targetMedToMax / medToMax) + targetMedian
     # TODO define a better minimum
-    MINIMUM = 0.000001
     # if MINIMUM > target_max:
     #     raise Exception("Minimum is greater than target_max, something is wrong.")
     scaledAndShiftedValues = np.clip(scaledAndShiftedValues, MINIMUM, max(2, targetMax))
@@ -215,7 +214,7 @@ def wktToXYList(wkt):
     return [float(p[0]), float(p[1])]
 
 
-def convertGraphCoordinateToMap(sourceX, sourceY, targetX, targetY,
+def convert_graph_coordinate_to_map(sourceX, sourceY, targetX, targetY,
                                     sourceXPixel, sourceYPixel, targetXPixel, targetYPixel,
                                     tileSize, minCoordinate, maxCoordinate):
     """

@@ -54,3 +54,8 @@ CREATE TABLE IF NOT EXISTS tg_vertex
             REFERENCES tg_graphs (id)
 ) PARTITION BY LIST (graph_id);
 
+CREATE TABLE IF NOT EXISTS tg_account_type(
+    vertex text not null unique,
+    type smallint
+);
+

@@ -2,9 +2,9 @@ import math
 import unittest
 import numpy as np
 import pandas as pd
+from be.tile_creator.src.new_way.test.fixtures import TEST_DATA
 
 from be.tile_creator.src.render.transparency_calculator import TransparencyCalculator
-from be.tile_creator.test.constants import TEST_DATA
 from be.utils.utils import calculateDiagonalSquareOfSide, findIndexOfNearest
 from be.gtm import getFinalConfigurations
 

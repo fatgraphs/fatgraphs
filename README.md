@@ -14,16 +14,22 @@ your specs, generate the command at the following url: https://rapids.ai/start.h
 To find out your cuda version conider using the command `nvidia-smi`.
 Python version should be python 3.8
 
-We will now assume that an Anaconda virtual environment called `rapids-0.18` exists in your system
+The following command should work on Ubuntu 20:
+
+`conda create -n rapids-21.08 -c rapidsai -c nvidia -c conda-forge -c anaconda \
+    rapids=21.08 python=3.8 cudatoolkit=11.2 flask flask-restx flask-cors flask_accepts geopandas graph-tool marshmallow matplotlib numpy pandas \
+    pillow psycopg2 pytest scikit-image sqlalchemy geoalchemy2 mypy_extensions`
+
+We will now assume that an Anaconda virtual environment called `rapids-21.08` exists in your system
 (you can call it something else).
 
-With the v.env active run
-`pip install -n rapids-0.18 opencv-python flask flask_cors flask_restx sqlalchemy geoalchemy2 psycopg2 flask_accepts`
+Some packages are not hosted by any Anaconda channels:
+
 Since the tests perform image comparisons between an output and a desired model, we need to have the open-cv library.
-To work with the postgres GIS extension from python you also need geoalchemy and psycopg.
-Your virtual environment should have all the required packages given that default anaconda environments come with many of
-the libraries we need pre-installed.
-If you notice that something is missing please use pip install to add missing dependencies.
+You can install it with
+`pip install opencv-python`
+We also use flask_accepts for input/output validation on the server endpoints.
+`pip install flask_accepts`
 
 ### Tests
 To run the `tile_creator` tests you need to have the folder `be/tile_creator/test/data` populated with the appropriate files.

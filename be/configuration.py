@@ -1,6 +1,6 @@
+import json
 import multiprocessing
 import os
-import json
 
 this_file_dir = os.path.dirname(os.path.realpath(__file__))
 data_folder = os.path.join(this_file_dir, '../data')
@@ -24,9 +24,15 @@ LABELS_TABLE_ETH = 'eth'
 LABELS_TABLE_LABEL = 'label'
 LABELS_TABLE_TYPE = 'type'
 
-
-#GIS CONFIGURATIONS
+# GIS CONFIGURATIONS
 SRID = 3857
+
+FA2_OPTIONS = {'max_iter': 500,
+                             'strong_gravity_mode': True,
+                             'barnes_hut_theta': 1.2,
+                             'outbound_attraction_distribution': False,
+                             'gravity': 1,
+                             'scaling_ratio': 1}
 
 def load_configurations():
     join = os.path.join(this_file_dir, "../configurations.json")
@@ -36,3 +42,15 @@ def load_configurations():
 
 
 CONFIGURATIONS = load_configurations()
+
+def internal_id(source_or_target):
+    if source_or_target == "source":
+        return 'source_' + CONFIGURATIONS['vertex_internal_id']
+    if source_or_target == "target":
+        return 'target_' + CONFIGURATIONS['vertex_internal_id']
+
+def external_id(source_or_target):
+    if source_or_target == "source":
+        return 'source_' + CONFIGURATIONS['vertex_external_id']
+    if source_or_target == "target":
+        return 'target_' + CONFIGURATIONS['vertex_external_id']

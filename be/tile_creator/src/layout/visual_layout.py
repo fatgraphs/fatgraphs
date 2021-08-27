@@ -3,7 +3,7 @@ import numpy as np
 from cuml.neighbors.nearest_neighbors import NearestNeighbors
 import cudf
 
-from be.utils.utils import shiftAndScale, convertGraphCoordinateToMap
+from be.utils.utils import shiftAndScale, convert_graph_coordinate_to_map
 
 
 class VisualLayout:
@@ -41,8 +41,7 @@ class VisualLayout:
                                                           config['max_edge_thickness'])
 
     def runForceAtlas2(self, gpuGraph):
-        if not isinstance(gpuGraph, cugraph.structure.graph.Graph):
-            raise TypeError("The cuGraph implementation of Force Atlas requires a gpu frame")
+
         # layout: x y vertex
         layout = cugraph.layout.force_atlas2(gpuGraph, **self.defaultForceAtlas2Options)
         layout = layout.to_pandas()
@@ -100,14 +99,14 @@ class VisualLayout:
         return graphPositions
 
     def convertToPixelSpace(self, tileSize, minCoordinate, maxCoordinate):
-        tileCoordinates = self.edgeIdsToPositions.apply_rows(convertGraphCoordinateToMap,
-                                                            incols=['sourceX', 'sourceY', 'targetX',
+        tileCoordinates = self.edgeIdsToPositions.apply_rows(convert_graph_coordinate_to_map,
+                                                             incols=['sourceX', 'sourceY', 'targetX',
                                                                     'targetY'],
-                                                            outcols=dict(sourceXPixel=np.float64,
+                                                             outcols=dict(sourceXPixel=np.float64,
                                                                          sourceYPixel=np.float64,
                                                                          targetXPixel=np.float64,
                                                                          targetYPixel=np.float64),
-                                                            kwargs={'tileSize': tileSize,
+                                                             kwargs={'tileSize': tileSize,
                                                                     'minCoordinate': minCoordinate,
                                                                     'maxCoordinate': maxCoordinate})
         return tileCoordinates

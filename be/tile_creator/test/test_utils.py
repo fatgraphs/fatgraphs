@@ -1,7 +1,7 @@
 import os
 import unittest
+from be.tile_creator.src.new_way.test.fixtures import IMG_SIMILARITY_DIR
 
-from be.tile_creator.test.constants import IMG_SIMILARITY_DIR
 from be.utils.utils import compareImages, isImage
 
 

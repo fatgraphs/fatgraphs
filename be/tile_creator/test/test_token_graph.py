@@ -1,7 +1,7 @@
 import unittest
+from be.configuration import CONFIGURATIONS
 from be.tile_creator.src.graph.token_graph import TokenGraph
-from be.tile_creator.test.constants import TEST_DATA, PREPROCESSED_EDGES, RAW_EDGES, UNIQUE_ADDRESSES, FAKE_NODES, \
-    FAKE_EDGES
+from be.tile_creator.src.new_way.test.fixtures import TEST_DATA, RAW_EDGES, FAKE_EDGES, PREPROCESSED_EDGES, UNIQUE_ADDRESSES, FAKE_NODES
 
 
 class TestTokenGraph(unittest.TestCase):
@@ -34,8 +34,8 @@ class TestTokenGraph(unittest.TestCase):
         highest_id = cls.graph.address_to_id['vertex'].max()
         fake_address_1 = cls.graph.address_to_id.where(cls.graph.address_to_id.vertex == highest_id - 1)['address'].dropna().values[0]
         fake_address_2 = cls.graph.address_to_id.where(cls.graph.address_to_id.vertex == highest_id)['address'].dropna().values[0]
-        cls.assertEqual(fake_address_1, cls.graph.preprocessor.FAKE_ADDRESS1)
-        cls.assertEqual(fake_address_2, cls.graph.preprocessor.FAKE_ADDRESS2)
+        cls.assertEqual(fake_address_1, CONFIGURATIONS['fake_vertex_1'])
+        cls.assertEqual(fake_address_2, CONFIGURATIONS['fake_vertex_2'])
 
     def test_edge_to_amount_map_is_equivalent_to_the_cudf_version(cls):
         cls.assertIsNotNone(cls.graph.edge_ids_to_amount_cudf)

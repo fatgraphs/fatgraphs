@@ -16,8 +16,18 @@
     "recentMetadataSearches": "searches/",
     "addVertexMetadata": "vertex-metadata/create"
   },
-  "labelsHome" : "/home/carlo/tokengallery/data/labels.csv",
+  "labelsHome": "/home/carlo/tokengallery/data/labels.csv",
+  "account_type_home": {
+    "eoa": "/home/carlo/tokengallery/data/account_types/EOA.csv",
+    "contracts": "/home/carlo/tokengallery/data/account_types/contracts.csv"
+  },
   "graphsHome": "be/graph-maps",
   "verticesMetadataFileName": "vertices_metadata.csv",
-  "graphMetadataFileName": "graph_metadata.csv"
+  "graphMetadataFileName": "graph_metadata.csv",
+  "fake_vertex_1": "0x123456789abcdef01",
+  "fake_vertex_2": "0x123456789abcdef02",
+  "fake_vertex_amount": 0.00000001,
+  "fake_vertex_block_number": 1,
+  "vertex_external_id": "vertex",
+  "vertex_internal_id": "index"
 }
