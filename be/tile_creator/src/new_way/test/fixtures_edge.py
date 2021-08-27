@@ -21,14 +21,9 @@ def edge_data_with_edges(datasource, edge_data, vertex_data_id):
 
 
 @pytest.fixture()
-def edge_data_with_cudf_edges(edge_data_with_edges):
-    edge_data_with_edges.populate_source_target_amount_cudf()
+def edge_data_positions(edge_data_with_edges: EdgeData, vertex_data_positions_fake: VertexData):
+    edge_data_with_edges.set_ids_to_position(vertex_data_positions_fake.get_positions(cudf=True))
     yield edge_data_with_edges
-
-@pytest.fixture()
-def edge_data_positions(edge_data_with_cudf_edges: EdgeData, vertex_data_positions_fake: VertexData):
-    edge_data_with_cudf_edges.set_ids_to_position(vertex_data_positions_fake.get_positions(cudf=True))
-    yield edge_data_with_cudf_edges
 
 @pytest.fixture()
 def edge_data_positions_pixel(edge_data_positions: EdgeData, vertex_data_positions_fake: VertexData):

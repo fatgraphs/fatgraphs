@@ -31,7 +31,7 @@ class TestVertexData:
         assert_all_vertices_in_vertex_data_are_in_file_except_fake_vertices(vertices_from_file, vertices_vertex_data)
         assert_all_vertices_in_file_are_in_vertex_data(vertices_from_file, vertices_vertex_data)
 
-    def test_set_degrees(self, vertex_data_id: VertexData, cudf_graph, edge_data_with_cudf_edges: EdgeData):
+    def test_set_degrees(self, vertex_data_id: VertexData, cudf_graph, edge_data_with_edges: EdgeData):
         assert vertex_data_id.get_degrees() is None
         vertex_data_id.set_degrees(cudf_graph.get_graph())
         assert vertex_data_id.get_degrees() is not None
@@ -41,9 +41,9 @@ class TestVertexData:
 
         assert_each_vertex_has_a_degree(cudf_graph, vertex_data_id)
         for (index, row) in vertex_data_id.get_vertex_to_id().iterrows():
-            calculated_degree = (edge_data_with_cudf_edges.get_source_target_amount()[
+            calculated_degree = (edge_data_with_edges.get_source_target_amount()[
                                      internal_id("source")] == index).sum() + (
-                                        edge_data_with_cudf_edges.get_source_target_amount()[
+                                        edge_data_with_edges.get_source_target_amount()[
                                             internal_id("target")] == index).sum()
 
             set_degree = vertex_data_id.get_degrees().loc[index]['in_degree'] + \

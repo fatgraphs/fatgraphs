@@ -40,8 +40,8 @@ def datasource(csv_path):
 
 
 @pytest.fixture()
-def cudf_graph(edge_data_with_cudf_edges):
-    yield CudfGraph(edge_data_with_cudf_edges.get_source_target_amount(cudf=True))
+def cudf_graph(edge_data_with_edges):
+    yield CudfGraph(edge_data_with_edges.get_source_target_amount())
 
 @pytest.fixture()
 def graph_data():

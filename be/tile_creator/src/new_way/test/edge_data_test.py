@@ -15,33 +15,25 @@ class TestEdgeData:
         for e in [external_id('source'), external_id('target'), 'amount']:
             assert e in edge_data_with_edges.get_source_target_amount().columns
 
-    def test_populate_source_target_amount_cudf(self, edge_data: EdgeData, datasource: DataSource, vertex_data_id: VertexData):
-        edge_data.set_source_target_amount(datasource, vertex_data_id.get_vertex_to_id())
-        assert edge_data.get_source_target_amount(cudf=True) is None
-        edge_data.populate_source_target_amount_cudf()
-        assert edge_data.get_source_target_amount(cudf=True) is not None
-        assert len(edge_data.get_source_target_amount()) == len(edge_data.get_source_target_amount(cudf=True))
-        assert edge_data.get_source_target_amount().equals(edge_data.get_source_target_amount(cudf=True).to_pandas())
-
-    def test_ids_to_positions(self, edge_data_with_cudf_edges: EdgeData, vertex_data_positions: VertexData):
-        assert edge_data_with_cudf_edges.get_ids_to_pos() is None, "at this stage edge data should NOT contain the " \
+    def test_ids_to_positions(self, edge_data_with_edges: EdgeData, vertex_data_positions: VertexData):
+        assert edge_data_with_edges.get_ids_to_pos() is None, "at this stage edge data should NOT contain the " \
                                                                    "ids to position mappings "
-        edge_data_with_cudf_edges.set_ids_to_position(vertex_data_positions.get_positions(cudf=True))
+        edge_data_with_edges.set_ids_to_position(vertex_data_positions.get_positions(cudf=True))
 
-        assert edge_data_with_cudf_edges.get_ids_to_pos() is not None, "at this stage edge data SHOULD contain the " \
+        assert edge_data_with_edges.get_ids_to_pos() is not None, "at this stage edge data SHOULD contain the " \
                                                                    "ids to position mappings "
 
-        assert len(edge_data_with_cudf_edges.get_ids_to_pos()) == len(edge_data_with_cudf_edges.get_source_target_amount())
+        assert len(edge_data_with_edges.get_ids_to_pos()) == len(edge_data_with_edges.get_source_target_amount())
 
-        assert internal_id("source") in edge_data_with_cudf_edges.get_ids_to_pos().columns
-        assert internal_id("target") in edge_data_with_cudf_edges.get_ids_to_pos().columns
-        assert external_id("source") in edge_data_with_cudf_edges.get_ids_to_pos().columns
-        assert external_id("target") in edge_data_with_cudf_edges.get_ids_to_pos().columns
+        assert internal_id("source") in edge_data_with_edges.get_ids_to_pos().columns
+        assert internal_id("target") in edge_data_with_edges.get_ids_to_pos().columns
+        assert external_id("source") in edge_data_with_edges.get_ids_to_pos().columns
+        assert external_id("target") in edge_data_with_edges.get_ids_to_pos().columns
 
-        assert "source_x" in edge_data_with_cudf_edges.get_ids_to_pos().columns
-        assert "target_x" in edge_data_with_cudf_edges.get_ids_to_pos().columns
-        assert "source_y" in edge_data_with_cudf_edges.get_ids_to_pos().columns
-        assert "target_y" in edge_data_with_cudf_edges.get_ids_to_pos().columns
+        assert "source_x" in edge_data_with_edges.get_ids_to_pos().columns
+        assert "target_x" in edge_data_with_edges.get_ids_to_pos().columns
+        assert "source_y" in edge_data_with_edges.get_ids_to_pos().columns
+        assert "target_y" in edge_data_with_edges.get_ids_to_pos().columns
 
     def test_id_to_pixel_position(self, edge_data_positions_pixel: EdgeData):
         assert edge_data_positions_pixel.get_ids_to_pos(pixel=True) is not None
