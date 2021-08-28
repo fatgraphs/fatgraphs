@@ -50,3 +50,8 @@ class GraphService:
         update = graph.update(changes)
         db.commit()
         return update
+
+    @staticmethod
+    def get_vertex_table_name(graph_id: int, db) -> str:
+        graph = GraphService.get_by_id(graph_id)
+        return graph.graph_name + '_' + graph.id
