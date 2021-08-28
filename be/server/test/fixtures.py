@@ -33,3 +33,7 @@ def db(app):
         Base.metadata.drop_all(db.bind)
         db.close()
 
+
+def assert_lists_equal(expected, actual):
+    assert len(actual) == len(expected)
+    assert all([a == b for a, b in zip(actual, expected)])

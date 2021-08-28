@@ -41,8 +41,7 @@ class VisualLayout:
                                                           config['max_edge_thickness'])
 
     def runForceAtlas2(self, gpuGraph):
-        if not isinstance(gpuGraph, cugraph.structure.graph.Graph):
-            raise TypeError("The cuGraph implementation of Force Atlas requires a gpu frame")
+
         # layout: x y vertex
         layout = cugraph.layout.force_atlas2(gpuGraph, **self.defaultForceAtlas2Options)
         layout = layout.to_pandas()
@@ -156,7 +155,8 @@ class VisualLayout:
         # dex = VertexService.get_by_type(graph_id, 'dex', db)
 
         # dex.extend(idex)
-        vertex_shapes = ['double_square'] * len(self.graph.address_to_id)
+        vertex_shapes = ['inactive'] * len(self.graph.address_to_id)
+
         # for vertex in dex:
         #     match = self.address_to_id[self.address_to_id['address'] == vertex.eth]
         #     index = match['vertex'].values[0]
