@@ -2,6 +2,7 @@ from typing import List
 
 from .interface import VertexMetadataInterface
 from .model import VertexMetadata
+from ..graph.service import GraphService
 from ..searches import AUTOCOMPLETE_TERMS_PER_PAGE
 
 
@@ -50,3 +51,8 @@ class VertexMetadataService:
             .offset((page - 1) * AUTOCOMPLETE_TERMS_PER_PAGE) \
             .limit(AUTOCOMPLETE_TERMS_PER_PAGE).all()
         return list(map(lambda e: str(e[0]), unique_terms))
+
+    @staticmethod
+    def merge_with_account_type(db, graph_id: int):
+        table_name = GraphService.get_vertex_table_name(graph_id)
+        # VertexMetadata.

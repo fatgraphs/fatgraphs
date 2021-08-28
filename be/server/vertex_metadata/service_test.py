@@ -95,3 +95,6 @@ def test_get_unique_labels(db: object, vertex_metedata_1_different_id: VertexMet
 
     unique_labels = VertexMetadataService.get_unique_labels(1, db)
     assert len(unique_labels) == 2
+
+def test_merge_account_type(db: object):
+    pass
