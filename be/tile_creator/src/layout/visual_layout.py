@@ -155,7 +155,10 @@ class VisualLayout:
         # dex = VertexService.get_by_type(graph_id, 'dex', db)
 
         # dex.extend(idex)
-        vertex_shapes = ['inactive'] * len(self.graph.address_to_id)
+
+        # vertex_shapes = ['inactive'] * len(self.graph.address_to_id)
+
+        vertex_shapes = ['circle'] * len(self.graph.address_to_id)
 
         # for vertex in dex:
         #     match = self.address_to_id[self.address_to_id['address'] == vertex.eth]
