@@ -73,6 +73,8 @@ def main(configurations):
         column_types = {'pos': Geometry('POINT', srid=SRID)}
         geo_frame.to_sql(vertex_table, engine, if_exists='append', index=False, dtype=column_types)
 
+        visualLayout.vertexShapes = visualLayout.generate_shapes(db, graph_id)
+
 
     print("rendering tiles . . .")
     # this will be GraphToolTokenGraph(vertex_data, edge_data, graph_data)
