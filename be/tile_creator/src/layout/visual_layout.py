@@ -2,6 +2,7 @@ import cugraph
 import numpy as np
 from cuml.neighbors.nearest_neighbors import NearestNeighbors
 import cudf
+from be.server.vertex_metadata.service import VertexMetadataService
 
 from be.utils.utils import shiftAndScale, convert_graph_coordinate_to_map
 
@@ -32,7 +33,7 @@ class VisualLayout:
         self.edgeThickness = self.calculate_edge_thickness(config, graph)
 
         self.edgeTransparencies = {}
-        self.vertexShapes = self.generate_shapes()
+        self.vertexShapes = None
 
     def calculate_edge_thickness(self, config, graph):
         logAmounts = np.log10(
@@ -149,7 +150,7 @@ class VisualLayout:
         layout["y"] = y
         return layout
 
-    def generate_shapes(self):
+    def generate_shapes(self, db, graph_id):
 
         # idex = VertexService.get_by_type(graph_id, 'idex', db)
         # dex = VertexService.get_by_type(graph_id, 'dex', db)
@@ -157,6 +158,8 @@ class VisualLayout:
         # dex.extend(idex)
 
         # vertex_shapes = ['inactive'] * len(self.graph.address_to_id)
+
+        VertexMetadataService.merge_with_account_type(db, graph_id)
 
         vertex_shapes = ['circle'] * len(self.graph.address_to_id)
 
