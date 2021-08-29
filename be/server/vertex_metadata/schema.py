@@ -8,4 +8,5 @@ class VertexMetadataSchema(CamelCaseSchema):
     eth = fields.String()
     type = fields.String()
     label = fields.String()
+    account_type = fields.Integer()
     description = fields.String()

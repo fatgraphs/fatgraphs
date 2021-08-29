@@ -6,4 +6,5 @@ class VertexMetadataInterface(TypedDict, total=False):
     eth: str
     type: str
     value: str
+    account_type: int
     description: str

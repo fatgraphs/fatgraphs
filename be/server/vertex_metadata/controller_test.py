@@ -40,7 +40,10 @@ class TestGraphResource:
     def test_post(self, client: FlaskClient, vertex_metadata_1_param):  # noqa
         with client:
 
-            result = client.post(f"/tokengallery/{BASE_ROUTE}/create", json=vertex_metadata_1_param).get_json()
+            params = {**vertex_metadata_1_param}
+            params.pop('account_type')
+            params['accountType'] = vertex_metadata_1_param['account_type']
+            result = client.post(f"/tokengallery/{BASE_ROUTE}/create", json=params).get_json()
 
             expected = (
                 VertexMetadataSchema()

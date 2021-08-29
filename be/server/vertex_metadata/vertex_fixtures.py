@@ -10,6 +10,7 @@ def vertex_metadata_1_param():
                 eth='test_eth',
                 type='test_type',
                 label='test_label',
+                account_type=0,
                 description='test_description')
 
 
@@ -30,6 +31,7 @@ def vertex_metadata_2_param():
                 eth='test_eth_2',
                 type='test_type_2',
                 label='test_label_2',
+                account_type=0,
                 description='test_description_2')
 
 
