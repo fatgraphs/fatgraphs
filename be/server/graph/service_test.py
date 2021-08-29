@@ -24,5 +24,5 @@ def test_get_vertex_table_name(db: object):
     a: Graph = Graph(graph_name='bello')
     db.add(a)
     db.commit()
-    table_name = GraphService.get_vertex_table_name(a.id)
-    assert table_name == a.graph_name + '_' + a.id
+    table_name = GraphService.get_vertex_table_name(a.id, db)
+    assert table_name == a.graph_name + '_' + str(a.id)
