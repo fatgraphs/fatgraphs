@@ -38,7 +38,8 @@ CREATE TABLE IF NOT EXISTS tg_vertex_metadata
     eth         text,
     type        text,
     label       text,
-    description text
+    description text,
+    icon text
 );
 CREATE INDEX IF NOT EXISTS eth_index ON tg_vertex_metadata (eth);
 

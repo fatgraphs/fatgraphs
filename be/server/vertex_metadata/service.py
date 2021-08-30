@@ -53,9 +53,22 @@ class VertexMetadataService:
     @staticmethod
     def merge_with_account_type(db, graph_id: int):
         table_name = GraphService.get_vertex_table_name(graph_id, db)
-        query = """SELECT * FROM %(table_name)s
+        query = """SELECT vertex, type FROM %(table_name)s
                     INNER JOIN tg_account_type
                     ON (tg_account_type.vertex = %(table_name)s.eth);"""
         execute = db.bind.engine.execute(query, {'table_name': AsIs(table_name)})
         frame = to_pd_frame(execute)
-        print(123)
+        return frame
+
+
+    @staticmethod
+    def merge_with_types(db, graph_id):
+        table_name = GraphService.get_vertex_table_name(graph_id, db)
+        query = """SELECT eth, icon FROM %(table_name)s
+                    INNER JOIN tg_vertex_metadata
+                    ON (tg_vertex_metadata.eth = %(table_name)s.eth);"""
+        execute = db.bind.engine.execute(query, {'table_name': AsIs(table_name)})
+        result = to_pd_frame(execute)
+        # result = frame[frame.icon.notnull()]
+        result = result.loc[: , ~result.columns.duplicated()]
+        return result

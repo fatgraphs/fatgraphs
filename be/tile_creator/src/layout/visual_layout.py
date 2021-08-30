@@ -5,7 +5,7 @@ import cudf
 from be.server.vertex_metadata.service import VertexMetadataService
 
 from be.utils.utils import shiftAndScale, convert_graph_coordinate_to_map
-
+import time
 
 class VisualLayout:
     defaultForceAtlas2Options = {'max_iter': 500,
@@ -152,19 +152,40 @@ class VisualLayout:
 
     def generate_shapes(self, db, graph_id):
 
-        # idex = VertexService.get_by_type(graph_id, 'idex', db)
-        # dex = VertexService.get_by_type(graph_id, 'dex', db)
+        # assume all inactive
 
-        # dex.extend(idex)
+        vertex_shapes = ['inactive_fake'] * len(self.graph.address_to_id)
 
-        # vertex_shapes = ['inactive'] * len(self.graph.address_to_id)
+        start_time = time.monotonic()
+        # assume vertices with an account  type are unlabelled
+        frame = VertexMetadataService.merge_with_account_type(db, graph_id)
+        print('seconds 1 : ', time.monotonic() - start_time)
 
-        VertexMetadataService.merge_with_account_type(db, graph_id)
+        start_time = time.monotonic()
+        # TODO faster with left merge
+        re = self.graph.address_to_id.merge(frame, left_on='address', right_on='vertex', how='left')
+        print('seconds 2 : ', time.monotonic() - start_time)
+        for (index, row) in frame.iterrows():
+            match = self.graph.address_to_id[self.graph.address_to_id['address'] == row.vertex]
+            if not match.empty:
+                index = match['vertex'].values[0]
+                vertex_shapes[index] = {0: 'eoa_unlabelled', 1: 'ca_unlabelled'}[row.type]
 
-        vertex_shapes = ['circle'] * len(self.graph.address_to_id)
 
-        # for vertex in dex:
-        #     match = self.address_to_id[self.address_to_id['address'] == vertex.eth]
-        #     index = match['vertex'].values[0]
-        #     vertex_shapes[index] = VerticesLabels.EXCHANGE
+        # find vertices with labels
+        # TODO what if a vertex NOT present in the account_type table is then found in type_labels? keep fake_incative
+        frame = VertexMetadataService.merge_with_types(db, graph_id)
+        for (index, row) in frame.iterrows():
+            match = self.graph.address_to_id[self.graph.address_to_id['address'] == row.eth]
+            if not match.empty:
+                index = match['vertex'].values[0]
+                vertex_shapes[index] = vertex_shapes[index].replace('unlabelled', 'labelled')
+
+        # find vertices with custom icons
+        frame = frame[frame.icon.notnull()]
+        for (index, row) in frame.iterrows():
+            match = self.graph.address_to_id[self.graph.address_to_id['address'] == row.eth]
+            if not match.empty:
+                index = match['vertex'].values[0]
+                vertex_shapes[index] = row['icon']
         return vertex_shapes

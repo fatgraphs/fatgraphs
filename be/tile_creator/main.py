@@ -40,12 +40,14 @@ def main(configurations):
     visualLayout.edgeTransparencies = transparencyCalculator.calculateEdgeTransparencies(
         visualLayout.edgeLengths)
 
-    print("generating vertices shapes . . .")
+
     metadata = TokenGraphMetadata(graph, visualLayout, configurations)
 
 
     with SessionLocal() as db:
         from be.server.graph import Graph
+
+        print("updating DB . . .")
 
         # save graph metadata to db
         new_graph = GraphService.create(metadata.get_config_dict(), db)
@@ -73,6 +75,7 @@ def main(configurations):
         column_types = {'pos': Geometry('POINT', srid=SRID)}
         geo_frame.to_sql(vertex_table, engine, if_exists='append', index=False, dtype=column_types)
 
+        print("generating vertices shapes . . .")
         visualLayout.vertexShapes = visualLayout.generate_shapes(db, graph_id)
 
 

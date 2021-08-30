@@ -16,7 +16,7 @@
     "recentMetadataSearches": "searches/",
     "addVertexMetadata": "vertex-metadata/create"
   },
-  "labelsHome": "/home/carlo/tokengallery/data/labels.csv",
+  "labelsHome": "/home/carlo/tokengallery/data/temp_test_labels.csv",
   "account_type_home": {
     "eoa": "/home/carlo/tokengallery/data/account_types/EOA.csv",
     "contracts": "/home/carlo/tokengallery/data/account_types/contracts.csv"

@@ -33,7 +33,8 @@ class GraphList extends React.Component {
 
     openGraph(graph) {
         const {match, location, history} = this.props;
-        history.push("/graph/" + graph.name + '/' + graph.id);
+        console.log(">>>> ", graph)
+        history.push("/graph/" + graph.graphName + '/' + graph.id);
     }
 
     render() {

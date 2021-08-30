@@ -43,7 +43,7 @@ def getFinalConfigurations(args, graph_name):
         "max_vertex_size": float(args.get("--maxSize", 10)),
         "med_vertex_size": float(args.get("--medSize", 0.5)),
         "curvature": float(args.get("--curvature", 0.1)),
-        "bg_color": "black",
+        "bg_color": "grey",
         "source": args['--csv'],
         "labels": args.get('--labels', None)
     }
