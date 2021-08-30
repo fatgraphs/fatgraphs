@@ -46,10 +46,10 @@ CREATE INDEX IF NOT EXISTS eth_index ON tg_vertex_metadata (eth);
 
 CREATE TABLE IF NOT EXISTS tg_vertex
 (
-    graph_id int not null,
-    eth      text,
-    size     real,
-    pos      Geometry('Point', 3857),
+    graph_id    int not null,
+    vertex      text,
+    size        real,
+    pos         Geometry('Point', 3857),
     CONSTRAINT fk_graph_id
         FOREIGN KEY (graph_id)
             REFERENCES tg_graphs (id)
