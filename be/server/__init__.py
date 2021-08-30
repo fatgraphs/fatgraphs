@@ -11,7 +11,7 @@ from werkzeug.routing import IntegerConverter
 # db = SQLAlchemy()
 from be.server.config import config_by_name
 
-env = os.getenv("FLASK_ENV") or "development"
+env = os.getenv("FLASK_ENV") or "test"
 configs = config_by_name[env]
 
 uri = configs.SQLALCHEMY_DATABASE_URI
