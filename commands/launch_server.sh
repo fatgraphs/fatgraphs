@@ -17,7 +17,7 @@ trap "cleanup" INT SIGTERM SIGQUIT
 
 # run server
 export FLASK_APP=../be/server/server.py
-flask run &
+FLASK_ENV='development' flask run &
 pids+=("$!")
 echo $pids
 wait
