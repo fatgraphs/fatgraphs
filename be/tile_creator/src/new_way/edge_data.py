@@ -6,7 +6,7 @@ from be.configuration import CONFIGURATIONS, internal_id, external_id
 from be.tile_creator.src.new_way.datasource import DataSource
 from be.tile_creator.src.new_way.graph_data import GraphData
 from be.tile_creator.src.new_way.gtm_args import GtmArgs
-from be.utils.utils import shiftAndScale
+from be.utils import shift_and_scale
 
 
 class EdgeData():
@@ -84,7 +84,7 @@ class EdgeData():
         def calculateEdgesThickness(amounts, medEdgeThickness, maxEdgeThickness):
             target_median = graph_data.get_median_pixel_distance() * medEdgeThickness
             target_max = graph_data.get_median_pixel_distance() * maxEdgeThickness
-            return shiftAndScale(amounts, target_median, target_max, 1.0)
+            return shift_and_scale(amounts, target_median, target_max, 1.0)
 
         logAmounts = np.log10(
             self.source_target_amount_cudf['amount'].values + 10)  # amounts can be huge numbers, reduce the range

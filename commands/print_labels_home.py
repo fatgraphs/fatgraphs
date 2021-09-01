@@ -1,5 +1,9 @@
 #!/usr/bin/python
-import json
+import json, os
 raw_configurations = open("../configurations.json")
-labelsHome = json.load(raw_configurations)['labelsHome']
-print(labelsHome)
+configurations = json.load(raw_configurations)
+print(os.path.join(
+    configurations['home'],
+    configurations['labelsHome']
+    )
+)

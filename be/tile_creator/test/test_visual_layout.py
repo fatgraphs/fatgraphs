@@ -92,8 +92,8 @@ class TestVisualLayout(unittest.TestCase):
         edgeLengths = cls.layout.edgeLengths
         vertexPositions = cls.layout.vertexPositions
         for index, edge in cls.graph.edge_ids_to_amount.iterrows():
-            source = vertexPositions[['x', 'y']].iloc[int(edge.sourceId)]
-            target = vertexPositions[['x', 'y']].iloc[int(edge.targetId)]
+            source = vertexPositions[['x', 'y']].iloc[int(edge.source_index)]
+            target = vertexPositions[['x', 'y']].iloc[int(edge.target_index)]
             source = [source['x'], source['y']]
             target = [target['x'], target['y']]
             expectedEdgeLength = math.dist(source, target)
@@ -101,7 +101,7 @@ class TestVisualLayout(unittest.TestCase):
             cls.assertAlmostEqual(expectedEdgeLength, actualEdgeLength, delta=0.001)
 
     def getPositionFakeNodes(cls):
-        maxId = cls.graph.address_to_id['vertex'].max()
+        maxId = cls.graph.address_to_id['index'].max()
         maxId2 = maxId - 1
         topLeftVertexPos = list(cls.layout.vertexPositions[maxId:maxId + 1][['x', 'y']].values[0])
         bottomRightVertexPos = list(cls.layout.vertexPositions[maxId2:maxId2 + 1][['x', 'y']].values[0])

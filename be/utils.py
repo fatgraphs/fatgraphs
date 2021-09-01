@@ -12,7 +12,7 @@ from be.configuration import SRID
 ASCII_N = 110
 
 
-def shiftAndScale(originalValues, targetMedian, targetMax, MINIMUM = 0.000001):
+def shift_and_scale(originalValues, targetMedian, targetMax, MINIMUM = 0.000001):
     """
     Scales a list of values to a new range.
     :param originalValues: list-like object of values that we intend to scale to a different range
@@ -22,7 +22,7 @@ def shiftAndScale(originalValues, targetMedian, targetMax, MINIMUM = 0.000001):
 
 
     example:
-    > shiftAndScale([1,2,3,4,5,6,7,8,9], 10, 20)
+    > shift_and_scale([1,2,3,4,5,6,7,8,9], 10, 20)
     > [ 1, 2.5, 5, 7.5, 10. 12.5, 15, 17.5, 20 ]
 
     """

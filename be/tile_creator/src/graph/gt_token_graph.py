@@ -1,9 +1,10 @@
+import os
 import cairo
 from graph_tool import Graph
 import numpy as np
 from os import listdir
 from os.path import isfile, join
-from be.configuration import internal_id
+from be.configuration import internal_id, CONFIGURATIONS
 
 
 class GraphToolTokenGraph:
@@ -46,27 +47,49 @@ class GraphToolTokenGraph:
         self.g.add_edge_list(
             edgeIdsToAmount[[internal_id('target'), internal_id('source')]].values,
             hashed=False)
+
     def make_shapes(self, string_shapes):
-        eoa = cairo.ImageSurface.create_from_png("assets/vertex_icons/generic/eoa.png")
-        eoa_labelled = cairo.ImageSurface.create_from_png("assets/vertex_icons/generic/eoa_labelled.png")
-        ca = cairo.ImageSurface.create_from_png("assets/vertex_icons/generic/ca.png")
-        ca_labelled = cairo.ImageSurface.create_from_png("assets/vertex_icons/generic/eoa_labelled.png")
-        inactive_fake = cairo.ImageSurface.create_from_png("assets/vertex_icons/generic/inactive_fake.png")
 
-        generic_icons_mapper = {
-            'eoa_unlabelled': eoa,
-            'eoa_labelled': eoa_labelled,
-            'ca_unlabelled': ca,
-            'ca_labelled': ca_labelled,
-            'inactive_fake': inactive_fake
-        }
+        def get_token_icon_mapper():
+            fs = listdir(join(CONFIGURATIONS['home'], CONFIGURATIONS['icons']['token_icons_home']))
 
-        token_icon_names = [f for f in listdir("assets/vertex_icons/tokens") if isfile(join("assets/vertex_icons/tokens", f))]
-        token_icon_paths = [cairo.ImageSurface.create_from_png(join("assets/vertex_icons/tokens", f))
-            for f in listdir("assets/vertex_icons/tokens") if isfile(join("assets/vertex_icons/tokens", f))]
+            token_icon_names = [f for f in fs if isfile(join(CONFIGURATIONS['home'],
+                CONFIGURATIONS['icons']['token_icons_home'], f))]
 
-        icon_mapper = {**generic_icons_mapper, **dict(zip(token_icon_names, token_icon_paths))}
+            token_icon_paths = [cairo.ImageSurface.create_from_png(join(CONFIGURATIONS['home'], CONFIGURATIONS['icons']['token_icons_home'], f))
+                    for f in fs if isfile(join(CONFIGURATIONS['home'],
+                CONFIGURATIONS['icons']['token_icons_home'], f))]
 
-        vals = list(map(lambda e: icon_mapper[e], string_shapes))
+            token_icon_mapper = dict(zip(token_icon_names, token_icon_paths))
+            return token_icon_mapper
 
-        return self.g.new_vertex_property('object', vals=vals)
+        def get_icons_mappper():
+            eoa = cairo.ImageSurface.create_from_png(
+                    os.path.join(CONFIGURATIONS['home'],
+                    CONFIGURATIONS['icons']["eoa"]))
+            eoa_labelled = cairo.ImageSurface.create_from_png(
+                    os.path.join(CONFIGURATIONS['home'],
+                    CONFIGURATIONS['icons']["eoa_labelled"]))
+            ca = cairo.ImageSurface.create_from_png(
+                    os.path.join(CONFIGURATIONS['home'],
+                    CONFIGURATIONS['icons']["ca"]))
+            ca_labelled = cairo.ImageSurface.create_from_png(
+                    os.path.join(CONFIGURATIONS['home'],
+                    CONFIGURATIONS['icons']["ca_labelled"]))
+            inactive_fake = cairo.ImageSurface.create_from_png(
+                    os.path.join(CONFIGURATIONS['home'],
+                    CONFIGURATIONS['icons']["inactive_fake"]))
+            result = {
+                    'eoa_unlabelled': eoa,
+                    'eoa_labelled': eoa_labelled,
+                    'ca_unlabelled': ca,
+                    'ca_labelled': ca_labelled,
+                    'inactive_fake': inactive_fake
+                }
+            return result
+
+        generic_icons_mapper = get_icons_mappper()
+        token_icon_mapper = get_token_icon_mapper()
+        icon_mapper = {**generic_icons_mapper, **token_icon_mapper}
+        vertex_cairo_surfaces = list(map(lambda e: icon_mapper[e], string_shapes))
+        return self.g.new_vertex_property('object', vals=vertex_cairo_surfaces)

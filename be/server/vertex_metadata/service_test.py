@@ -15,8 +15,8 @@ def test_get_by_eth(db: object, vertex_metedata_1: VertexMetadata, vertex_meteda
     vertex_metedata_2.add(db)
     db.commit()
 
-    assert_get_by_eth([vertex_metedata_1], vertex_metedata_1.eth)
-    assert_get_by_eth([vertex_metedata_2], vertex_metedata_2.eth)
+    assert_get_by_eth([vertex_metedata_1], vertex_metedata_1.vertex)
+    assert_get_by_eth([vertex_metedata_2], vertex_metedata_2.vertex)
     assert_get_by_eth([], 'eth_not_present')
 
 def test_get_by_label(db: object, vertex_metedata_1: VertexMetadata, vertex_metedata_2: VertexMetadata):
@@ -51,7 +51,7 @@ def test_get_by_type(db: object, vertex_metedata_1: VertexMetadata, vertex_meted
 def test_create(db: object, vertex_metadata_1_param: VertexMetadataInterface):
 
     def assert_db_empty():
-        by_eth = VertexMetadataService.get_by_eth(vertex_metadata_1_param['eth'], db)
+        by_eth = VertexMetadataService.get_by_eth(vertex_metadata_1_param['vertex'], db)
         by_label = VertexMetadataService.get_by_label(vertex_metadata_1_param['label'], db)
         by_type = VertexMetadataService.get_by_type(vertex_metadata_1_param['type'], db)
         assert len(by_eth) == len(by_type) == len(by_label) == 0
@@ -60,7 +60,7 @@ def test_create(db: object, vertex_metadata_1_param: VertexMetadataInterface):
 
     VertexMetadataService.create(vertex_metadata_1_param, db)
 
-    by_eth = VertexMetadataService.get_by_eth(vertex_metadata_1_param['eth'], db)
+    by_eth = VertexMetadataService.get_by_eth(vertex_metadata_1_param['vertex'], db)
     by_label = VertexMetadataService.get_by_label(vertex_metadata_1_param['label'], db)
     by_type = VertexMetadataService.get_by_type(vertex_metadata_1_param['type'], db)
 
@@ -76,7 +76,7 @@ def test_get_unique_types(db: object, vertex_metedata_1_different_id: VertexMeta
     assert len(unique_types) == 1
     assert vertex_metedata_1.type in unique_types
 
-    VertexMetadata(id=1234, type="something new", eth=123445).add(db)
+    VertexMetadata(id=1234, type="something new", vertex=123445).add(db)
     db.commit()
 
     unique_types = VertexMetadataService.get_unique_types(1, db)
@@ -90,7 +90,7 @@ def test_get_unique_labels(db: object, vertex_metedata_1_different_id: VertexMet
     assert len(unique_labels) == 1
     assert vertex_metedata_1.label in unique_labels
 
-    VertexMetadata(id=1234, type="something new", eth=123445).add(db)
+    VertexMetadata(id=1234, type="something new", vertex=123445).add(db)
     db.commit()
 
     unique_labels = VertexMetadataService.get_unique_labels(1, db)

@@ -1,4 +1,5 @@
 {
+  "home": "/home/carlo/tokengallery/",
   "endpoints": {
     "base": "http://127.0.0.1:5000/tokengallery/",
     "availableGraphs": "graph",
@@ -16,7 +17,7 @@
     "recentMetadataSearches": "searches/",
     "addVertexMetadata": "vertex-metadata/create"
   },
-  "labelsHome": "/home/carlo/tokengallery/data/temp_test_labels.csv",
+  "labelsHome": "data/temp_test_labels.csv",
   "account_type_home": {
     "eoa": "/home/carlo/tokengallery/data/account_types/EOA.csv",
     "contracts": "/home/carlo/tokengallery/data/account_types/contracts.csv"
@@ -29,5 +30,13 @@
   "fake_vertex_amount": 0.00000001,
   "fake_vertex_block_number": 1,
   "vertex_external_id": "vertex",
-  "vertex_internal_id": "index"
+  "vertex_internal_id": "index",
+  "icons": {
+    "eoa": "assets/vertex_icons/generic/eoa.png",
+    "eoa_labelled": "assets/vertex_icons/generic/eoa_labelled.png",
+    "ca": "assets/vertex_icons/generic/ca.png",
+    "ca_labelled": "assets/vertex_icons/generic/ca_labelled.png",
+    "inactive_fake": "assets/vertex_icons/generic/inactive_fake.png",
+    "token_icons_home": "assets/vertex_icons/tokens"
+  }
 }

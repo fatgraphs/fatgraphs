@@ -31,9 +31,9 @@ class TestTokenGraph(unittest.TestCase):
         cls.assertEqual(cls.graph.edge_ids_to_amount.shape[0], PREPROCESSED_EDGES + FAKE_EDGES)
 
     def test_fake_nodes_have_highest_ids(cls):
-        highest_id = cls.graph.address_to_id['vertex'].max()
-        fake_address_1 = cls.graph.address_to_id.where(cls.graph.address_to_id.vertex == highest_id - 1)['address'].dropna().values[0]
-        fake_address_2 = cls.graph.address_to_id.where(cls.graph.address_to_id.vertex == highest_id)['address'].dropna().values[0]
+        highest_id = cls.graph.address_to_id['index'].max()
+        fake_address_1 = cls.graph.address_to_id.where(cls.graph.address_to_id['index'] == highest_id - 1)['vertex'].dropna().values[0]
+        fake_address_2 = cls.graph.address_to_id.where(cls.graph.address_to_id['index'] == highest_id)['vertex'].dropna().values[0]
         cls.assertEqual(fake_address_1, CONFIGURATIONS['fake_vertex_1'])
         cls.assertEqual(fake_address_2, CONFIGURATIONS['fake_vertex_2'])
 

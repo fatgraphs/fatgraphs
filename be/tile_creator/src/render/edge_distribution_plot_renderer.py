@@ -2,7 +2,7 @@ import math
 import matplotlib.pyplot as plt
 import os
 import numpy as np
-from be.utils.utils import calculateDiagonalSquareOfSide
+from be.utils import calculateDiagonalSquareOfSide
 
 
 class EdgeDistributionPlotRenderer:

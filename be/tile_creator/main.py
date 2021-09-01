@@ -12,7 +12,7 @@ from be.tile_creator.src.layout.visual_layout import VisualLayout
 from be.tile_creator.src.metadata.token_graph_metadata import TokenGraphMetadata
 from be.tile_creator.src.render.tiles_renderer import TilesRenderer
 from be.tile_creator.src.render.transparency_calculator import TransparencyCalculator
-from be.utils.utils import make_geoframe
+from be.utils import make_geoframe
 
 
 def ensure_directory_exists(path):

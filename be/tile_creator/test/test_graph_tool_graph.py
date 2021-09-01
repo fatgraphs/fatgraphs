@@ -1,6 +1,9 @@
+import os
 import unittest
+import cairo
 import numpy as np
 import pandas as pd
+from be.configuration import CONFIGURATIONS
 from be.tile_creator.src.graph.gt_token_graph import GraphToolTokenGraph
 from be.tile_creator.src.graph.token_graph import TokenGraph
 from be.tile_creator.src.layout.visual_layout import VisualLayout
@@ -23,6 +26,7 @@ class TestGraphToolGraph(unittest.TestCase):
         cls.transparencyCalculators = TransparencyCalculator(cls.layout.max - cls.layout.min, defaultConfig)
         cls.layout.edgeTransparencies = cls.transparencyCalculators.calculateEdgeTransparencies(
             cls.layout.edgeLengths)
+        cls.layout.vertexShapes = ['inactive_fake'] * len(cls.layout.vertexSizes)
         metadata = TokenGraphMetadata(cls.graph, cls.layout, defaultConfig)
         cls.gtg = GraphToolTokenGraph(cls.graph.edge_ids_to_amount,
                                       cls.layout,

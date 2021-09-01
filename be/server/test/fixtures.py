@@ -33,7 +33,7 @@ def db(app):
                  "tg_vertex_metadata",
                 Base.metadata,
                 Column('id', Integer, primary_key=True),
-                Column('eth', String()),
+                Column('vertex', String()),
                 Column('type', String()),
                 Column('label', String()),
                 Column('description', String())

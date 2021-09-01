@@ -3,7 +3,7 @@ import math
 import cudf
 import numpy as np
 
-from be.utils.utils import gauss, calculateDiagonalSquareOfSide
+from be.utils import gauss, calculateDiagonalSquareOfSide
 
 
 def setTransparencyGaussian(x, transparency, mean, std, min_out=0, max_out=1):

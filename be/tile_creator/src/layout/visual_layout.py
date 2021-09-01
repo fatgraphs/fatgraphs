@@ -5,7 +5,7 @@ import cudf
 from be.configuration import internal_id, CONFIGURATIONS
 from be.server.vertex_metadata.service import VertexMetadataService
 
-from be.utils.utils import shiftAndScale, convert_graph_coordinate_to_map
+from be.utils import shift_and_scale, convert_graph_coordinate_to_map
 import time
 
 class VisualLayout:
@@ -72,12 +72,12 @@ class VisualLayout:
     def calculateVerticesSize(self, inDegrees, medVertexSize, maxVertexSize):
         targetMedian = self.medianPixelDistance * medVertexSize
         targetMax = self.medianPixelDistance * maxVertexSize
-        return shiftAndScale(inDegrees, targetMedian, targetMax)
+        return shift_and_scale(inDegrees, targetMedian, targetMax)
 
     def calculateEdgesThickness(self, amounts, medEdgeThickness, maxEdgeThickness):
         targetMedian = self.medianPixelDistance * medEdgeThickness
         targetMax = self.medianPixelDistance * maxEdgeThickness
-        return shiftAndScale(amounts, targetMedian, targetMax)
+        return shift_and_scale(amounts, targetMedian, targetMax)
 
     def calculateEdgeLengthsGraphSpace(self):
         distances = ((self.edgeIdsToPositions['sourceX'] - self.edgeIdsToPositions['targetX']) ** 2 + (
