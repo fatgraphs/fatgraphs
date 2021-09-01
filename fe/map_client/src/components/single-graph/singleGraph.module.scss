@@ -1,3 +1,5 @@
+@import '../../reactBlueTemplate/src/styles/variables';
+
 .singleGraphGrid {
   padding: 1rem;
   display: grid;
@@ -15,7 +17,7 @@
 .myMap {
   height: 100%;
   border-radius: 1%;
-  background-color: black !important;
+  background-color: black !important; //$main-background
   z-index: 10;
 }
 

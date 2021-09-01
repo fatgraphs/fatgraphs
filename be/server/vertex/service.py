@@ -44,7 +44,7 @@ class VertexService:
         if not isinstance(vertices, list):
             vertices = [vertices]
         for v in vertices:
-            metadata = VertexMetadataService.get_by_eth(v.eth, db)
+            metadata = VertexMetadataService.get_by_eth(v.vertex, db)
             for m in metadata:
                 for attr in ['types', 'labels']:
                     existing = getattr(v, attr, [])
@@ -56,7 +56,7 @@ class VertexService:
     def get_by_type(graph_id, type, db):
         global_matches = VertexMetadataService.get_by_type(type, db)
         if graph_id is not None:
-            global_eths = list(map(lambda e: e.eth, global_matches))
+            global_eths = list(map(lambda e: e.vertex, global_matches))
             this_graph_matches = VertexService.get_by_eths(graph_id, global_eths, db)
             return this_graph_matches
         return global_matches
@@ -65,7 +65,7 @@ class VertexService:
     def get_by_label(graph_id, label, db):
         global_matches = VertexMetadataService.get_by_label(label, db)
         if graph_id is not None:
-            global_eths = list(map(lambda e: e.eth, global_matches))
+            global_eths = list(map(lambda e: e.vertex, global_matches))
             this_graph_matches = VertexService.get_by_eths(graph_id, global_eths, db)
             return this_graph_matches
         return global_matches

@@ -1,6 +1,7 @@
 import cudf
 from cugraph import Graph
 import pandas as pd
+from be.configuration import CONFIGURATIONS, internal_id, external_id
 
 from be.tile_creator.src.new_way.preprocessor import DataPreprocessor
 
@@ -47,24 +48,34 @@ class TokenGraph:
         # indices to vertices
         mapping = pd.DataFrame(unique_addresses)\
             .reset_index()\
-            .rename(columns={"index": "vertex", 0: "address"})
+            .rename(columns={
+                "index": CONFIGURATIONS['vertex_internal_id'],
+                0: CONFIGURATIONS['vertex_external_id']})
         return mapping
 
 
     def makeGraphGpuFrame(self):
         graph = Graph()
-        graph.from_cudf_edgelist(self.edge_ids_to_amount_cudf, source='sourceId', destination='targetId')
+        graph.from_cudf_edgelist(self.edge_ids_to_amount_cudf, source=internal_id("source"), destination=internal_id("target"))
         return graph
 
     def make_edge_ids_to_amount(self):
         # associate source id with source address
-        data = self.preprocessed_data.merge(self.address_to_id.rename(columns={"address": "source"})).rename(
-            columns={"vertex": "sourceId"})
+        data = self.preprocessed_data.merge(self.address_to_id.rename(
+            columns={
+                CONFIGURATIONS['vertex_external_id']: external_id("source"),
+                CONFIGURATIONS['vertex_internal_id']: internal_id('source')
+            }), left_on='source', right_on=external_id("source"))
+
         # associate target_id with target address
-        data = data.merge(self.address_to_id.rename(columns={"address": "target"})).rename(
-            columns={"vertex": "targetId"})
-        data = data[["sourceId", "targetId", "amount"]]
-        data = data.sort_values(['sourceId', 'targetId'])
+        data = data.merge(self.address_to_id.rename(
+            columns={
+                CONFIGURATIONS['vertex_external_id']: external_id("target"),
+                CONFIGURATIONS['vertex_internal_id']: internal_id('target')
+            }), left_on='target', right_on=external_id("target"))
+
+        data = data[[internal_id('source'), internal_id('target'), "amount"]]
+        data = data.sort_values([internal_id('source'), internal_id('target')])
         data = data.reset_index(drop=True)
         return data
 

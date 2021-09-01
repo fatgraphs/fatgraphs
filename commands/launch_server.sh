@@ -16,7 +16,7 @@ trap "cleanup" INT SIGTERM SIGQUIT
 # PYTHONPATH=$(pwd) python be/tile_creator/main.py
 
 # run server
-export FLASK_APP=be/server/server.py
+export FLASK_APP=../be/server/server.py
 flask run &
 pids+=("$!")
 echo $pids

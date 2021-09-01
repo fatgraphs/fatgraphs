@@ -12,7 +12,7 @@ cleanup() {
 }
 trap "cleanup" SIGINT SIGTERM SIGQUIT
 
-cd fe/map_client
+cd ../fe/map_client
 # npm i
 npm run webpack
 npm run start &

@@ -14,13 +14,13 @@ class Vertex(Base):
     __tablename__ = "tg_vertex"
 
     graph_id = Column(Integer(), ForeignKey('tg_graphs.id'))
-    eth = Column(String(), primary_key=True)
+    vertex = Column(String(), primary_key=True)
     size = Column(Float(precision=8))
     pos = Column(Geometry('Point', 3857))
 
     @staticmethod
     def get_closest(graph_id: int, x: float, y: float, db):
-        query = """SELECT graph_id, eth, size, ST_AsText(ST_PointFromWKB(pos)), pos <-> ST_SetSRID(ST_MakePoint(%(x)s, %(y)s), 3857) AS dist 
+        query = """SELECT graph_id, vertex, size, ST_AsText(ST_PointFromWKB(pos)), pos <-> ST_SetSRID(ST_MakePoint(%(x)s, %(y)s), 3857) AS dist 
                 FROM %(table_name)s 
                 WHERE graph_id = %(graph_id)s
                 ORDER BY dist LIMIT 1;
@@ -35,19 +35,19 @@ class Vertex(Base):
         closest = to_pd_frame(result)
         v = Vertex(graph_id=closest['graph_id'][0],
                    pos=wkt_to_x_y_list(closest['st_astext'][0]),
-                   eth=closest['eth'][0],
+                   vertex=closest['vertex'][0],
                    size=closest['size'][0])
         return v
 
     @staticmethod
-    def get(eths: List[str], graph_id: int, db: object):
+    def get(vertices: List[str], graph_id: int, db: object):
 
-        query = """SELECT graph_id, eth, size, ST_AsText(ST_PointFromWKB(pos)) AS pos 
+        query = """SELECT graph_id, vertex, size, ST_AsText(ST_PointFromWKB(pos)) AS pos 
         FROM %(table_name)s 
-        WHERE %(table_name)s.eth IN %(eths)s"""
+        WHERE %(table_name)s.vertex IN %(vertices)s"""
 
         substitution = {'table_name': AsIs(VERTEX_GLOBAL_TABLE),
-                             'eths': tuple(eths)}
+                             'vertices': tuple(vertices)}
 
         if graph_id != None:
             query = query + """ AND %(table_name)s.graph_id = %(graph_id)s"""
@@ -67,6 +67,6 @@ class Vertex(Base):
         collect = []
         for (i, e) in fetchall.iterrows():
             pos_as_list = wkt_to_x_y_list(e['pos'])
-            vertex = Vertex(graph_id=e['graph_id'], eth=e['eth'], size=e['size'], pos=pos_as_list)
+            vertex = Vertex(graph_id=e['graph_id'], vertex=e['vertex'], size=e['size'], pos=pos_as_list)
             collect.append(vertex)
         return collect

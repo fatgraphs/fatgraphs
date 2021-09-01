@@ -103,19 +103,19 @@ class SingleGraphView extends Component {
         }
 
         // the same eth may have multiple types and labels
-        let groupedByEth = _.groupBy(verticesMatchingMetadata, 'eth');
+        let groupedByEth = _.groupBy(verticesMatchingMetadata, 'vertex');
 
         let markers = []
-        for (const eth in groupedByEth) {
-            this.populateMarkers(groupedByEth, eth, markers);
+        for (const vertex in groupedByEth) {
+            this.populateMarkers(groupedByEth, vertex, markers);
         }
         return markers
     }
 
-    populateMarkers(groupedByEth, eth, markers) {
-        const types = groupedByEth[eth].map(obj => obj.types).flat()
-        const labels = groupedByEth[eth].map(obj => obj.labels).flat()
-        const {pos, size} = groupedByEth[eth][0]
+    populateMarkers(groupedByEth, vertex, markers) {
+        const types = groupedByEth[vertex].map(obj => obj.types).flat()
+        const labels = groupedByEth[vertex].map(obj => obj.labels).flat()
+        const {pos, size} = groupedByEth[vertex][0]
         let mapCoordinate = toMapCoordinate(pos, this.state.graphMetadata)
 
         markers.push({
@@ -123,7 +123,7 @@ class SingleGraphView extends Component {
             labels: labels,
             pos: mapCoordinate,
             size: size,
-            eth: eth
+            vertex: vertex
         })
         // this.setState({markersSelectedMetadata: markers})
 

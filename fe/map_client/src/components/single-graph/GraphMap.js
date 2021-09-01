@@ -109,7 +109,7 @@ class GraphMap extends React.Component {
 
     generateCircleWithPopup(markerObject, zoom) {
         if (markerObject !== undefined) {
-            let {types, labels, pos, size, eth} = markerObject
+            let {types, labels, pos, size, vertex} = markerObject
             let iconSize = size * (2 ** zoom);
             let icon = getCircleIcon('circleMarker', [iconSize, iconSize])
             let labelsString = labels === null ? 'NA' : labels.join(', ');
@@ -117,10 +117,10 @@ class GraphMap extends React.Component {
 
             let popup = getVertexPopup(typesString,
                 labelsString,
-                eth,
+                vertex,
                 this.props.graphName,
                 this.props.graphId,
-                this.addSingleMetadataToVertex(eth),
+                this.addSingleMetadataToVertex(vertex),
                 this.props.recentMetadataSearches);
 
             return (
@@ -140,16 +140,16 @@ class GraphMap extends React.Component {
 
     generateTextLabel(markerObject, zoom) {
         if (markerObject !== undefined) {
-            let {types, labels, pos, size, eth} = markerObject
+            let {types, labels, pos, size, vertex} = markerObject
             let labelsString = labels === null ? 'NA' : labels.join(', ');
             let typesString = types === null ? 'NA' : types.join(', ');
 
             let popup = getVertexPopup(typesString,
                 labelsString,
-                eth,
+                vertex,
                 this.props.graphName,
                 this.props.graphId,
-                this.addSingleMetadataToVertex(eth),
+                this.addSingleMetadataToVertex(vertex),
                 this.props.recentMetadataSearches);
 
             let myIcon = L.divIcon({className: 'my-div-icon',
@@ -171,10 +171,10 @@ class GraphMap extends React.Component {
 
     }
 
-    addSingleMetadataToVertex(eth) {
+    addSingleMetadataToVertex(vertex) {
         return function (metadataObject) {
             console.log("INNER addSingleMetadataToVertex")
-            postVertexMetadata(eth, metadataObject)
+            postVertexMetadata(vertex, metadataObject)
         }
     }
 

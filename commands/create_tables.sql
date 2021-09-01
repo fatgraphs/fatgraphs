@@ -35,13 +35,13 @@ CREATE TABLE IF NOT EXISTS tg_graphs
 CREATE TABLE IF NOT EXISTS tg_vertex_metadata
 (
     id          SERIAL UNIQUE PRIMARY KEY,
-    eth         text,
+    vertex      text,
     type        text,
     label       text,
     description text,
     icon text
 );
-CREATE INDEX IF NOT EXISTS eth_index ON tg_vertex_metadata (eth);
+CREATE INDEX IF NOT EXISTS eth_index ON tg_vertex_metadata (vertex);
 
 
 CREATE TABLE IF NOT EXISTS tg_vertex
@@ -55,8 +55,5 @@ CREATE TABLE IF NOT EXISTS tg_vertex
             REFERENCES tg_graphs (id)
 ) PARTITION BY LIST (graph_id);
 
-CREATE TABLE IF NOT EXISTS tg_account_type(
-    vertex text UNIQUE PRIMARY KEY,
-    type smallint
-);
+
 

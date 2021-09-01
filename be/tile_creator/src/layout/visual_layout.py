@@ -2,6 +2,7 @@ import cugraph
 import numpy as np
 from cuml.neighbors.nearest_neighbors import NearestNeighbors
 import cudf
+from be.configuration import internal_id, CONFIGURATIONS
 from be.server.vertex_metadata.service import VertexMetadataService
 
 from be.utils.utils import shiftAndScale, convert_graph_coordinate_to_map
@@ -49,6 +50,9 @@ class VisualLayout:
         # layout = self._distribute_on_square_edges(layout)
         layout = layout.sort_values(['vertex'])
         layout = layout.reset_index(drop=True)
+        layout = layout.rename(columns={
+            'vertex': CONFIGURATIONS['vertex_internal_id']
+        })
         return layout
 
     def computeMedianPixelDistance(self):
@@ -60,7 +64,7 @@ class VisualLayout:
         return medianPixelDistance
 
     def ensureLayoutIsSquare(self):
-        lastVertexId = self.vertexPositions['vertex'].max()
+        lastVertexId = self.vertexPositions[CONFIGURATIONS['vertex_internal_id']].max()
         penultimum_vertex_id = lastVertexId - 1
         self.vertexPositions.iloc[lastVertexId, 0:3] = [self.min, self.min, self.vertexPositions.iloc[lastVertexId, 0:3][2]]
         self.vertexPositions.iloc[penultimum_vertex_id, 0:3] = [self.max, self.max, self.vertexPositions.iloc[penultimum_vertex_id, 0:3][2]]
@@ -86,16 +90,18 @@ class VisualLayout:
         vertexXY = vertexXY.rename(columns={'x': 'sourceX', 'y': 'sourceY'})
 
         graphPositions = self.graph.edge_ids_to_amount_cudf \
-            .merge(vertexXY, left_on=['sourceId'], right_on=['vertex']) \
-            .drop(columns=['vertex'])
+            .merge(vertexXY, left_on=internal_id('source'), right_on=CONFIGURATIONS['vertex_internal_id']) \
+            .drop(columns=[CONFIGURATIONS['vertex_internal_id']])
 
         vertexXY = vertexXY.rename(columns={'sourceX': 'targetX', 'sourceY': 'targetY'})
 
         graphPositions = graphPositions \
-            .merge(vertexXY, left_on=['targetId'], right_on=['vertex']) \
-            .drop(columns=['vertex'])
+            .merge(vertexXY, left_on=internal_id('target'), right_on=CONFIGURATIONS['vertex_internal_id']) \
+            .drop(columns=[CONFIGURATIONS['vertex_internal_id']])
 
-        graphPositions = graphPositions.sort_values(by=['sourceId', 'targetId']).reset_index(drop=True)
+        graphPositions = graphPositions\
+            .sort_values(by=[internal_id('source'), internal_id('target')])\
+            .reset_index(drop=True)
 
         return graphPositions
 
@@ -152,40 +158,38 @@ class VisualLayout:
 
     def generate_shapes(self, db, graph_id):
 
-        # assume all inactive
-
-        vertex_shapes = ['inactive_fake'] * len(self.graph.address_to_id)
-
         start_time = time.monotonic()
-        # assume vertices with an account  type are unlabelled
+
         frame = VertexMetadataService.merge_with_account_type(db, graph_id)
-        print('seconds 1 : ', time.monotonic() - start_time)
+
+        print('db op merge_with_account_type took: : ', time.monotonic() - start_time)
 
         start_time = time.monotonic()
-        # TODO faster with left merge
-        re = self.graph.address_to_id.merge(frame, left_on='address', right_on='vertex', how='left')
-        print('seconds 2 : ', time.monotonic() - start_time)
-        for (index, row) in frame.iterrows():
-            match = self.graph.address_to_id[self.graph.address_to_id['address'] == row.vertex]
-            if not match.empty:
-                index = match['vertex'].values[0]
-                vertex_shapes[index] = {0: 'eoa_unlabelled', 1: 'ca_unlabelled'}[row.type]
 
+        re = self.graph.address_to_id.merge(frame, how='left')
+        re = re['type'].fillna('inactive_fake').replace({0: 'eoa_unlabelled', 1: 'ca_unlabelled'})
+        vertex_shapes = list(re.values)
+
+        print('pandas merging took : ', time.monotonic() - start_time)
+
+        start_time = time.monotonic()
 
         # find vertices with labels
         # TODO what if a vertex NOT present in the account_type table is then found in type_labels? keep fake_incative
         frame = VertexMetadataService.merge_with_types(db, graph_id)
         for (index, row) in frame.iterrows():
-            match = self.graph.address_to_id[self.graph.address_to_id['address'] == row.eth]
+            match = self.graph.address_to_id[self.graph.address_to_id[CONFIGURATIONS['vertex_external_id']] == row.vertex]
             if not match.empty:
-                index = match['vertex'].values[0]
+                index = match[CONFIGURATIONS['vertex_internal_id']].values[0]
                 vertex_shapes[index] = vertex_shapes[index].replace('unlabelled', 'labelled')
+
+        print('labelled vertices loop took : ', time.monotonic() - start_time)
 
         # find vertices with custom icons
         frame = frame[frame.icon.notnull()]
         for (index, row) in frame.iterrows():
-            match = self.graph.address_to_id[self.graph.address_to_id['address'] == row.eth]
+            match = self.graph.address_to_id[self.graph.address_to_id[CONFIGURATIONS['vertex_external_id']] == row.vertex]
             if not match.empty:
-                index = match['vertex'].values[0]
+                index = match[CONFIGURATIONS['vertex_internal_id']].values[0]
                 vertex_shapes[index] = row['icon']
         return vertex_shapes

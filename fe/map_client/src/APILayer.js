@@ -77,7 +77,7 @@ export function fetchMatchingVertices(graphId, metadataObject) {
     return doRequest(url);
 }
 
-export function postVertexMetadata(eth, metadataObject) {
+export function postVertexMetadata(vertex, metadataObject) {
     let url = UrlComposer.addVertexMetadata();
     let type = metadataObject['type'];
     let value = metadataObject['value'];
@@ -87,7 +87,7 @@ export function postVertexMetadata(eth, metadataObject) {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            "eth": eth,
+            "vertex": vertex,
             "type": type === 'type' ? value : '',
             "label": type === 'label' ? value : '',
             "description": ""

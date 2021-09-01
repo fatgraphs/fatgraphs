@@ -52,7 +52,7 @@ gradle-app.setting
 *.png
 *.jpg
 *.csv
-be/graph-maps/
+graph-tiles/
 
 # eclude jupyter notebook cache files
 *-checkpoint.ipynb

@@ -18,14 +18,14 @@ export function getCircleIcon(className, iconSize) {
     return circleIcon
 }
 
-export function getVertexPopup(typesString, labelsString, eth, graphName, graphId, callBack, recentMetadataSearches) {
+export function getVertexPopup(typesString, labelsString, vertex, graphName, graphId, callBack, recentMetadataSearches) {
     /**
      * The popup when you click on a vertex-marker
      */
     return <VertexPopup
         typesConcatenated={typesString}
         labelsConcatenated={labelsString}
-        eth={eth}
+        vertex={vertex}
         graphName={graphName}
         graphId={graphId}
         selectionCallback={callBack}

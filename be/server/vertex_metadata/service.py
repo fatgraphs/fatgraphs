@@ -3,17 +3,16 @@ from psycopg2._psycopg import AsIs
 
 from .interface import VertexMetadataInterface
 from .model import VertexMetadata
-from .. import engine
 from ..graph.service import GraphService
-from ..searches import AUTOCOMPLETE_TERMS_PER_PAGE
 from ..utils import to_pd_frame
+import numpy as np
 
 
 class VertexMetadataService:
 
     @staticmethod
-    def get_by_eth(eth: str, db) -> List[VertexMetadata]:
-        result = VertexMetadata.filter_by(db, eth=eth )
+    def get_by_eth(vertex: str, db) -> List[VertexMetadata]:
+        result = VertexMetadata.filter_by(db, vertex=vertex )
         return result
 
     @staticmethod
@@ -30,7 +29,7 @@ class VertexMetadataService:
     def create(metadata_to_insert: VertexMetadataInterface, db: object):
 
         new_metadata = VertexMetadata(
-            eth=metadata_to_insert['eth'],
+            vertex=metadata_to_insert['vertex'],
             type=metadata_to_insert['type'],
             label=metadata_to_insert['label'],
             account_type=metadata_to_insert['account_type'],
@@ -53,22 +52,21 @@ class VertexMetadataService:
     @staticmethod
     def merge_with_account_type(db, graph_id: int):
         table_name = GraphService.get_vertex_table_name(graph_id, db)
-        query = """SELECT vertex, type FROM %(table_name)s
+        query = """SELECT tg_account_type.vertex, tg_account_type.type FROM %(table_name)s
                     INNER JOIN tg_account_type
-                    ON (tg_account_type.vertex = %(table_name)s.eth);"""
+                    ON (tg_account_type.vertex = %(table_name)s.vertex);"""
         execute = db.bind.engine.execute(query, {'table_name': AsIs(table_name)})
-        frame = to_pd_frame(execute)
-        return frame
+        result = to_pd_frame(execute)
+        result['type'] = result['type'].astype(np.int64)
+        return result
 
 
     @staticmethod
     def merge_with_types(db, graph_id):
         table_name = GraphService.get_vertex_table_name(graph_id, db)
-        query = """SELECT eth, icon FROM %(table_name)s
+        query = """SELECT tg_vertex_metadata.vertex, tg_vertex_metadata.icon FROM %(table_name)s
                     INNER JOIN tg_vertex_metadata
-                    ON (tg_vertex_metadata.eth = %(table_name)s.eth);"""
+                    ON (tg_vertex_metadata.vertex = %(table_name)s.vertex);"""
         execute = db.bind.engine.execute(query, {'table_name': AsIs(table_name)})
         result = to_pd_frame(execute)
-        # result = frame[frame.icon.notnull()]
-        result = result.loc[: , ~result.columns.duplicated()]
         return result

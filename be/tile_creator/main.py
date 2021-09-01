@@ -65,10 +65,10 @@ def main(configurations):
 
         # this will be there
         vertices = graph.address_to_id.merge(visualLayout.vertexPositions)
-        vertices = vertices.rename(columns={'address': 'eth'})
+        # vertices = vertices.rename(columns={'address': 'eth'})
         vertices['size'] = visualLayout.vertexSizes
         vertices['graph_id'] = [str(graph_id)] * len(vertices)
-        vertices = vertices.drop(columns=['vertex'])
+        vertices = vertices.drop(columns=[CONFIGURATIONS['vertex_internal_id']])
 
         # save as geo frame
         geo_frame = make_geoframe(vertices)

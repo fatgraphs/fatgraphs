@@ -9,24 +9,29 @@ You need to have `npm` installed.
 
 You need a graph.csv file inside data (currently it needs to be called `medium.csv`)
 
-We use rapids libraries, the easiest way to install is to create an Anaconda environment with the command that matches
+We use rapids libraries, the easiest way to install is to create an Anaconda
+environment
+with the command that matches
 your specs, generate the command at the following url: https://rapids.ai/start.html
 To find out your cuda version conider using the command `nvidia-smi`.
 Python version should be python 3.8
 
 The following command should work on Ubuntu 20:
 
-`conda create -n rapids-21.08 -c rapidsai -c nvidia -c conda-forge -c anaconda \
-    rapids=21.08 python=3.8 cudatoolkit=11.2 flask flask-restx flask-cors flask_accepts geopandas graph-tool marshmallow matplotlib numpy pandas \
-    pillow psycopg2 pytest scikit-image sqlalchemy geoalchemy2 mypy_extensions`
+<code>
+conda create -n rapids-21.08 -c rapidsai -c nvidia
+-c conda-forge -c anaconda rapids=21.08 python=3.8
+cudatoolkit=11.2 flask flask-restx flask-cors flask_accepts
+geopandas graph-tool marshmallow matplotlib numpy pandas
+pillow psycopg2 pytest scikit-image sqlalchemy geoalchemy2 mypy_extensions
+</code>
 
-We will now assume that an Anaconda virtual environment called `rapids-21.08` exists in your system
-(you can call it something else).
+We will now assume that an Anaconda virtual environment called `rapids-21.08`
+exists in your system (you can call it something else).
 
-Some packages are not hosted by any Anaconda channels:
-
-Since the tests perform image comparisons between an output and a desired model, we need to have the open-cv library.
-You can install it with
+Since some packages are not hosted by any Anaconda channels and the tests
+perform image comparisons between an output and a desired model, we need to have
+the open-cv library. You can install it with
 `pip install opencv-python`
 We also use flask_accepts for input/output validation on the server endpoints.
 `pip install flask_accepts`
@@ -38,7 +43,7 @@ Ask the project maintainer to provide them to you.
 
 The server tests shouldn't need anything.
 
-#### Run tests as pre-push hook 
+#### Run tests as pre-push hook
 Copy-paste the below snippet into .git/hooks/pre-push in order to have tests automatically run before each push.
 ```
 #!/bin/bash
@@ -50,26 +55,27 @@ export FLASK_ENV='test'
 cd ~/tokengallery/be && python -m pytest
 ```
 
-### PostGIS installation
-To run the code locally please make sure postgres and the GIS extension are correctly set up.
-This wastested with Ubuntu 20.
+### Postgres & PostGIS installation
+To run the code locally please make sure postgres and the GIS extension are
+correctly set up. This wastested with Ubuntu 20.
 
-If you have postgresql already installed, you should skip this.
-`apt-get install postgresql-12 postgresql-contrib`
+Ubuntu 20 comes with postgres already installed. Refer to this image to know
+what postgres-related paackages are required:
+[Postgres-related packages required for this project](docs/postgres_related_packages.png)
 
 Launch a session and set the password for the `postgres` user.
 `sudo -u postgres psql`
-`ALTER USER postgres  PASSWORD 1234`
+Set the password to something:
+`ALTER USER postgres PASSWORD '1234';`
+quit the session.
 
-Launch a session with the postgres user to check that it worked:
+Launch another session with the postgres user to check that it worked:
 `psql -U postgres -h 127.0.0.1`
 
 Quit the session and install the GIS extension.
-Note that you should apt-get install the postgis version that matches your postgresql version.
 `sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable`
 `sudo apt-get update`
-finally
-`sudo apt-get install postgis`
+`sudo apt-get install postgis postgresql-postgis-scripts`
 
 To check that it worked, let's launch a new session and add the GIS extension to the deafult database:
 ```

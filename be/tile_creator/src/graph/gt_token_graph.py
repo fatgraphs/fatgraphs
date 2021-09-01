@@ -3,6 +3,7 @@ from graph_tool import Graph
 import numpy as np
 from os import listdir
 from os.path import isfile, join
+from be.configuration import internal_id
 
 
 class GraphToolTokenGraph:
@@ -40,16 +41,16 @@ class GraphToolTokenGraph:
                 self.controlPoints[e] = [0, 0, 0.25, curvature, 0.75, curvature, 1, 0]
 
     def addEdges(self, edgeIdsToAmount):
-        data = edgeIdsToAmount.rename(columns={'sourceId': 'source', 'targetId': 'target'})
+        # data = edgeIdsToAmount.rename(columns={'sourceId': 'source', 'targetId': 'target'})
         # hashed = False ensure that vertex values correspond to vertex indices
         self.g.add_edge_list(
-            data[["source", "target"]].values,
+            edgeIdsToAmount[[internal_id('target'), internal_id('source')]].values,
             hashed=False)
     def make_shapes(self, string_shapes):
         eoa = cairo.ImageSurface.create_from_png("assets/vertex_icons/generic/eoa.png")
         eoa_labelled = cairo.ImageSurface.create_from_png("assets/vertex_icons/generic/eoa_labelled.png")
         ca = cairo.ImageSurface.create_from_png("assets/vertex_icons/generic/ca.png")
-        ca_labelled = cairo.ImageSurface.create_from_png("assets/vertex_icons/generic/ca_labelled.png")
+        ca_labelled = cairo.ImageSurface.create_from_png("assets/vertex_icons/generic/eoa_labelled.png")
         inactive_fake = cairo.ImageSurface.create_from_png("assets/vertex_icons/generic/inactive_fake.png")
 
         generic_icons_mapper = {

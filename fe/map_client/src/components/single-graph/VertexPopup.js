@@ -26,8 +26,8 @@ class VertexPopup extends Component {
                     <div><span>Types : </span> <span>{this.props.typesConcatenated + addedMetadata['type']}</span></div>
                     <div><span>Labels : </span> <span>{this.props.labelsConcatenated + addedMetadata['label']}</span>
                     </div>
-                    <a href={'https://etherscan.io/address/' + this.props.eth}
-                       target="_blank">{this.props.eth}</a>
+                    <a href={'https://etherscan.io/address/' + this.props.vertex}
+                       target="_blank">{this.props.vertex}</a>
 
                     <SearchBar
                         onChange={(v) => this.setState({
@@ -41,7 +41,7 @@ class VertexPopup extends Component {
                                     shouldRender={this.state.showAutocompletion}
                                     recentMetadataSearches={[]}
                                     onClick={(metadataObject) => {
-                                        postVertexMetadata(this.props.eth, metadataObject)
+                                        postVertexMetadata(this.props.vertex, metadataObject)
                                         this.setState({recentlyAddedMetadata: [...this.state.recentlyAddedMetadata, metadataObject]})
                                     }}/>
                     {/*<searchBar*/}
@@ -87,7 +87,7 @@ class VertexPopup extends Component {
 }
 
 VertexPopup.propTypes = {
-    eth: string.isRequired,
+    vertex: string.isRequired,
     selectionCallback: func.isRequired,
     typesConcatenated: string.isRequired,
     labelsConcatenated: string.isRequired,

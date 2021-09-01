@@ -7,7 +7,7 @@ from be.server.vertex_metadata.interface import VertexMetadataInterface
 @pytest.fixture
 def vertex_metadata_1_param():
     yield dict(id=1,
-                eth='test_eth',
+                vertex='test_eth',
                 type='test_type',
                 label='test_label',
                 account_type=0,
@@ -28,7 +28,7 @@ def vertex_metedata_1_different_id(vertex_metadata_1_param: VertexMetadataInterf
 @pytest.fixture
 def vertex_metadata_2_param():
     yield dict(id=2,
-                eth='test_eth_2',
+                vertex='test_eth_2',
                 type='test_type_2',
                 label='test_label_2',
                 account_type=0,

@@ -21,7 +21,7 @@
     "eoa": "/home/carlo/tokengallery/data/account_types/EOA.csv",
     "contracts": "/home/carlo/tokengallery/data/account_types/contracts.csv"
   },
-  "graphsHome": "be/graph-maps",
+  "graphsHome": "/home/carlo/tokengallery/graph-tiles",
   "verticesMetadataFileName": "vertices_metadata.csv",
   "graphMetadataFileName": "graph_metadata.csv",
   "fake_vertex_1": "0x123456789abcdef01",
