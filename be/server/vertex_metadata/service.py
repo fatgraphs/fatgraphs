@@ -62,9 +62,9 @@ class VertexMetadataService:
 
 
     @staticmethod
-    def merge_with_types(db, graph_id):
+    def merge_with_metadata(db, graph_id):
         table_name = GraphService.get_vertex_table_name(graph_id, db)
-        query = """SELECT tg_vertex_metadata.vertex, tg_vertex_metadata.icon FROM %(table_name)s
+        query = """SELECT tg_vertex_metadata.vertex, tg_vertex_metadata.type, tg_vertex_metadata.icon FROM %(table_name)s
                     INNER JOIN tg_vertex_metadata
                     ON (tg_vertex_metadata.vertex = %(table_name)s.vertex);"""
         execute = db.bind.engine.execute(query, {'table_name': AsIs(table_name)})

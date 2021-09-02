@@ -160,36 +160,43 @@ class VisualLayout:
 
         start_time = time.monotonic()
 
-        frame = VertexMetadataService.merge_with_account_type(db, graph_id)
+        def mark_token_icons():
+            result['type_x'] = np.where(result['icon'].isnull(), result['type_x'], result['icon'])
+            result['type_x'] = result['type_x'].replace(int_to_icon)
 
-        print('db op merge_with_account_type took: : ', time.monotonic() - start_time)
+        def mark_labelled():
+            result['type_y'] = result['type_y'].where(result['type_y'].notna(), 0)
+            result['type_x'] = result['type_x'] + result['type_y'].where(result['type_y'] == 0, 1)
 
-        start_time = time.monotonic()
+        icon_to_int = {
+            'inactive_fake': 0,
+            'eoa_unlabelled': 1,
+            'eoa_labelled': 2,
+            'ca_unlabelled': 3,
+            'ca_labelled': 4,
+        }
+        int_to_icon = {v: k for k, v in icon_to_int.items()}
 
-        re = self.graph.address_to_id.merge(frame, how='left')
-        re = re['type'].fillna('inactive_fake').replace({0: 'eoa_unlabelled', 1: 'ca_unlabelled'})
-        vertex_shapes = list(re.values)
+        account_types = VertexMetadataService.merge_with_account_type(db, graph_id)
 
-        print('pandas merging took : ', time.monotonic() - start_time)
+        result = self.graph.address_to_id.merge(account_types, how='left')
+        result['type'] = result['type'].replace({0: 1, 1: 3}).fillna(0)
 
-        start_time = time.monotonic()
-
-        # find vertices with labels
         # TODO what if a vertex NOT present in the account_type table is then found in type_labels? keep fake_incative
-        frame = VertexMetadataService.merge_with_types(db, graph_id)
-        for (index, row) in frame.iterrows():
-            match = self.graph.address_to_id[self.graph.address_to_id[CONFIGURATIONS['vertex_external_id']] == row.vertex]
-            if not match.empty:
-                index = match[CONFIGURATIONS['vertex_internal_id']].values[0]
-                vertex_shapes[index] = vertex_shapes[index].replace('unlabelled', 'labelled')
 
-        print('labelled vertices loop took : ', time.monotonic() - start_time)
+        frame = VertexMetadataService.merge_with_metadata(db, graph_id)
+        result = result.merge(frame, left_on='vertex', right_on='vertex', how='left')
+        mark_labelled()
+        result = result.groupby('vertex').first()
+        result['type_x'] = result['type_x'].astype(np.int64)
+        mark_token_icons()
 
-        # find vertices with custom icons
-        frame = frame[frame.icon.notnull()]
-        for (index, row) in frame.iterrows():
-            match = self.graph.address_to_id[self.graph.address_to_id[CONFIGURATIONS['vertex_external_id']] == row.vertex]
-            if not match.empty:
-                index = match[CONFIGURATIONS['vertex_internal_id']].values[0]
-                vertex_shapes[index] = row['icon']
-        return vertex_shapes
+        print('\tGenerating vertices\' shapes took: ', time.monotonic() - start_time)
+
+        return result.sort_values(['index'])['type_x'].values
+
+
+
+
+
+
