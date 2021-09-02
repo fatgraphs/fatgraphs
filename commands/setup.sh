@@ -37,8 +37,8 @@ echo "Loading labels located at: $LABELS_HOME ..."
 PGPASSWORD=$tokengallerist_password psql -U tokengallerist -h 127.0.0.1 -d tg_main -v v1="'$LABELS_HOME'" -f scripts/load_labels.sql
 
 echo "Loading account types located at ${ACCOUNT_TYPE_HOMES[0]} and ${ACCOUNT_TYPE_HOMES[1]}..."
-#PGPASSWORD=$password psql -U tokengallerist -h 127.0.0.1 -d tg_main -v v1="${ACCOUNT_TYPE_HOMES[0]}" -v v2="${ACCOUNT_TYPE_HOMES[1]}" -f scripts/load_account_types.sql
+PGPASSWORD=$password psql -U tokengallerist -h 127.0.0.1 -d tg_main -v v1="${ACCOUNT_TYPE_HOMES[0]}" -v v2="${ACCOUNT_TYPE_HOMES[1]}" -f scripts/load_account_types.sql
 echo "Creating index on account_type table after it has been populated..."
-#psql -U postgres -h 127.0.0.1 -d tg_main -c "CREATE INDEX IF NOT EXISTS vertex_id ON tg_account_type (vertex);"
+psql -U postgres -h 127.0.0.1 -d tg_main -c "CREATE INDEX IF NOT EXISTS vertex_id ON tg_account_type (vertex);"
 
 echo 'Done'
