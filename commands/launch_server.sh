@@ -1,23 +1,20 @@
-#!/bin/bash
+#!/bin/zsh
 
 # to store spwned processes IDs
 declare -a pids
 
 # on exit kill the spwned processes
 cleanup() {
-  echo "Killing the server process"
   for pid in "${pids[@]}"; do
+    echo "Killing server process with PID ${pid}"
     kill -9 "$pid"
   done
 }
 trap "cleanup" INT SIGTERM SIGQUIT
 
-#generate tiles
-# PYTHONPATH=$(pwd) python be/tile_creator/main.py
-
 # run server
 export FLASK_APP=../be/server/server.py
-FLASK_ENV='development' flask run &
+FLASK_ENV='development' FLASK_DEBUG=1 flask run --no-reload &
 pids+=("$!")
 echo $pids
 wait
