@@ -12,23 +12,6 @@ from .. import SessionLocal
 api = Namespace("Searches", description="Search terms that can be used while exploring the graph")  # noqa
 
 
-@api.route("/")
-class RecentSearchTermsResource(Resource):
-
-    @responds(schema=SearchTermSchema(many=True))
-    def get(self) -> SearchTermSchema:
-        with SessionLocal() as db:
-            objects = SearchTermService.get_recent_searches(db)
-            return objects
-
-    @accepts(schema=SearchTermSchema, api=api)
-    @responds(schema=SearchTermSchema(many=True))
-    def put(self) -> List[SearchTerm]:
-        with SessionLocal() as db:
-            terms = SearchTermService.update_search_terms(request.parsed_obj, db)
-            return terms
-
-
 @api.route("/autocomplete-term/<int:page>")
 @api.param("page", f"Page for pagination, {AUTOCOMPLETE_TERMS_PER_PAGE} per page")
 class AutocompleteTermsResource(Resource):

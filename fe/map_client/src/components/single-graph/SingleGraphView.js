@@ -31,10 +31,9 @@ class SingleGraphView extends Component {
 
     async componentDidMount() {
         let graphMetadata = await fetchGraph(this.props.match.params.graphId);
-        let recentMetadata = await fetchRecentMetadata();
         this.setState({
             graphMetadata: graphMetadata,
-            recentMetadataSearches: recentMetadata
+            recentMetadataSearches: []
         })
     }
 

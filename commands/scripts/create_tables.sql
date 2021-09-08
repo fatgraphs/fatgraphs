@@ -1,10 +1,3 @@
-CREATE TABLE IF NOT EXISTS tg_search
-(
-    id    SERIAL UNIQUE PRIMARY KEY,
-    type  text,
-    value text
-);
-
 CREATE TABLE IF NOT EXISTS tg_graphs
 (
     id                             SERIAL UNIQUE PRIMARY KEY,

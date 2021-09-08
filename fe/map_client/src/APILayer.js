@@ -55,18 +55,6 @@ export function fetchAutocompletionTerms(page) {
     return doRequest(url, {});
 }
 
-export function postRecentMetadataSearches(metadataObject) {
-    let url = UrlComposer.recentMetadataSearches()
-    let init = {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(metadataObject)
-    };
-    return doRequest(url, init);
-}
-
 export function fetchUser(userName) {
     let url = UrlComposer.user(userName)
     return doRequest(url, {});
@@ -94,9 +82,4 @@ export function postVertexMetadata(vertex, metadataObject) {
         })
     }
     return doRequest(url, init);
-}
-
-export function fetchRecentMetadata() {
-    let url = UrlComposer.recentMetadataSearches();
-    return doRequest(url, {});
 }

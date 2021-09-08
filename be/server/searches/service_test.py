@@ -1,47 +1,34 @@
 from typing import List
+from unittest.mock import patch
 
 from be.server.searches import SearchTerm
 from be.server.searches.service import SearchTermService
 from .interface import SearchTermInterface
 from ..test.fixtures import app, db
+from ..vertex_metadata.service import VertexMetadataService
 
-def test_get_recent_searches(db: object):  # noqa
-    a: SearchTerm = SearchTerm(id=1, type="type", value="idex")
-    b: SearchTerm = SearchTerm(id=2, type="label", value="test")
-    c: SearchTerm = SearchTerm(id=3, type="type", value="dex")
-    db.add(a)
-    db.add(b)
-    db.add(c)
-    db.commit()
 
-    results: List[SearchTerm] = SearchTermService.get_recent_searches(db)
+class TestSearches:
 
-    assert len(results) == 3
-    assert a in results
-    assert b in results
-    assert c in results
+    @patch.object(
+            VertexMetadataService,
+            "get_unique_types",
+            lambda page, db : ['test_1'
+            ],
+        )
+    @patch.object(
+            VertexMetadataService,
+            "get_unique_labels",
+            lambda page, db : ['test_2'
+            ],
+        )
+    def test_get_autocompletion_terms(db: object):
+        result: List[str] = SearchTermService.get_autocomplete_terms(1, db)
 
-def test_update_search_terms(db: object):  # noqa
-    a: SearchTerm = SearchTerm(type="type", value="idex")
-    b: SearchTerm = SearchTerm(type="label", value="test")
-    c: SearchTerm = SearchTerm(type="type", value="dex")
-    d: SearchTerm = SearchTerm(type="type", value="dex")
-    e: SearchTerm = SearchTerm(type="type", value="dex")
-
-    db.add(a)
-    db.add(b)
-    db.add(c)
-    db.add(d)
-    db.add(e)
-    db.commit()
-
-    update: SearchTermInterface = dict(type='blah', value='bar')
-
-    results: List[SearchTerm] = SearchTermService.update_search_terms(update, db)
-
-    assert len(results) == 5
-    assert a not in results
-    assert b in results
-    assert c in results
-    assert d in results
-    assert e in results
+        assert len(result) == 2
+        test_type = list(filter(lambda e: e.type == 'type', result))
+        assert len(test_type) == 1
+        assert test_type[0].value == 'test_1'
+        test_label = list(filter(lambda e: e.type == 'label', result))
+        assert len(test_label) == 1
+        assert test_label[0].value == 'test_2'
