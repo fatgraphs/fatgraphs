@@ -8,7 +8,7 @@ from be.tile_creator.src.new_way.test.fixtures import TEST_DATA, TEST_DIR
 from be.tile_creator.src.render.edge_distribution_plot_renderer import EdgeDistributionPlotRenderer
 from be.tile_creator.src.render.transparency_calculator import TransparencyCalculator
 from be.utils import calculateDiagonalSquareOfSide
-from be.gtm import getFinalConfigurations
+from commands.gtm import getFinalConfigurations
 
 
 class TestRenderer(unittest.TestCase):

@@ -4,11 +4,11 @@ import unittest
 from be.tile_creator.src.graph.gt_token_graph import GraphToolTokenGraph
 from be.tile_creator.src.graph.token_graph import TokenGraph
 from be.tile_creator.src.layout.visual_layout import VisualLayout
-from be.tile_creator.src.new_way.test.fixtures import TEST_DATA, TEST_DIR, TEST_REFERENCE_OUTPUT_DIR
+from be.tile_creator.src.new_way.test.fixtures import TEST_DATA, TEST_DIR
 from be.tile_creator.src.render.tiles_renderer import TilesRenderer
 from be.tile_creator.src.render.transparency_calculator import TransparencyCalculator
 from be.tile_creator.src.metadata.token_graph_metadata import TokenGraphMetadata
-from be.gtm import getFinalConfigurations
+from commands.gtm import getFinalConfigurations
 
 
 class TestRenderer(unittest.TestCase):

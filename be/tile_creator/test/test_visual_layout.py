@@ -2,7 +2,7 @@ import unittest
 import numpy as np
 from be.tile_creator.src.graph.token_graph import TokenGraph
 from be.tile_creator.src.layout.visual_layout import VisualLayout
-from be.gtm import getFinalConfigurations
+from commands.gtm import getFinalConfigurations
 import math
 from be.tile_creator.src.new_way.test.fixtures import PREPROCESSED_EDGES, UNIQUE_ADDRESSES, FAKE_NODES, TEST_DATA
 

@@ -6,7 +6,7 @@ from be.tile_creator.src.new_way.test.fixtures import TEST_DATA
 
 from be.tile_creator.src.render.transparency_calculator import TransparencyCalculator
 from be.utils import calculateDiagonalSquareOfSide, findIndexOfNearest
-from be.gtm import getFinalConfigurations
+from commands.gtm import getFinalConfigurations
 
 
 class TestTransparencyCalculator(unittest.TestCase):

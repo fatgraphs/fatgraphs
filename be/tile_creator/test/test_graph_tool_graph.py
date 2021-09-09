@@ -1,16 +1,14 @@
-import os
+
 import unittest
-import cairo
 import numpy as np
 import pandas as pd
-from be.configuration import CONFIGURATIONS
 from be.tile_creator.src.graph.gt_token_graph import GraphToolTokenGraph
 from be.tile_creator.src.graph.token_graph import TokenGraph
 from be.tile_creator.src.layout.visual_layout import VisualLayout
 from be.tile_creator.src.metadata.token_graph_metadata import TokenGraphMetadata
 from be.tile_creator.src.new_way.test.fixtures import TEST_DATA
 from be.tile_creator.src.render.transparency_calculator import TransparencyCalculator
-from be.gtm import getFinalConfigurations
+from commands.gtm import getFinalConfigurations
 
 
 class TestGraphToolGraph(unittest.TestCase):
