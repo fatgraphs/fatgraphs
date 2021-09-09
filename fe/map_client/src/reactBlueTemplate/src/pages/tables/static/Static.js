@@ -14,7 +14,6 @@ class Static extends React.Component {
 
 
     render() {
-        console.log(">>>>>> ", this.props.closestVertex)
         return (
             <div className={s.root}>
 

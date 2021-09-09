@@ -65,6 +65,12 @@ export function fetchMatchingVertices(graphId, metadataObject) {
     return doRequest(url);
 }
 
+
+export function fetchEdgePlot(graphId, zoom_level) {
+    let url = UrlComposer.edgePlot(graphId, zoom_level);
+    return doRequest(url);
+}
+
 export function postVertexMetadata(vertex, metadataObject) {
     let url = UrlComposer.addVertexMetadata();
     let type = metadataObject['type'];

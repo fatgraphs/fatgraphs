@@ -22,3 +22,17 @@ class TileNameResource(Resource):
             tile_name = TileService.get_tile_name(z, x, y)
             return send_from_directory(tile_folder, tile_name, mimetype='image/jpeg')
 
+
+
+@api.route("/plot/<string:graph_id>/<signed_int:z>")
+@api.param("graph_id", "Graph Id")
+@api.param("z", "Zoom Level")
+class EdgePlotsResource(Resource):
+
+    def get(self, graph_id: int, z: int):
+        with SessionLocal() as db:
+            graph = GraphService.get_by_id(graph_id, db)
+            graph_name = graph.graph_name
+            tile_folder = TileService.get_tile_folder(graph_name, graph_id)
+            plot_name = "z_{}_distribution.png".format(z)
+            return send_from_directory(tile_folder, plot_name, mimetype='image/jpeg')

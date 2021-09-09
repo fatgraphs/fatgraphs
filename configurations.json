@@ -5,6 +5,7 @@
     "availableGraphs": "graph",
     "autocompletionTerms": "searches/autocomplete-term/{page}",
     "tile": "tile/{graphId}/{z}/{x}/{y}.png?{randint}",
+    "edgePlot": "tile/plot/{graphId}/{z}",
     "matchingVertex": {
       "type": "vertex/type/{value}",
       "label": "vertex/label/{value}",

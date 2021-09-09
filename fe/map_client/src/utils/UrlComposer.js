@@ -66,6 +66,13 @@ class UrlComposer {
     static recentMetadataSearches(){
         return configs['endpoints']['base'] + configs['endpoints']['recentMetadataSearches'];
     }
+
+    static edgePlot(graphId, zoom_level) {
+        let toParametriseUrlFragment = configs['endpoints']['edgePlot']
+        let parametrisedUrlFragment = toParametriseUrlFragment.replace(/{graphId}/g, graphId);
+        parametrisedUrlFragment = parametrisedUrlFragment.replace(/{z}/g, zoom_level);
+        return configs['endpoints']['base'] +parametrisedUrlFragment;
+    }
 }
 
 export default UrlComposer;

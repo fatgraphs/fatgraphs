@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {withRouter} from "react-router-dom";
-import {fetchGraph, fetchMatchingVertices, fetchRecentMetadata} from "../../APILayer";
+import {fetchEdgePlot, fetchGraph, fetchMatchingVertices} from "../../APILayer";
 import _ from 'underscore';
 import {MyContext} from "../../Context";
 import GraphMap from "./GraphMap";
@@ -9,7 +9,7 @@ import GraphTitle from "./GraphTitle";
 import CopyGtmCommand from "./CopyGtmCommand";
 import s from './singleGraph.module.scss';
 import TagListGraph from "../tagList/tagListGraph";
-import {toMapCoordinate} from "../../utils/CoordinatesUtil";
+import {toMapCoordinate} from "../../utils/CoordinatesUtil"; import Fillable from "../../reactBlueTemplate/src/pages/tables/static/Fillable"; import UrlComposer from "../../utils/UrlComposer";
 
 class SingleGraphView extends Component {
 
@@ -53,9 +53,16 @@ class SingleGraphView extends Component {
     // className={'grid grid-rows-tokenGraphLayout grid-cols-tokenGraphLayout grid-cols-3 gap-1 p-4 h-full'}>
 
     render() {
+
         if (this.state.graphMetadata === undefined) {
             return <div>Loading . . . </div>
         } else {
+
+            let plot_urls = []
+            for(let z = 0; z < this.state.graphMetadata['zoomLevels']; z++){
+                plot_urls.push(UrlComposer.edgePlot(this.props.match.params.graphId, z))
+            }
+
             return (
                 <div className={s.singleGraphGrid}>
 
@@ -84,7 +91,9 @@ class SingleGraphView extends Component {
                         selectedMetadataMarkers={this.state.markersSelectedMetadata}
                         recentMetadataSearches={this.state.recentMetadataSearches}/>
 
-                    <SidePanel/>
+                    <Fillable>
+                        {plot_urls.map(url => <img src={url}/>)}
+                    </Fillable>
                 </div>
             );
         }
