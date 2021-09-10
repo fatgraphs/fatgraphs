@@ -55,7 +55,7 @@ def _to_128(image):
     return util.img_as_ubyte(resize(image, (128, 128, image.shape[2])))
 
 
-output_path = "../assets/vertex_icons/tokens"
+output_path = "../assets/vertex_icons/custom"
 for icon, path in zip(raw_pngs, raw_pngs_paths):
 
     icon = _to_128(icon)
