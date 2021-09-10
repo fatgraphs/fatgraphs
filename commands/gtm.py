@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 import getopt, sys, os
-
-# -n "experiment number 7" -csv="path/to/file" -ts=512 -z=3 -min_t=0.01 -max_t=0.1 -std=0.5 -max_edge_thickness=8 -min_edge_thickness=1
-from be.configuration import CONFIGURATIONS
+os.environ["FLASK_ENV"] = "development"
+sys.path.append(os.path.abspath('..'))
 from be.tile_creator.main import main
 
 
@@ -16,6 +15,7 @@ def extractArguments():
                     "max_size=", "curvature=", "mean_t="]
     try:
         arguments, values = getopt.getopt(argumentList, shortOptions, longOptions)
+        print(">>> ", arguments)
     except getopt.error as err:
         # Output error, and return with an error code
         print(str(err))
@@ -34,14 +34,14 @@ def getFinalConfigurations(args, graph_name):
         'graph_name': graph_name,
         "tile_size": int(args.get('--ts', 256)),
         "zoom_levels": int(args.get('-z', 2)),
-        "min_transparency": float(args.get('--minT', 0)),
-        "max_transparency": float(args.get('--maxT', 0.1)),
-        "tile_based_mean_transparency": float(args.get('--meanT', 0.5)),
+        "min_transparency": float(args.get('--min_t', 0)),
+        "max_transparency": float(args.get('--max_t', 0.1)),
+        "tile_based_mean_transparency": float(args.get('--mean_t', 0.5)),
         "std_transparency_as_percentage": float(args.get("--std", 0.25)),
-        "max_edge_thickness": float(args.get('--maxThick', 2)),
-        "med_edge_thickness": float(args.get('--medThick', 0.25)),
-        "max_vertex_size": float(args.get("--maxSize", 10)),
-        "med_vertex_size": float(args.get("--medSize", 0.5)),
+        "max_edge_thickness": float(args.get('--max_thick', 2)),
+        "med_edge_thickness": float(args.get('--med_thick', 0.25)),
+        "max_vertex_size": float(args.get("--max_size", 10)),
+        "med_vertex_size": float(args.get("--med_size", 0.5)),
         "curvature": float(args.get("--curvature", 0.1)),
         "bg_color": "grey",
         "source": args['--csv'],

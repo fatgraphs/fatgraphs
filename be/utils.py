@@ -38,7 +38,8 @@ def shift_and_scale(originalValues, targetMedian, targetMax, MINIMUM = 0.000001)
     # TODO define a better minimum
     # if MINIMUM > target_max:
     #     raise Exception("Minimum is greater than target_max, something is wrong.")
-    scaledAndShiftedValues = np.clip(scaledAndShiftedValues, MINIMUM, max(2, targetMax))
+    # scaledAndShiftedValues = np.clip(scaledAndShiftedValues, MINIMUM, max(2, targetMax))
+    scaledAndShiftedValues = np.clip(scaledAndShiftedValues, MINIMUM, targetMax)
     return scaledAndShiftedValues
 
 
