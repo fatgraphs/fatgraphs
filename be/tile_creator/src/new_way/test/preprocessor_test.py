@@ -50,8 +50,8 @@ class TestPreprocessor:
     def test_fake_vertices_have_highest_id(self, raw_data, preprocessor):
         augmented_vertices = preprocessor._add_fake_vertices(raw_data)
         highest_id_prior_to_addition = raw_data.index.values.max()
-        fake_address_1 = augmented_vertices.loc[augmented_vertices['source'] == CONFIGURATIONS['fake_vertex_1']]
-        fake_address_2 = augmented_vertices.loc[augmented_vertices['source'] == CONFIGURATIONS['fake_vertex_2']]
+        fake_address_1 = augmented_vertices.loc[augmented_vertices['source'] == CONFIGURATIONS['corner_vertices']['fake_vertex_1']]
+        fake_address_2 = augmented_vertices.loc[augmented_vertices['source'] == CONFIGURATIONS['corner_vertices']['fake_vertex_2']]
 
         assert fake_address_1.index.values[0] == highest_id_prior_to_addition + 1
         assert fake_address_2.index.values[0] == highest_id_prior_to_addition + 2

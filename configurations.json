@@ -26,10 +26,12 @@
   "graphsHome": "/home/carlo/tokengallery/graph-tiles",
   "verticesMetadataFileName": "vertices_metadata.csv",
   "graphMetadataFileName": "graph_metadata.csv",
-  "fake_vertex_1": "0x123456789abcdef01",
-  "fake_vertex_2": "0x123456789abcdef02",
-  "fake_vertex_amount": 0.00000001,
-  "fake_vertex_block_number": 1,
+  "corner_vertices": {
+    "fake_vertex_1": "0x123456789abcdef01",
+    "fake_vertex_2": "0x123456789abcdef02",
+    "fake_vertex_amount": 0.00000001,
+    "fake_vertex_block_number": 1
+  },
   "vertex_external_id": "vertex",
   "vertex_internal_id": "index",
   "icons": {
@@ -38,6 +40,6 @@
     "ca": "assets/vertex_icons/generic/ca.png",
     "ca_labelled": "assets/vertex_icons/generic/ca_labelled.png",
     "inactive_fake": "assets/vertex_icons/generic/inactive_fake.png",
-    "token_icons_home": "assets/vertex_icons/tokens"
+    "token_icons_home": "assets/vertex_icons/custom"
   }
 }

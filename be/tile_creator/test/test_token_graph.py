@@ -34,8 +34,8 @@ class TestTokenGraph(unittest.TestCase):
         highest_id = cls.graph.address_to_id['index'].max()
         fake_address_1 = cls.graph.address_to_id.where(cls.graph.address_to_id['index'] == highest_id - 1)['vertex'].dropna().values[0]
         fake_address_2 = cls.graph.address_to_id.where(cls.graph.address_to_id['index'] == highest_id)['vertex'].dropna().values[0]
-        cls.assertEqual(fake_address_1, CONFIGURATIONS['fake_vertex_1'])
-        cls.assertEqual(fake_address_2, CONFIGURATIONS['fake_vertex_2'])
+        cls.assertEqual(fake_address_1, CONFIGURATIONS['corner_vertices']['fake_vertex_1'])
+        cls.assertEqual(fake_address_2, CONFIGURATIONS['corner_vertices']['fake_vertex_2'])
 
     def test_edge_to_amount_map_is_equivalent_to_the_cudf_version(cls):
         cls.assertIsNotNone(cls.graph.edge_ids_to_amount_cudf)

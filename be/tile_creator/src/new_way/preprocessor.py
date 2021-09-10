@@ -16,10 +16,10 @@ class DataPreprocessor:
         return result
 
     def _check_fake_vertices_are_unused(self, data):
-        if CONFIGURATIONS['fake_vertex_1'] in data['target'].values or \
-                CONFIGURATIONS['fake_vertex_1'] in data['source'].values or \
-                CONFIGURATIONS['fake_vertex_2'] in data['target'].values or \
-                CONFIGURATIONS['fake_vertex_2'] in data['source'].values:
+        if CONFIGURATIONS['corner_vertices']['fake_vertex_1'] in data['target'].values or \
+                CONFIGURATIONS['corner_vertices']['fake_vertex_1'] in data['source'].values or \
+                CONFIGURATIONS['corner_vertices']['fake_vertex_2'] in data['target'].values or \
+                CONFIGURATIONS['corner_vertices']['fake_vertex_2'] in data['source'].values:
             raise Exception(
                 "Fake addresses are in use, either chanhe the fake addresses in configuration or rename them in the data")
 
@@ -32,18 +32,18 @@ class DataPreprocessor:
         """
         We add two fake nodes that will be later positioned such that the resulting layout is a square
         """
-        block_number = {'blockNumber': CONFIGURATIONS['fake_vertex_block_number']} \
+        block_number = {'blockNumber': CONFIGURATIONS['corner_vertices']['fake_vertex_block_number']} \
             if 'block_number' in data.columns or 'blockNumber' in data.columns \
             else {}
 
-        shared = {'amount': CONFIGURATIONS['fake_vertex_amount'],
+        shared = {'amount': CONFIGURATIONS['corner_vertices']['fake_vertex_amount'],
                   **block_number}
 
-        data = data.append([{'source': CONFIGURATIONS['fake_vertex_1'],
-                             'target': CONFIGURATIONS['fake_vertex_1'],
+        data = data.append([{'source': CONFIGURATIONS['corner_vertices']['fake_vertex_1'],
+                             'target': CONFIGURATIONS['corner_vertices']['fake_vertex_1'],
                              **shared}], ignore_index=True)
 
-        data = data.append([{'source': CONFIGURATIONS['fake_vertex_2'],
-                             'target': CONFIGURATIONS['fake_vertex_2'],
+        data = data.append([{'source': CONFIGURATIONS['corner_vertices']['fake_vertex_2'],
+                             'target': CONFIGURATIONS['corner_vertices']['fake_vertex_2'],
                              **shared}], ignore_index=True)
         return data

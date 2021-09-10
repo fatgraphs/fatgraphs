@@ -21,7 +21,8 @@ class TestVertexData:
         def assert_all_vertices_in_vertex_data_are_in_file_except_fake_vertices(vertices_from_file,
                                                                                 vertices_vertex_data):
             assert all(
-                v in vertices_from_file or v == CONFIGURATIONS['fake_vertex_1'] or v == CONFIGURATIONS['fake_vertex_2']
+                v in vertices_from_file or v == CONFIGURATIONS['corner_vertices']['fake_vertex_1'] or\
+                v == CONFIGURATIONS['corner_vertices']['fake_vertex_2']
                 for
                 v in vertices_vertex_data)
 
