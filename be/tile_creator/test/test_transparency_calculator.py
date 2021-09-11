@@ -26,7 +26,7 @@ class TestTransparencyCalculator(unittest.TestCase):
                     config = getFinalConfigurations({'--csv': TEST_DATA,
                                                      "--std": std,
                                                      '-z': zoom,
-                                                     '--meanT': 2.0},
+                                                     '--mean_t': 2.0},
                                                     "test_graph")
                     cls.transparencyCalculators.append(TransparencyCalculator(graphSide, config))
 

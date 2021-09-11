@@ -1,4 +1,4 @@
-
+import os
 import unittest
 import numpy as np
 import pandas as pd
@@ -18,6 +18,7 @@ class TestGraphToolGraph(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        os.chdir(os.path.abspath(os.path.join(os.getcwd(), 'tokengallery')))
         cls.graph = TokenGraph(TEST_DATA, {'dtype': {'amount': object}})
         defaultConfig = getFinalConfigurations({'--csv': TEST_DATA},  "test_graph")
         cls.layout = VisualLayout(cls.graph, defaultConfig)
