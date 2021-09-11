@@ -21,10 +21,10 @@ def ensure_directory_exists(path):
         os.mkdir(path)
 
 def mkdir_for_graph(graph_name, graph_id):
-    ensure_directory_exists(CONFIGURATIONS['graphsHome'])
-    path = os.path.join(CONFIGURATIONS['graphsHome'])
+    graphs_home = os.path.abspath(CONFIGURATIONS['graphsHome'])
+    ensure_directory_exists(graphs_home)
     graph_folder = f'{graph_name}_{graph_id}'
-    path = os.path.join(path, graph_folder)
+    path = os.path.join(graphs_home, graph_folder)
     ensure_directory_exists(path)
     return path
 

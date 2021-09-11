@@ -1,3 +1,4 @@
+import fnmatch
 import os
 import cairo
 from graph_tool import Graph
@@ -51,34 +52,28 @@ class GraphToolTokenGraph:
     def make_shapes(self, string_shapes):
 
         def get_token_icon_mapper():
-            fs = listdir(join(CONFIGURATIONS['home'], CONFIGURATIONS['icons']['token_icons_home']))
+            custom_icons_file_name = fnmatch.filter(listdir(os.path.abspath(CONFIGURATIONS['icons']['token_icons_home'])), "*.png")
 
-            token_icon_names = [f for f in fs if isfile(join(CONFIGURATIONS['home'],
-                CONFIGURATIONS['icons']['token_icons_home'], f))]
+            custom_icons_full_path = [os.path.abspath(join(CONFIGURATIONS['icons']['token_icons_home'], f)) for f in custom_icons_file_name]
 
-            token_icon_paths = [cairo.ImageSurface.create_from_png(join(CONFIGURATIONS['home'], CONFIGURATIONS['icons']['token_icons_home'], f))
-                    for f in fs if isfile(join(CONFIGURATIONS['home'],
-                CONFIGURATIONS['icons']['token_icons_home'], f))]
+            token_icon_paths = [cairo.ImageSurface.create_from_png(f) for f in custom_icons_full_path]
 
-            token_icon_mapper = dict(zip(token_icon_names, token_icon_paths))
+            token_icon_mapper = dict(zip(custom_icons_file_name, token_icon_paths))
+
             return token_icon_mapper
 
         def get_icons_mappper():
+            print(os.path.abspath(CONFIGURATIONS['icons']["eoa"]))
             eoa = cairo.ImageSurface.create_from_png(
-                    os.path.join(CONFIGURATIONS['home'],
-                    CONFIGURATIONS['icons']["eoa"]))
+                    os.path.abspath(CONFIGURATIONS['icons']["eoa"]))
             eoa_labelled = cairo.ImageSurface.create_from_png(
-                    os.path.join(CONFIGURATIONS['home'],
-                    CONFIGURATIONS['icons']["eoa_labelled"]))
+                    os.path.abspath(CONFIGURATIONS['icons']["eoa_labelled"]))
             ca = cairo.ImageSurface.create_from_png(
-                    os.path.join(CONFIGURATIONS['home'],
-                    CONFIGURATIONS['icons']["ca"]))
+                os.path.abspath(CONFIGURATIONS['icons']["ca"]))
             ca_labelled = cairo.ImageSurface.create_from_png(
-                    os.path.join(CONFIGURATIONS['home'],
-                    CONFIGURATIONS['icons']["ca_labelled"]))
+                    os.path.abspath(CONFIGURATIONS['icons']["ca_labelled"]))
             inactive_fake = cairo.ImageSurface.create_from_png(
-                    os.path.join(CONFIGURATIONS['home'],
-                    CONFIGURATIONS['icons']["inactive_fake"]))
+                    os.path.abspath(CONFIGURATIONS['icons']["inactive_fake"]))
             result = {
                     'eoa_unlabelled': eoa,
                     'eoa_labelled': eoa_labelled,
