@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {withRouter} from "react-router-dom";
-import {fetchEdgePlot, fetchGraph, fetchMatchingVertices} from "../../APILayer";
+import {fetchGraph, fetchMatchingVertices} from "../../APILayer";
 import _ from 'underscore';
 import {MyContext} from "../../Context";
 import GraphMap from "./GraphMap";
@@ -9,7 +9,7 @@ import GraphTitle from "./GraphTitle";
 import CopyGtmCommand from "./CopyGtmCommand";
 import s from './singleGraph.module.scss';
 import TagListGraph from "../tagList/tagListGraph";
-import {toMapCoordinate} from "../../utils/CoordinatesUtil"; import Fillable from "../../reactBlueTemplate/src/pages/tables/static/Fillable"; import UrlComposer from "../../utils/UrlComposer";
+import {toMapCoordinate} from "../../utils/CoordinatesUtil"; import Fillable from "../../reactBlueTemplate/src/pages/tables/static/Fillable"; import UrlComposer from "../../utils/UrlComposer"; import {IconsLegend} from "./IconsLegend";
 
 class SingleGraphView extends Component {
 
@@ -81,6 +81,11 @@ class SingleGraphView extends Component {
                         <SidePanel
                             closestVertex={this.state.closestVertex}
                             selectedVertices={this.state.markersSelectedMetadata}/>
+                        <div className={'mt-2'}>
+                            <Fillable>
+                                <IconsLegend></IconsLegend>
+                            </Fillable>
+                        </div>
                     </div>
 
                     <GraphMap
