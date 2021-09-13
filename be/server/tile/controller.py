@@ -1,3 +1,4 @@
+import os
 from flask import send_from_directory
 from flask_restx import Namespace, Resource
 from .service import TileService
@@ -20,7 +21,7 @@ class TileNameResource(Resource):
             graph_name = graph.graph_name
             tile_folder = TileService.get_tile_folder(graph_name, graph_id)
             tile_name = TileService.get_tile_name(z, x, y)
-            return send_from_directory(tile_folder, tile_name, mimetype='image/jpeg')
+            return send_from_directory(os.path.abspath(tile_folder), tile_name, mimetype='image/jpeg')
 
 
 
@@ -35,4 +36,4 @@ class EdgePlotsResource(Resource):
             graph_name = graph.graph_name
             tile_folder = TileService.get_tile_folder(graph_name, graph_id)
             plot_name = "z_{}_distribution.png".format(z)
-            return send_from_directory(tile_folder, plot_name, mimetype='image/jpeg')
+            return send_from_directory(os.path.abspath(tile_folder), plot_name, mimetype='image/jpeg')

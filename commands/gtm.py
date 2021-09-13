@@ -2,7 +2,9 @@
 import getopt, sys, os
 os.environ["FLASK_ENV"] = "development"
 sys.path.append(os.path.abspath('..'))
-os.chdir(os.path.abspath(".."))
+if os.getcwd().split(os.sep)[-1] == "commands":
+    # if it's run from the commands frolder then chdire to be in root
+    os.chdir(os.path.abspath(".."))
 from be.tile_creator.main import main
 
 

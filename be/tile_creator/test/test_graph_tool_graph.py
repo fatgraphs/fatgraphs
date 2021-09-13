@@ -18,7 +18,8 @@ class TestGraphToolGraph(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        os.chdir(os.path.abspath(os.path.join(os.getcwd(), 'tokengallery')))
+        if not os.getcwd().split('/')[-1] == 'tokengallery':
+            os.chdir(os.path.abspath(os.path.join(os.getcwd(), 'tokengallery')))
         cls.graph = TokenGraph(TEST_DATA, {'dtype': {'amount': object}})
         defaultConfig = getFinalConfigurations({'--csv': TEST_DATA},  "test_graph")
         cls.layout = VisualLayout(cls.graph, defaultConfig)
