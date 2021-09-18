@@ -32,7 +32,7 @@ class VertexMetadataService:
             vertex=metadata_to_insert['vertex'],
             type=metadata_to_insert['type'],
             label=metadata_to_insert['label'],
-            account_type=metadata_to_insert['account_type'],
+            account_type=metadata_to_insert.get('account_type'),
             description=metadata_to_insert['description'])
 
         # db.add(new_metadata)

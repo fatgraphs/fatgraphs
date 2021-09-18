@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import * as PropTypes from "prop-types";
 import {func, string} from "prop-types";
-import {TYPE_ICONS} from "../single-graph/VisualElements";
+import {TYPE_ICONS} from "../single-graph/TypeIcons";
 
 class AddableElement extends Component {
 

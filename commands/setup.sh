@@ -43,7 +43,5 @@ PGPASSWORD=$tokengallerist_password psql -U tokengallerist -h 127.0.0.1 -d tg_ma
 
 echo "Loading account types located at ${ACCOUNT_TYPE_HOMES[1]} and ${ACCOUNT_TYPE_HOMES[2]}..."
 PGPASSWORD=$tokengallerist_password psql -U tokengallerist -h 127.0.0.1 -d tg_main -v v1=\'${ACCOUNT_TYPE_HOMES[1]}\' -v v2=\'"${ACCOUNT_TYPE_HOMES[2]}"\' -f scripts/load_account_types.sql
-#echo "Creating index on account_type table after it has been populated..."
-#psql -U postgres -h 127.0.0.1 -d tg_main -c "CREATE INDEX IF NOT EXISTS vertex_id ON tg_account_type (vertex);"
 
 echo 'Done'

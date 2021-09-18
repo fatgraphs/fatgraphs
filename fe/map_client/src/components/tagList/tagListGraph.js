@@ -4,7 +4,7 @@ import './tagBox.scss'
 import './closeIcon.scss'
 import './closeBox.scss'
 import Autocompletion from "../autocompletion/Autocompletion";
-import {TYPE_ICONS} from "../single-graph/VisualElements";
+import {TYPE_ICONS} from "../single-graph/TypeIcons";
 
 class TagListGraph extends Component {
 

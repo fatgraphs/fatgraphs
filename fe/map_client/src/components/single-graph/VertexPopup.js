@@ -7,6 +7,7 @@ import './leafletPopup.scss'
 import {postVertexMetadata} from "../../APILayer";
 
 class VertexPopup extends Component {
+
     constructor(props) {
         super(props);
         this.state = {
@@ -18,13 +19,19 @@ class VertexPopup extends Component {
         this.onBlur = this.onBlur.bind(this);
     }
 
+    componentDidMount() {
+
+    }
+
     render() {
         let addedMetadata = this.getAddedMetadata();
+        let labelsString = this.props.labels === null ? 'NA' : this.props.labels.join(', ');
+        let typesString = this.props.types === null ? 'NA' : this.props.types.join(', ');
         return (
             <Popup>
                 <>
-                    <div><span>Types : </span> <span>{this.props.typesConcatenated + addedMetadata['type']}</span></div>
-                    <div><span>Labels : </span> <span>{this.props.labelsConcatenated + addedMetadata['label']}</span>
+                    <div><span>Types : </span> <span>{typesString + addedMetadata['type']}</span></div>
+                    <div><span>Labels : </span> <span>{labelsString + addedMetadata['label']}</span>
                     </div>
                     <a href={'https://etherscan.io/address/' + this.props.vertex}
                        target="_blank">{this.props.vertex}</a>
@@ -46,13 +53,6 @@ class VertexPopup extends Component {
                             postVertexMetadata(this.props.vertex, metadataObject)
                             this.setState({recentlyAddedMetadata: [...this.state.recentlyAddedMetadata, metadataObject]})
                     }}/>
-                    {/*<searchBar*/}
-                    {/*    showSelected={false}*/}
-                    {/*    graphName={this.props.graphName}*/}
-                    {/*    graphId={this.props.graphId}*/}
-                    {/*    selectedMetadataCallback={this.vertexAddMetadataCallback}*/}
-                    {/*    recentMetadataSearches={this.props.recentMetadataSearches}*/}
-                    {/*    placeholder={'ADD METADATA'}/>*/}
                 </>
             </Popup>
         );
