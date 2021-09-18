@@ -2,7 +2,7 @@
   "endpoints": {
     "base": "http://127.0.0.1:5000/tokengallery/",
     "availableGraphs": "graph",
-    "autocompletionTerms": "searches/autocomplete-term/{page}",
+    "autocompletionTerms": "searches/autocomplete-term/{graphId}",
     "tile": "tile/{graphId}/{z}/{x}/{y}.png?{randint}",
     "edgePlot": "tile/plot/{graphId}/{z}",
     "matchingVertex": {

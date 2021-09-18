@@ -51,9 +51,9 @@ class UrlComposer {
         return configs['endpoints']['base'] + configs['endpoints']['availableGraphs'];
     }
 
-    static autocompletionTerms(page) {
+    static autocompletionTerms(graphId) {
         let toParametriseUrlFragment = configs['endpoints']['autocompletionTerms'];
-        let parametrisedUrlFragment = toParametriseUrlFragment.replace(/{page}/g, String(page));
+        let parametrisedUrlFragment = toParametriseUrlFragment.replace(/{graphId}/g, String(graphId));
         return configs['endpoints']['base'] + parametrisedUrlFragment
     }
 

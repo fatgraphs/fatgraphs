@@ -18,7 +18,7 @@ export function getCircleIcon(className, iconSize) {
     return circleIcon
 }
 
-export function getVertexPopup(typesString, labelsString, vertex, graphName, graphId, callBack, recentMetadataSearches) {
+export function getVertexPopup(typesString, labelsString, vertex, graphName, graphId, callBack, recentMetadataSearches, autocompletionTerms) {
     /**
      * The popup when you click on a vertex-marker
      */
@@ -30,6 +30,7 @@ export function getVertexPopup(typesString, labelsString, vertex, graphName, gra
         graphId={graphId}
         selectionCallback={callBack}
         recentMetadataSearches={recentMetadataSearches}
+        autocompletionTerms={autocompletionTerms}
     />;
 }
 

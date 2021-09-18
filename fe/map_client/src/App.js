@@ -21,21 +21,6 @@ class App extends Component {
 
     async componentDidMount() {
         document.title = "Token GraphGallery.js"
-        let page = 1
-        let autocomplete_terms = []
-        while(page !== 0){
-             let fetched = await fetchAutocompletionTerms(page);
-             if(fetched.length === 0){
-                 page = 0
-                 break;
-             }
-             autocomplete_terms = [...autocomplete_terms, ...fetched]
-             page += 1
-        }
-
-        this.setState({
-            autocompleteTerms: autocomplete_terms
-        })
     }
 
     render() {
@@ -43,7 +28,7 @@ class App extends Component {
             <HashRouter>
                 <NavBar/>
 
-                <MyContext.Provider value={{autocompleteTerms: this.state.autocompleteTerms}}>
+                <MyContext.Provider>
                     <Switch>
                         <Route exact path="/" component={Gallery}>
                         </Route>

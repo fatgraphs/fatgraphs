@@ -37,13 +37,15 @@ class VertexPopup extends Component {
                         onFocus={() => {
                             this.setState({showAutocompletion: true})
                         }}/>
-                    <Autocompletion currentInput={this.state.currentInput}
-                                    shouldRender={this.state.showAutocompletion}
-                                    recentMetadataSearches={[]}
-                                    onClick={(metadataObject) => {
-                                        postVertexMetadata(this.props.vertex, metadataObject)
-                                        this.setState({recentlyAddedMetadata: [...this.state.recentlyAddedMetadata, metadataObject]})
-                                    }}/>
+                    <Autocompletion
+                        autocompletionTerms={this.props.autocompletionTerms}
+                        currentInput={this.state.currentInput}
+                        shouldRender={this.state.showAutocompletion}
+                        recentMetadataSearches={[]}
+                        onClick={(metadataObject) => {
+                            postVertexMetadata(this.props.vertex, metadataObject)
+                            this.setState({recentlyAddedMetadata: [...this.state.recentlyAddedMetadata, metadataObject]})
+                    }}/>
                     {/*<searchBar*/}
                     {/*    showSelected={false}*/}
                     {/*    graphName={this.props.graphName}*/}

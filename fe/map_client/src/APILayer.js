@@ -50,8 +50,8 @@ export function fetchGraph(graphId) {
     return doRequest(url, {});
 }
 
-export function fetchAutocompletionTerms(page) {
-    let url = UrlComposer.autocompletionTerms(page)
+export function fetchAutocompletionTerms(graphId) {
+    let url = UrlComposer.autocompletionTerms(graphId)
     return doRequest(url, {});
 }
 

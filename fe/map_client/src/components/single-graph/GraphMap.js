@@ -54,7 +54,7 @@ class GraphMap extends React.Component {
                 maxZoom={this.props.graphMetadata['zoomLevels'] - 1}
                 tileSize={this.props.graphMetadata.tileSize}
             />
-            {this.generateCircleWithPopup(this.state.closestVertex, this.state.zoom)}
+            {this.generateCircleWithPopup(this.state.closestVertex, this.state.zoom, this.props.autocompletionTerms)}
             {this.props.selectedMetadataMarkers.map(
                 (e, i) => {
                 return this.generateTextLabel(e, this.state.zoom)
@@ -107,7 +107,7 @@ class GraphMap extends React.Component {
         this.props.setDisplayedAddress(closestVertex)
     }
 
-    generateCircleWithPopup(markerObject, zoom) {
+    generateCircleWithPopup(markerObject, zoom, autocompletionTerms) {
         if (markerObject !== undefined) {
             let {types, labels, pos, size, vertex} = markerObject
             let iconSize = size * (2 ** zoom);
@@ -121,7 +121,8 @@ class GraphMap extends React.Component {
                 this.props.graphName,
                 this.props.graphId,
                 this.addSingleMetadataToVertex(vertex),
-                this.props.recentMetadataSearches);
+                this.props.recentMetadataSearches,
+                autocompletionTerms);
 
             return (
                 <Marker key={generateLargeRandom()}

@@ -22,7 +22,7 @@ class Autocompletion extends Component {
     render() {
 
         let containsCurrentInputRegex = new RegExp('.*' + this.props.currentInput.toLowerCase() + '.*');
-        let matchingAutocompleteTerms = this.context['autocompleteTerms'].filter(s => s['value']?.toLowerCase().match(containsCurrentInputRegex));
+        let matchingAutocompleteTerms = this.props['autocompletionTerms'].filter(s => s['value']?.toLowerCase().match(containsCurrentInputRegex));
         // limit showed autocompletion terms for performance reasons
         matchingAutocompleteTerms = matchingAutocompleteTerms.slice(0, this.state.howManyToShow)
 

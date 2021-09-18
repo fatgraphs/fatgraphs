@@ -48,6 +48,7 @@ class TagListGraph extends Component {
 
                 <Autocompletion currentInput={this.state.currentInput}
                                 shouldRender={this.state.showAutocompletion}
+                                autocompletionTerms={this.props.autocompletionTerms}
                                 recentMetadataSearches={[]}
                 onClick={(e) => {
                     // console.log("from taglist graph ", e)

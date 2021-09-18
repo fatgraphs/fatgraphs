@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {withRouter} from "react-router-dom";
-import {fetchGraph, fetchMatchingVertices} from "../../APILayer";
+import {fetchAutocompletionTerms, fetchGraph, fetchMatchingVertices} from "../../APILayer";
 import _ from 'underscore';
 import {MyContext} from "../../Context";
 import GraphMap from "./GraphMap";
@@ -31,8 +31,10 @@ class SingleGraphView extends Component {
 
     async componentDidMount() {
         let graphMetadata = await fetchGraph(this.props.match.params.graphId);
+        let autocompletionTerms = await fetchAutocompletionTerms(this.props.match.params.graphId);
         this.setState({
             graphMetadata: graphMetadata,
+            autocompletionTerms: autocompletionTerms,
             recentMetadataSearches: []
         })
     }
@@ -70,6 +72,7 @@ class SingleGraphView extends Component {
                         graphMetadata={this.state.graphMetadata}/>
 
                     <TagListGraph
+                        autocompletionTerms={this.state.autocompletionTerms}
                         onChange={(currentSelection) => this.setState({selectedMetadata: currentSelection})}/>
 
 
@@ -89,6 +92,7 @@ class SingleGraphView extends Component {
                     </div>
 
                     <GraphMap
+                        autocompletionTerms={this.state.autocompletionTerms}
                         graphMetadata={this.state.graphMetadata}
                         graphId={this.props.match.params.graphId}
                         graphName={this.props.match.params.graphName}
