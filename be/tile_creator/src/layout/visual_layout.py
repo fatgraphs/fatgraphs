@@ -185,7 +185,7 @@ class VisualLayout:
 
         # TODO what if a vertex NOT present in the account_type table is then found in type_labels? keep fake_incative
 
-        frame = VertexMetadataService.merge_graph_vertices_with_metadata(db, graph_id)
+        frame = VertexMetadataService.merge_graph_vertices_with_metadata(graph_id, db)
         if not frame.empty:
             result = result.merge(frame, left_on='vertex', right_on='vertex', how='left')
             mark_labelled()
