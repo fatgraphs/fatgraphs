@@ -1,7 +1,8 @@
 @import '../../../styles/app';
 
 .root {
-
+  overflow-y: scroll;
+  overflow-x: hidden;
 }
 
 .overFlow {
