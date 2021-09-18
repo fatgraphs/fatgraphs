@@ -10,7 +10,7 @@ class SearchTermService:
     @staticmethod
     def get_autocomplete_terms(graph_id, db) -> List[SearchTerm]:
 
-        metadata = VertexMetadataService.merge_graph_vertices_with_metadata(db, graph_id)
+        metadata = VertexMetadataService.merge_graph_vertices_with_metadata(graph_id, db)
 
         types = metadata.type.unique()
         labels = metadata.label.unique()

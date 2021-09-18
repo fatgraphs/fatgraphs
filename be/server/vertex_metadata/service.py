@@ -41,7 +41,7 @@ class VertexMetadataService:
         return new_metadata
 
     @staticmethod
-    def merge_with_account_type(db, graph_id: int):
+    def merge_graph_vertices_with_account_type(db, graph_id: int):
         table_name = GraphService.get_vertex_table_name(graph_id, db)
         query = """SELECT tg_account_type.vertex, tg_account_type.type FROM %(table_name)s
                     INNER JOIN tg_account_type
@@ -53,7 +53,7 @@ class VertexMetadataService:
 
 
     @staticmethod
-    def merge_graph_vertices_with_metadata(db, graph_id):
+    def merge_graph_vertices_with_metadata(graph_id, db):
         table_name = GraphService.get_vertex_table_name(graph_id, db)
         query = """SELECT * FROM %(table_name)s
                     INNER JOIN tg_vertex_metadata

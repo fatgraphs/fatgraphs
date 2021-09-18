@@ -67,34 +67,10 @@ def test_create(db: object, vertex_metadata_1_param: VertexMetadataInterface):
     assert len(by_eth) == len(by_type) == len(by_label)
     assert by_eth[0] == by_type[0] == by_label[0]
 
+# TODO
+def test_merge_graph_vertices_with_metadata(db: object):
+    pass
 
-def test_get_unique_types(db: object, vertex_metedata_1_different_id: VertexMetadata, vertex_metedata_1: VertexMetadata):
-    vertex_metedata_1_different_id.add(db)
-    vertex_metedata_1.add(db)
-    db.commit()
-    unique_types = VertexMetadataService.get_unique_types(1, db)
-    assert len(unique_types) == 1
-    assert vertex_metedata_1.type in unique_types
-
-    VertexMetadata(id=1234, type="something new", vertex=123445).add(db)
-    db.commit()
-
-    unique_types = VertexMetadataService.get_unique_types(1, db)
-    assert len(unique_types) == 2
-
-def test_get_unique_labels(db: object, vertex_metedata_1_different_id: VertexMetadata, vertex_metedata_1: VertexMetadata):
-    vertex_metedata_1_different_id.add(db)
-    vertex_metedata_1.add(db)
-    db.commit()
-    unique_labels = VertexMetadataService.get_unique_labels(1, db)
-    assert len(unique_labels) == 1
-    assert vertex_metedata_1.label in unique_labels
-
-    VertexMetadata(id=1234, type="something new", vertex=123445).add(db)
-    db.commit()
-
-    unique_labels = VertexMetadataService.get_unique_labels(1, db)
-    assert len(unique_labels) == 2
-
-def test_merge_account_type(db: object):
+# TODO
+def test_merge_graph_vertices_with_account_type(db: object):
     pass

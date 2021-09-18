@@ -177,7 +177,7 @@ class VisualLayout:
         }
         int_to_icon = {v: k for k, v in icon_to_int.items()}
 
-        account_types = VertexMetadataService.merge_with_account_type(db, graph_id)
+        account_types = VertexMetadataService.merge_graph_vertices_with_account_type(db, graph_id)
         account_types = account_types.rename(columns={'type': 'type_code'})
 
         result = self.graph.address_to_id.merge(account_types, how='left')
