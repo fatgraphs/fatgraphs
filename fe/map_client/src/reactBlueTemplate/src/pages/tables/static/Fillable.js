@@ -14,16 +14,12 @@ class Fillable extends React.Component {
 
     render() {
         return (
-            <div className={s.root}>
-                <Row>
-                    <Col lg={12} md={12} sm={12}>
-                        <Widget>
-                            <div className={s.overFlow}>
-                                {this.props.children}
-                            </div>
-                        </Widget>
-                    </Col>
-                </Row>
+            <div className={s.fillable}>
+                <Widget>
+                    <div className={s.overFlow}>
+                        {this.props.children}
+                    </div>
+                </Widget>
             </div>
         );
     }

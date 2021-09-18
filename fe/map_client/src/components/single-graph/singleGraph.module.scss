@@ -4,7 +4,7 @@
   padding: 1rem;
   display: grid;
   grid-template-columns: minmax(0, 0.15fr) minmax(0, 0.55fr) minmax(0, 0.30fr);
-  height: 100%;
+  height: 92%;
   grid-template-rows: minmax(0, 0.10fr) minmax(0, 0.90fr);
   gap: 1rem;
 }
@@ -26,4 +26,10 @@
     cursor: pointer;
     font-style: oblique;
   }
+}
+
+.plot {
+  height: 20rem;
+  border-radius: 0.5rem;
+  margin-bottom: 0.5rem;
 }

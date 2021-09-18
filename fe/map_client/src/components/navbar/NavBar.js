@@ -14,7 +14,7 @@ class NavBar extends React.Component {
 
     render() {
         return (
-            <Navbar className={`d-print-none p-3`}>
+            <Navbar className={`d-print-none p-3 ${s.navbar}`}>
 
                 <div className={`d-print-none ${s.root}`}>
                     <div>

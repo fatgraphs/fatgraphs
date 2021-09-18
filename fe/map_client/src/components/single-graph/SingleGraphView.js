@@ -101,7 +101,10 @@ class SingleGraphView extends Component {
                         recentMetadataSearches={this.state.recentMetadataSearches}/>
 
                     <Fillable>
-                        {plot_urls.map(url => <img src={url}/>)}
+                        {plot_urls.map(url => <img
+                            className={s.plot}
+                            src={url}/>
+                       )}
                     </Fillable>
                 </div>
             );
