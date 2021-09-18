@@ -25,7 +25,6 @@ class Graph(Base):
     curvature = Column(Float(precision=8))
     bg_color = Column(String())
     source = Column(String())
-    labels = Column(String())
     median_pixel_distance = Column(Float(precision=8))
     min = Column(Float(precision=8))
     max = Column(Float(precision=8))

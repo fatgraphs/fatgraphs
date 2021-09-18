@@ -37,8 +37,8 @@ class GraphService:
             tile_based_mean_transparency=graph_to_create['tile_based_mean_transparency'],
             med_edge_thickness=graph_to_create['med_edge_thickness'],
             graph_name=graph_to_create['graph_name'],
-            max_edge_thickness=graph_to_create['max_edge_thickness'],
-            labels=graph_to_create['labels'])
+            max_edge_thickness=graph_to_create['max_edge_thickness']
+            )
 
         db.add(new_graph)
         db.commit()

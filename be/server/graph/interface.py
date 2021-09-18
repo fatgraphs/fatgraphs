@@ -24,4 +24,3 @@ class GraphInterface(TypedDict, total=False):
     id: int
     graph_name: str
     max_edge_thickness: float
-    labels: str

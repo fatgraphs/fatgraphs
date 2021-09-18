@@ -16,7 +16,6 @@ CREATE TABLE IF NOT EXISTS tg_graphs
     curvature                      double precision,
     bg_color                       text,
     source                         text,
-    labels                         text,
     median_pixel_distance          real,
     min                            real,
     max                            real,

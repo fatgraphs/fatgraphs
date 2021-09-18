@@ -21,7 +21,6 @@ class GraphSchema(CamelCaseSchema):
     curvature = fields.Float()
     bg_color = fields.String()
     source = fields.String()
-    labels = fields.String()
     median_pixel_distance = fields.Float()
     min = fields.Float()
     max = fields.Float()

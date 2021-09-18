@@ -7,8 +7,6 @@ class TokenGraphMetadata:
         self.configurations = None
         self.graphData = None
 
-        configurationDictionary['labels'] = "" if configurationDictionary['labels'] is None else \
-            configurationDictionary['labels']
         self.configurations = pd.DataFrame(data=configurationDictionary, index=[0])
 
         self.graphData = pd.DataFrame(data={
