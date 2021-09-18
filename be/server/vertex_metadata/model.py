@@ -119,22 +119,6 @@ class VertexMetadata:
             id = row[1]['id'])
         return result
 
-    @staticmethod
-    def get_unique_by(db, page, by) -> List[str]:
-
-        query = """SELECT DISTINCT %(column)s 
-        FROM %(table_name)s
-        LIMIT %(limit)s
-        OFFSET %(offset)s;"""
-        execute = db.bind.engine.execute(query, {
-            'column': AsIs(by),
-            'table_name': AsIs(VertexMetadata.__type_labels__),
-            'limit': AsIs(AUTOCOMPLETE_TERMS_PER_PAGE),
-            'offset': AsIs(AUTOCOMPLETE_TERMS_PER_PAGE * (page - 1))
-        })
-        frame = to_pd_frame(execute)
-        return list(frame.values.flat)
-
     def __eq__(self, other):
         if not isinstance(other, VertexMetadata):
             return False

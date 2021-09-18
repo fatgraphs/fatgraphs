@@ -12,13 +12,13 @@ from .. import SessionLocal
 api = Namespace("Searches", description="Search terms that can be used while exploring the graph")  # noqa
 
 
-@api.route("/autocomplete-term/<int:page>")
-@api.param("page", f"Page for pagination, {AUTOCOMPLETE_TERMS_PER_PAGE} per page")
+@api.route("/autocomplete-term/<int:graph_id>")
+@api.param("graph_id", "The graph id")
 class AutocompleteTermsResource(Resource):
 
     # tis annotation automatically casts the Metadata item to AutocompleteTermSchema
     @responds(schema=SearchTermSchema(many=True))
-    def get(self, page: int) -> List[SearchTerm]:
+    def get(self, graph_id: int) -> List[SearchTerm]:
         with SessionLocal() as db:
-            terms = SearchTermService.get_autocomplete_terms(page, db)
+            terms = SearchTermService.get_autocomplete_terms(graph_id, db)
             return terms
