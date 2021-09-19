@@ -3,8 +3,7 @@ import SearchBar from "../searchBar/SearchBar";
 import './tagBox.scss'
 import './closeIcon.scss'
 import './closeBox.scss'
-import Autocompletion from "../autocompletion/Autocompletion";
-import {TYPE_ICONS} from "../single-graph/TypeIcons";
+import Autocompletion from "../autocompletion/Autocompletion"; import {TagElement} from "./tagElement"; import {TYPE_ICONS} from "../single-graph/TypeIcons";
 
 class TagListGraph extends Component {
 
@@ -15,61 +14,50 @@ class TagListGraph extends Component {
             metadataObjects: [],
             showAutocompletion: false
         }
-        this.add = this.add.bind(this);
         this.onBlur = this.onBlur.bind(this);
         this.removeWrapper = this.removeWrapper.bind(this);
+        this.onAutocompletionElementClick = this.onAutocompletionElementClick.bind(this);
     }
 
     render() {
         return (
-            <div className={'d-flex flex-row flex-wrap'}>
+            <div className={'d-flex flex-row flex-wrap overflow-auto'}>
+
+            {/*The current input from search bar is only used to filter the autocompletion list*/}
 
                 <SearchBar
-                    searchCallback={(v) => this.setState({currentInput: v})}
+                    searchCallback={(v) => {
+                        this.setState({currentInput: v});
+                        if(v.slice(0,2) === '0x'){
+                            this.onAutocompletionElementClick({type: 'eth', value: v})
+                        }
+                    }}
                     onBlur={this.onBlur}
                     onFocus={() => this.setState({showAutocompletion: true})}
-                onChange={(v) => this.setState({currentInput: v})}/>
+                    onChange={(v) => this.setState({currentInput: v})}
+                />
 
-                {this.state.metadataObjects.map((t, i) => {
-                    return <div
-                        className={'d-flex flex-row'}
-                        key={i}>
-                        <div className={'tagBox'}>
-                            <div className={'d-flex mr-1'}>{TYPE_ICONS[t.type]}</div>
-                            <div>{t.value}</div>
-
-                        </div>
-                        <div className={'closeBox'}
-                             onClick={this.removeWrapper(i)}>
-                            <span className={'glyphicon glyphicon-remove closeIcon'}/>
-                        </div>
-                    </div>
-                })}
+                {this.state.metadataObjects.map((metaObject, i) => <TagElement
+                        key={i}
+                        closeCallback={this.removeWrapper(i)}>
+                            <div className={'d-flex mr-1'}>{TYPE_ICONS[metaObject.type]}</div>
+                            <div>{metaObject.value}</div>
+                    </TagElement>)}
 
                 <Autocompletion currentInput={this.state.currentInput}
                                 shouldRender={this.state.showAutocompletion}
                                 autocompletionTerms={this.props.autocompletionTerms}
                                 recentMetadataSearches={[]}
-                onClick={(e) => {
-                    // console.log("from taglist graph ", e)
-                    let metadataObjects = [...this.state.metadataObjects, e];
-                    this.props.onChange(metadataObjects)
-                    this.setState({metadataObjects: metadataObjects, showAutocompletion: false})
-                }}/>
+                                onClick={this.onAutocompletionElementClick}/>
             </div>
         );
     }
 
-    add(tagObject) {
-        let newTags = [...this.state.metadataObjects, tagObject];
-        this.props.onChange(newTags);
-        this.setState({metadataObjects: newTags});
-        console.log(">>>>>>>>")
-    }
-
     removeWrapper(indexToRemove) {
         return function () {
-            let tagsWithoutOne = [...this.state.metadataObjects.slice(0, indexToRemove), ...this.state.metadataObjects.slice(indexToRemove + 1, this.state.metadataObjects.length)];
+            let tagsWithoutOne = [...this.state.metadataObjects.slice(0, indexToRemove),
+                ...this.state.metadataObjects.slice(indexToRemove + 1,
+                this.state.metadataObjects.length)];
             this.props.onChange(tagsWithoutOne)
             this.setState({metadataObjects: tagsWithoutOne})
         }.bind(this)
@@ -85,6 +73,12 @@ class TagListGraph extends Component {
         this.setState({
             showAutocompletion: false
         })
+    }
+
+    onAutocompletionElementClick(e) {
+        let metadataObjects = [...this.state.metadataObjects, e];
+        this.props.onChange(metadataObjects)
+        this.setState({metadataObjects: metadataObjects, showAutocompletion: false})
     }
 }
 

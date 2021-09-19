@@ -1,8 +1,9 @@
 import React, {Component} from 'react';
 import SearchBar from "../searchBar/SearchBar";
-import './tagBox.scss'
-import './closeIcon.scss'
-import './closeBox.scss'
+import './tagBox.scss';
+import './closeIcon.scss';
+import './closeBox.scss';
+import {TagElement} from "./tagElement";
 
 class TagListGallery extends Component {
 
@@ -15,27 +16,18 @@ class TagListGallery extends Component {
         this.removeWrapper = this.removeWrapper.bind(this);
     }
 
+
+
     render() {
         return (
             <div className={'d-flex flex-row flex-wrap'}>
-                <SearchBar searchCallback={this.add}/>
-                {this.state.tags.map((t, i) => {
-                    return <div
-                        className={'d-flex flex-row'}
-                        key={i}>
-                        <div
-                            className={'tagBox'}
-                        >
-                            <div>{t}</div>
-
-                        </div>
-                        <div className={'closeBox'}
-                             onClick={this.removeWrapper(i)}>
-                            <span className={'glyphicon glyphicon-remove closeIcon'}/>
-                        </div>
-                    </div>
-
-                })}
+                <SearchBar
+                    searchCallback={this.add}/>
+                    {this.state.tags.map((tag, i) => <TagElement
+                    key={i}
+                    closeCallback={this.removeWrapper(i)}>
+                        <div>{tag}</div>
+                </TagElement>)}
             </div>
         );
     }

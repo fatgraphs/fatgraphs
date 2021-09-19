@@ -15,7 +15,6 @@ class VertexPopup extends Component {
             currentInput: '',
             showAutocompletion: false
         }
-        this.vertexAddMetadataCallback = this.vertexAddMetadataCallback.bind(this)
         this.onBlur = this.onBlur.bind(this);
     }
 
@@ -68,13 +67,6 @@ class VertexPopup extends Component {
         return addition;
     }
 
-    vertexAddMetadataCallback(currentSelection) {
-        this.props.selectionCallback(currentSelection[currentSelection.length - 1])
-        this.setState({
-            recentlyAddedMetadata: [...currentSelection]
-        })
-    }
-
     onBlur(e) {
         let wasAutocompleteTermClicked = e.relatedTarget !== null && e.relatedTarget.className.includes('dont-lose-focus');
         // console.log("blurring, wasAutocompleteTermClicked ", wasAutocompleteTermClicked)
@@ -90,7 +82,6 @@ class VertexPopup extends Component {
 
 VertexPopup.propTypes = {
     vertex: string.isRequired,
-    selectionCallback: func.isRequired,
     typesConcatenated: string.isRequired,
     labelsConcatenated: string.isRequired,
     graphName: string.isRequired,

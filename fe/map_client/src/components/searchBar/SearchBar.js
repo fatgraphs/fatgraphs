@@ -14,6 +14,7 @@ class SearchBar extends Component {
             searchFocused: false,
             currentInput: ''
         }
+        this.onSubmit = this.onSubmit.bind(this);
     }
 
     render() {
@@ -21,15 +22,8 @@ class SearchBar extends Component {
             <div>
 
                 <Form inline
-                onSubmit={(e) => {
-                    e.preventDefault();
-                    if(this.state.currentInput.length == 0){
-                        return;
-                    }
-                    this.props.searchCallback(this.state.currentInput)
-                    this.setState({currentInput: ''})
-                }}
-                onBlur={this.props.onBlur}>
+                    onSubmit={this.onSubmit}
+                    onBlur={this.props.onBlur}>
                     <FormGroup>
                         <InputGroup className={`input-group-no-border ${s.searchForm}`}>
                             <InputGroupAddon addonType="prepend">
@@ -54,6 +48,17 @@ class SearchBar extends Component {
             </div>
         );
     }
+
+    onSubmit(e){
+        e.preventDefault();
+        console.log("pressed enter", this.state.currentInput)
+        if(this.state.currentInput.length === 0){
+            return;
+        }
+        this.props.searchCallback(this.state.currentInput)
+        this.setState({currentInput: ''})
+    }
+
 }
 
 SearchBar

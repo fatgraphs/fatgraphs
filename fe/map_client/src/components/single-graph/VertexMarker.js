@@ -18,7 +18,6 @@ class VertexMarker extends Component {
                     vertex={this.props.markerObject['vertex']}
                     graphName={this.props.graphName}
                     graphId={this.props.graphId}
-                    selectionCallback={this.addSingleMetadataToVertex(this.props.markerObject['vertex'])}
                     recentMetadataSearches={this.props.recentMetadataSearches}
                     autocompletionTerms={this.props.autocompletionTerms}
                 />
@@ -27,12 +26,6 @@ class VertexMarker extends Component {
         return <></>
       }
   }
-
-  addSingleMetadataToVertex(vertex) {
-        return function (metadataObject) {
-            postVertexMetadata(vertex, metadataObject)
-        }
-    }
 }
 
 
