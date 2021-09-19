@@ -50,8 +50,8 @@ class SearchBar extends Component {
     }
 
     onSubmit(e){
+        e.target[0].blur();
         e.preventDefault();
-        console.log("pressed enter", this.state.currentInput)
         if(this.state.currentInput.length === 0){
             return;
         }

@@ -35,7 +35,8 @@ class SingleGraphView extends Component {
         this.setState({
             graphMetadata: graphMetadata,
             autocompletionTerms: autocompletionTerms,
-            recentMetadataSearches: []
+            recentMetadataSearches: [],
+            flyToLast: false
         })
     }
 
@@ -73,7 +74,10 @@ class SingleGraphView extends Component {
 
                     <TagListGraph
                         autocompletionTerms={this.state.autocompletionTerms}
-                        onChange={(currentSelection) => this.setState({selectedMetadata: currentSelection})}/>
+                        onChange={(currentSelection) => this.setState({selectedMetadata: currentSelection})}
+                        onSpecificVertexSearch={() => {
+                            this.setState({flyToLast: true})
+                        }}/>
 
 
                     <CopyGtmCommand
@@ -83,7 +87,7 @@ class SingleGraphView extends Component {
                     <div>
                         <SidePanel
                             closestVertex={this.state.closestVertex}
-                            selectedVertices={this.state.markersSelectedMetadata}/>
+                            selectedVertices={this.state.selectedMetadata}/>
                         <div className={'mt-2'}>
                             <Fillable>
                                 <IconsLegend></IconsLegend>
@@ -98,7 +102,10 @@ class SingleGraphView extends Component {
                         graphName={this.props.match.params.graphName}
                         setDisplayedAddress={this.setClosestVertex}
                         selectedMetadataMarkers={this.state.markersSelectedMetadata}
-                        recentMetadataSearches={this.state.recentMetadataSearches}/>
+                        recentMetadataSearches={this.state.recentMetadataSearches}
+                        flyToLast={this.state.flyToLast}
+                        afterFlyToLast={() => this.setState({flyToLast: false})}
+                    />
 
                     <Fillable>
                         {plot_urls.map(url => <img

@@ -30,6 +30,8 @@ class TagListGraph extends Component {
                         this.setState({currentInput: v});
                         if(v.slice(0,2) === '0x'){
                             this.onAutocompletionElementClick({type: 'eth', value: v})
+                            this.setState({currentInput: ""});
+                            this.props.onSpecificVertexSearch();
                         }
                     }}
                     onBlur={this.onBlur}

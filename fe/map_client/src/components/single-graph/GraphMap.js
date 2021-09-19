@@ -28,8 +28,13 @@ class GraphMap extends React.Component {
 
 
     async componentDidUpdate(prevProps, prevState, snapshot) {
-        // ttis.state.selected;etadata
-
+        if(this.props.selectedMetadataMarkers !== undefined
+            && this.props.flyToLast
+            && this.props.selectedMetadataMarkers.length > 0){
+                this.state.map_ref.flyTo(this.props.selectedMetadataMarkers[this.props.selectedMetadataMarkers.length - 1].pos,
+                this.props.graphMetadata['zoomLevels'] - 1)
+                this.props.afterFlyToLast()
+        }
     }
 
     render() {
