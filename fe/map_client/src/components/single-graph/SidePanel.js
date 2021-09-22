@@ -26,8 +26,8 @@ class SidePanel extends React.Component {
                 <tr>
 
                     <td>{truncateEth(this.props.closestVertex?.eth)}</td>
-                    <td>{this.props.closestVertex?.types.filter((t) => t.length > 0).join(', ')}</td>
-                    <td>{this.props.closestVertex?.labels.filter((t) => t.length > 0).join(', ')}</td>
+                    <td>{this.props.closestVertex?.types.filter((t) => !!t && t.length > 0).join(', ')}</td>
+                    <td>{this.props.closestVertex?.labels.filter((t) => !!t && t.length > 0).join(', ')}</td>
 
                 </tr>
 
