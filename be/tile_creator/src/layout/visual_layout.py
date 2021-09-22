@@ -1,5 +1,6 @@
 import cugraph
 import numpy as np
+import pandas as pd
 from cuml.neighbors.nearest_neighbors import NearestNeighbors
 import cudf
 from be.configuration import internal_id, CONFIGURATIONS
@@ -161,12 +162,12 @@ class VisualLayout:
         start_time = time.monotonic()
 
         def mark_token_icons():
-            result['type_code'] = np.where(result['icon'].isnull(), result['type_code'], result['icon'])
+            result['code'] = np.where(result['icon'].isnull(), result['code'], result['icon'])
 
         def mark_labelled():
             result['type'] = result['type'].where(result['type'].notna(), 0)
             # increment by 1 where type is not 0 (i.e. type == 'exchange')
-            result['type_code'] = result['type_code'] + result['type'].where(result['type'] == 0, 1)
+            result['code'] = result['code'] + result['type'].where(result['type'] == 0, 1)
 
         icon_to_int = {
             'inactive_fake': 0,
@@ -178,26 +179,42 @@ class VisualLayout:
         int_to_icon = {v: k for k, v in icon_to_int.items()}
 
         account_types = VertexMetadataService.merge_graph_vertices_with_account_type(db, graph_id)
-        account_types = account_types.rename(columns={'type': 'type_code'})
+        account_types = account_types.rename(columns={'type': 'code'})
+
 
         result = self.graph.address_to_id.merge(account_types, how='left')
-        result['type_code'] = result['type_code'].replace({0: 1, 1: 3}).fillna(0)
+        result['code'] = result['code'].replace({0: 1, 1: 3}).fillna(0)
 
         # TODO what if a vertex NOT present in the account_type table is then found in type_labels? keep fake_incative
 
-        frame = VertexMetadataService.merge_graph_vertices_with_metadata(graph_id, db)
-        if not frame.empty:
-            result = result.merge(frame, left_on='vertex', right_on='vertex', how='left')
+        metadata = VertexMetadataService.merge_graph_vertices_with_metadata(graph_id, db)
+        if not metadata.empty:
+            # if the same vertex is duplicated result will contain dups
+            result = result.merge(metadata, left_on='vertex', right_on='vertex', how='left')
             mark_labelled()
-            result = result.groupby('vertex').first()
-            result['type_code'] = result['type_code'].astype(np.int64)
+
+            vertex_code = result[['vertex', 'code']]
+            vertex_code['code'] = pd.to_numeric(vertex_code['code'])
+            vertex_code = vertex_code.groupby(['vertex'], sort=False).max().reset_index()
+
+            def longestFilename(s):
+                return s.dropna().max()
+
+            vertex_icon = result[['vertex', 'icon']]
+            vertex_icon = vertex_icon.fillna(value=np.nan)
+            vertex_icon = vertex_icon.groupby(['vertex'], sort=False).agg(longestFilename).reset_index()
+
+            result = vertex_code.merge(vertex_icon)
+
+            result['code'] = result['code'].astype(np.int64)
+
             mark_token_icons()
 
-        result['type_code'] = result['type_code'].replace(int_to_icon)
+        result['code'] = result['code'].replace(int_to_icon)
 
         print('\tGenerating vertices\' shapes took: ', time.monotonic() - start_time)
 
-        return result.sort_values(['index'])['type_code'].values
+        return self.graph.address_to_id.merge(result).sort_values(['index'])['code'].values
 
 
 
