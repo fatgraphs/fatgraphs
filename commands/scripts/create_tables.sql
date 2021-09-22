@@ -2,7 +2,6 @@ CREATE TABLE IF NOT EXISTS tg_graphs
 (
     id                             SERIAL UNIQUE PRIMARY KEY,
     graph_name                     text,
-    output_folder                  text,
     tile_size                      bigint,
     zoom_levels                    bigint,
     min_transparency               double precision,

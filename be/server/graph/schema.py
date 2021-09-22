@@ -7,7 +7,6 @@ class GraphSchema(CamelCaseSchema):
 
     id = fields.Integer()
     graph_name = fields.String()
-    output_folder = fields.String(missing='')
     tile_size = fields.Integer()
     zoom_levels = fields.Integer()
     min_transparency = fields.Float()

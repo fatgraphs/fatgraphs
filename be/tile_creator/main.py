@@ -57,8 +57,6 @@ def main(configurations):
         graph_id = new_graph.id
         graph_name = configurations['graph_name']
         output_folder = mkdir_for_graph(graph_name, graph_id)
-        GraphService.update(new_graph, {'output_folder': output_folder}, db)
-        configurations['output_folder'] = output_folder
 
         # save vertices
         vertex_table = VERTEX_TABLE_NAME(graph_name, graph_id)
@@ -80,15 +78,15 @@ def main(configurations):
         visualLayout.vertexShapes = visualLayout.generate_shapes(db, graph_id)
 
 
-    print("rendering tiles . . .")
-    # this will be GraphToolTokenGraph(vertex_data, edge_data, graph_data)
-    gtGraph = GraphToolTokenGraph(graph.edge_ids_to_amount, visualLayout, metadata, configurations['curvature'])
-    tilesRenderer = TilesRenderer(gtGraph, metadata, configurations)
-    tilesRenderer.renderGraph()
+        print("rendering tiles . . .")
+        # this will be GraphToolTokenGraph(vertex_data, edge_data, graph_data)
+        gtGraph = GraphToolTokenGraph(graph.edge_ids_to_amount, visualLayout, metadata, configurations['curvature'])
+        tilesRenderer = TilesRenderer(gtGraph, metadata, configurations, output_folder)
+        tilesRenderer.renderGraph()
 
-    print("rendering edge distributions plots...")
-    edgePlotsRenderer = EdgeDistributionPlotRenderer(configurations, visualLayout)
-    edgePlotsRenderer.render()
+        print("rendering edge distributions plots...")
+        edgePlotsRenderer = EdgeDistributionPlotRenderer(configurations, visualLayout, output_folder)
+        edgePlotsRenderer.render()
 
 
 

@@ -9,12 +9,12 @@ class EdgeDistributionPlotRenderer:
 
     BIN_FREQUENCY = 50
 
-    def __init__(self, configurations, visualLayout):
+    def __init__(self, configurations, visualLayout, outputFolder):
         self.sideGraphSpace = visualLayout.max - visualLayout.min
         self.zoomLevels = configurations['zoom_levels']
         self.edgeLengths = visualLayout.edgeLengths
         self.edgeTransparencies = visualLayout.edgeTransparencies
-        self.outputFolder = configurations['output_folder']
+        self.outputFolder = outputFolder
         self.minLength = int(min(self.edgeLengths))
         self.maxLength = int(max(self.edgeLengths))
         self.step = math.ceil((self.maxLength - self.minLength) / EdgeDistributionPlotRenderer.BIN_FREQUENCY)

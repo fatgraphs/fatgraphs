@@ -26,7 +26,6 @@ class TestRenderer(unittest.TestCase):
 
         attr = getattr(defaultConfig, 'outputFolder', None)
         cls.assertIsNone(cls, attr)
-        defaultConfig['output_folder'] = TEST_DIR
 
         cls.layout = VisualLayout(cls.graph, defaultConfig)
         metadata = TokenGraphMetadata(cls.graph, cls.layout, defaultConfig)
@@ -39,7 +38,7 @@ class TestRenderer(unittest.TestCase):
                                       metadata,
                                       defaultConfig['curvature'])
 
-        cls.tileRenderer = TilesRenderer(cls.gtg,  metadata, defaultConfig)
+        cls.tileRenderer = TilesRenderer(cls.gtg,  metadata, defaultConfig, TEST_DIR)
 
     def test_initialisation(cls):
         cls.assertIsNotNone(cls.tileRenderer)

@@ -10,7 +10,6 @@ class Graph(Base):
     __tablename__ = "tg_graphs"
 
     id = Column(Integer(), primary_key=True)
-    output_folder = Column(String(), default='')
     graph_name = Column(String())
     tile_size = Column(Integer())
     zoom_levels = Column(Integer())

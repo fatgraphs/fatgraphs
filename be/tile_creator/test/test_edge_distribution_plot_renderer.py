@@ -26,7 +26,6 @@ class TestRenderer(unittest.TestCase):
 
         attr = getattr(defaultConfig, 'outputFolder', None)
         cls.assertIsNone(cls, attr)
-        defaultConfig['output_folder'] = TEST_DIR
 
 
         cls.transparencyCalculator = TransparencyCalculator(cls.SIDE_GRAPH, defaultConfig)
@@ -36,7 +35,7 @@ class TestRenderer(unittest.TestCase):
         cls.layout = VisualLayout(cls.graph, defaultConfig)
         cls.layout.edgeTransparencies = cls.transparencyCalculator.calculateEdgeTransparencies(
             cls.layout.edgeLengths)
-        cls.plotRenderer = EdgeDistributionPlotRenderer(defaultConfig, cls.layout)
+        cls.plotRenderer = EdgeDistributionPlotRenderer(defaultConfig, cls.layout, TEST_DIR)
 
     def testInitialisation(cls):
         cls.assertIsNotNone(cls.transparencyCalculator)

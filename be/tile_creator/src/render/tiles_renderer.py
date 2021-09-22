@@ -12,13 +12,14 @@ from be.tile_creator.src.graph.gt_token_graph import GraphToolTokenGraph
 
 class TilesRenderer:
 
-    def __init__(self, gtGraph, metadata, configurations):
+    def __init__(self, gtGraph, metadata, configurations, output_folder):
         if not isinstance(gtGraph, GraphToolTokenGraph):
             raise TypeError("graph renderer needs an instance of GraphToolTokenGraph as argument")
         self.gtGraph = gtGraph
         self.metadata = metadata
         self.configurations = configurations
         self.renderingProcesses = []
+        self.output_folder = output_folder
 
     def renderGraph(self):
         # rgba = [[1.0] * len(self.edgeTransparencies[0])] * 4
@@ -52,7 +53,7 @@ class TilesRenderer:
                     round(side / divideBy, 2))
 
                 tileName = "z_" + str(zoomLevel) + "x_" + str(t[0]) + "y_" + str(t[1]) + ".png"
-                fileName = os.path.join(self.configurations['output_folder'], tileName)
+                fileName = os.path.join(self.output_folder, tileName)
 
                 # Serial code
                 # self._render(fit, file_name, edge_colors, vertex_size, edge_size)

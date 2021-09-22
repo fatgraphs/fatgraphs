@@ -18,7 +18,6 @@ class GraphService:
     @staticmethod
     def create(graph_to_create: GraphInterface, db):
         new_graph = Graph(
-            output_folder='',
             tile_size=graph_to_create['tile_size'],
             max_transparency=graph_to_create['max_transparency'],
             median_pixel_distance=graph_to_create['median_pixel_distance'],

@@ -18,7 +18,6 @@ class GraphInterface(TypedDict, total=False):
     std_transparency_as_percentage: float
     min: float
     zoom_levels: int
-    output_folder: str
     tile_based_mean_transparency: float
     med_edge_thickness: float
     id: int
