@@ -148,7 +148,7 @@ class GraphMap extends React.Component {
             'C',[srcPos[0] - (deltaX/4) + curvature * signX, srcPos[1] - deltaY/4  + curvature * signY],
                 [srcPos[0] - deltaX/4*3 + curvature * signX, srcPos[1] - deltaY/4*3 + curvature * signY],
                 [targetPos[0], targetPos[1]]],
-                {weight: 3, lineCap: 'round', dashArray: '5', animate: {duration: 3000, iterations: Infinity}}
+                {weight: 3, lineCap: 'round', dashArray: '10', animate: {duration: 5000 * (2**this.state.zoom), iterations: Infinity}}
             ).addTo(this.state.map_ref);
            //  let isThisSrc = edge['src']['vertex'] === closestVertex['vertex']
            //  let otherPos = toMapCoordinate(edge[isThisSrc ? 'trg' : 'src']['pos'], this.props.graphMetadata)
