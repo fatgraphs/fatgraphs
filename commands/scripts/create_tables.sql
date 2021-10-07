@@ -46,5 +46,17 @@ CREATE TABLE IF NOT EXISTS tg_vertex
             REFERENCES tg_graphs (id)
 ) PARTITION BY LIST (graph_id);
 
+CREATE TABLE IF NOT EXISTS tg_edge
+(
+    graph_id        int not null,
+    src             text,
+    trg             text,
+    block_number    int,
+    amount          real,
+    CONSTRAINT fk_graph_id
+        FOREIGN KEY (graph_id)
+            REFERENCES tg_graphs (id)
+) PARTITION BY LIST (graph_id);
+
 
 

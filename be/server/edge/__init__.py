@@ -1,6 +1,7 @@
-from .model import Vertex # noqa  # noqa
+from .model import Edge # noqa
+from .schema import EdgeSchema  # noqa
 
-BASE_ROUTE = "vertex"
+BASE_ROUTE = "edge"
 
 
 def register_routes(api, app):

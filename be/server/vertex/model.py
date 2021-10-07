@@ -57,7 +57,6 @@ class Vertex(Base):
 
         raw_result = engine.execute(query, substitution)
 
-        db.commit()
         fetchall = to_pd_frame(raw_result)
 
         return Vertex._map_to_model(fetchall)

@@ -3,7 +3,7 @@ from flask_accepts import responds, accepts
 from flask_restx import Namespace, Resource
 
 from .model import Vertex
-from .schema import VertexSchemaPos
+from .schema import VertexSchema
 from .service import VertexService
 from .. import SessionLocal
 
@@ -16,7 +16,7 @@ api = Namespace("Vertex", description="Single namespace, single entity")  # noqa
 @api.param("x", "X coordinate")
 class GetClosestVertexWithMetadata(Resource):
 
-    @responds(schema=VertexSchemaPos)
+    @responds(schema=VertexSchema)
     def get(self, graph_id: int, x: float, y: float) -> Vertex:
         with SessionLocal() as db:
             closest_vertex = VertexService.get_closest(graph_id, x, y, db)
@@ -29,7 +29,7 @@ class GetClosestVertexWithMetadata(Resource):
 class GetVerticesByType(Resource):
     @api.doc(params={'graphId': {'description': 'If you provide a graph id your query will be scoped to that graph only',
                                  'type': 'int'}})
-    @responds(schema=VertexSchemaPos(many=True))
+    @responds(schema=VertexSchema(many=True))
     def get(self, type: str) -> Vertex:
         with SessionLocal() as db:
             graph_id = request.args.get('graphId')
@@ -43,7 +43,7 @@ class GetVerticesByType(Resource):
 class GetVerticesByLabel(Resource):
     @api.doc(params={'graphId': {'description':  'If you provide a graph id your query will be scoped to that graph only',
                                  'type': 'int'}})
-    @responds(schema=VertexSchemaPos(many=True))
+    @responds(schema=VertexSchema(many=True))
     def get(self, label: str) -> Vertex:
         with SessionLocal() as db:
             graph_id = request.args.get('graphId')
@@ -58,7 +58,7 @@ class GetVerticesByLabel(Resource):
 class GetVerticesByEth(Resource):
     @api.doc(params={'graphId': {'description':  'If you provide a graph id your query will be scoped to that graph only',
                                  'type': 'int'}})
-    @responds(schema=VertexSchemaPos(many=True))
+    @responds(schema=VertexSchema(many=True))
     def get(self, eth: str) -> Vertex:
         with SessionLocal() as db:
             graph_id = request.args.get('graphId')

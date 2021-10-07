@@ -15,9 +15,13 @@
     "closestPoint": "vertex/closest/{graphId}/{x}/{y}",
     "user": "user/{userName}",
     "recentMetadataSearches": "searches/",
-    "addVertexMetadata": "vertex-metadata/create"
+    "addVertexMetadata": "vertex-metadata/create",
+    "edges": "edge/{graphId}/{vertex}",
+    "parameters": {
+      "edges_fetched_limit": 100
+    }
   },
-  "labelsHome": "data/temp_test_labels.csv",
+  "labelsHome": "data/temp_test_label0s.csv",
   "account_type_home": {
     "eoa": "data/account_types/EOA.csv",
     "ca": "data/account_types/contracts.csv"
@@ -40,5 +44,6 @@
     "ca_labelled": "assets/vertex_icons/generic/ca_labelled.png",
     "inactive_fake": "assets/vertex_icons/generic/inactive_fake.png",
     "token_icons_home": "assets/vertex_icons/custom"
-  }
+  },
+  "edge_curvature": 0.1
 }

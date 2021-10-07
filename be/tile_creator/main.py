@@ -2,8 +2,9 @@ import os
 
 from geoalchemy2 import Geometry
 
-from be.configuration import CONFIGURATIONS, VERTEX_TABLE_NAME, SRID
+from be.configuration import CONFIGURATIONS, VERTEX_TABLE_NAME, SRID, EDGE_TABLE_NAME
 from be.server import SessionLocal, engine
+from be.server.edge.service import EdgeService
 from be.server.graph.service import GraphService
 from be.server.vertex.service import VertexService
 from be.tile_creator.src.graph.gt_token_graph import GraphToolTokenGraph
@@ -58,21 +59,24 @@ def main(configurations):
         graph_name = configurations['graph_name']
         output_folder = mkdir_for_graph(graph_name, graph_id)
 
-        # save vertices
+        # save vertices in DB
         vertex_table = VERTEX_TABLE_NAME(graph_name, graph_id)
         VertexService.ensure_vertex_table_exists(vertex_table, graph_id)
-
-        # this will be there
         vertices = graph.address_to_id.merge(visualLayout.vertexPositions)
-        # vertices = vertices.rename(columns={'address': 'eth'})
         vertices['size'] = visualLayout.vertexSizes
         vertices['graph_id'] = [str(graph_id)] * len(vertices)
         vertices = vertices.drop(columns=[CONFIGURATIONS['vertex_internal_id']])
-
-        # save as geo frame
         geo_frame = make_geoframe(vertices)
         column_types = {'pos': Geometry('POINT', srid=SRID)}
         geo_frame.to_sql(vertex_table, engine, if_exists='append', index=False, dtype=column_types)
+
+        # save edges to DB
+        edge_table = EDGE_TABLE_NAME(graph_name, graph_id)
+        EdgeService.ensure_edge_table_exists(edge_table, graph_id)
+        edges = graph.preprocessed_data.rename(columns={'blockNumber': 'block_number', 'source': 'src', 'target': 'trg'})
+        edges['graph_id'] = [str(graph_id)] * len(edges)
+        edges.to_sql(edge_table, engine, if_exists='append', index=False)
+        EdgeService.ensure_index_edge_table(edge_table, graph_id)
 
         print("generating vertices shapes . . .")
         visualLayout.vertexShapes = visualLayout.generate_shapes(db, graph_id)
