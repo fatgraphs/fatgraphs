@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {withRouter} from "react-router-dom";
-import {fetchAutocompletionTerms, fetchGraph, fetchMatchingVertices} from "../../APILayer";
+import {fetchAutocompletionTerms,fetchEdges, fetchGraph, fetchMatchingVertices} from "../../APILayer";
 import _ from 'underscore';
 import {MyContext} from "../../Context";
 import GraphMap from "./GraphMap";

@@ -71,6 +71,11 @@ export function fetchEdgePlot(graphId, zoom_level) {
     return doRequest(url);
 }
 
+export function fetchEdges(graphId, vertex) {
+    let url = UrlComposer.edges(graphId, vertex);
+    return doRequest(url);
+}
+
 export function postVertexMetadata(vertex, metadataObject) {
     let url = UrlComposer.addVertexMetadata();
     let type = metadataObject['type'];

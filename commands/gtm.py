@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import getopt, sys, os
+from be.configuration import CONFIGURATIONS
 os.environ["FLASK_ENV"] = "development"
 sys.path.append(os.path.abspath('..'))
 if os.getcwd().split(os.sep)[-1] == "commands":
@@ -45,7 +46,7 @@ def getFinalConfigurations(args, graph_name):
         "med_edge_thickness": float(args.get('--med_thick', 0.25)),
         "max_vertex_size": float(args.get("--max_size", 10)),
         "med_vertex_size": float(args.get("--med_size", 0.5)),
-        "curvature": float(args.get("--curvature", 0.1)),
+        "curvature": float(args.get("--curvature", CONFIGURATIONS['edge_curvature'])),
         "bg_color": "grey",
         "source": args['--csv']
     }

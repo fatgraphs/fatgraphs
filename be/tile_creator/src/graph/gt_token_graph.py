@@ -39,7 +39,7 @@ class GraphToolTokenGraph:
         self.controlPoints = self.g.new_edge_property('vector<float>')
         for v in self.g.vertices():
             for e in v.out_edges():
-                curvature = self.edgeLength[e] * self.edgeCurvature
+                curvature = self.edgeLength[e] * self.edgeCurvature * -1
                 self.controlPoints[e] = [0, 0, 0.25, curvature, 0.75, curvature, 1, 0]
 
     def addEdges(self, edgeIdsToAmount):

@@ -73,6 +73,13 @@ class UrlComposer {
         parametrisedUrlFragment = parametrisedUrlFragment.replace(/{z}/g, zoom_level);
         return configs['endpoints']['base'] +parametrisedUrlFragment;
     }
+
+    static edges(graphId, vertex){
+        let toParametriseUrlFragment = configs['endpoints']['edges']
+        let parametrisedUrlFragment = toParametriseUrlFragment.replace(/{graphId}/g, graphId);
+        parametrisedUrlFragment = parametrisedUrlFragment.replace(/{vertex}/g, vertex);
+        return configs['endpoints']['base'] + parametrisedUrlFragment;
+    }
 }
 
 export default UrlComposer;
