@@ -71,15 +71,16 @@ class TilesRenderer:
         # Parallel code
         started = []
         for renderingProcess in self.renderingProcesses:
-
-            if len(started) >= MAX_CORES:
-                started[0].join()
-                started = started[1::]
             renderingProcess.start()
             started.append(renderingProcess)
+            if(len(started) >= MAX_CORES):
+                started[0].join() # wait for process to complete
+                started[0].close() # terminate process properly
+                started = started[1::] # remove from active list
 
         for renderingProcess in started:
-            renderingProcess.join()
+            renderingProcess.join() # wait for process to complete
+            renderingProcess.close() # terminate process properly
 
     def render(self, fit, fileName, edgeColors, vertexSize, edgeSize):
         # if np.isnan(self.gt_graph.vertex_positions.get_2d_array([0, 1])).any() or \
