@@ -11,6 +11,7 @@ from ...configuration import VERTEX_GLOBAL_TABLE
 
 
 class Vertex(Base):
+
     __tablename__ = "tg_vertex"
 
     graph_id = Column(Integer(), ForeignKey('tg_graphs.id'))

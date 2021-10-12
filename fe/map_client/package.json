@@ -51,6 +51,7 @@
   },
   "dependencies": {
     "@elfalem/leaflet-curve": "^0.8.2",
+    "react-leaflet-fullscreen-plugin": "^1.0.1",
     "@fortawesome/fontawesome-svg-core": "^1.2.35",
     "@fortawesome/free-brands-svg-icons": "^5.15.3",
     "@fortawesome/free-regular-svg-icons": "^5.15.3",

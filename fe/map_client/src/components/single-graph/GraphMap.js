@@ -8,6 +8,7 @@ import {generateLargeRandom} from "../../utils/Utils";
 import s from './singleGraph.module.scss'
 import "./circleMarker.scss"; import VertexPopup from "./VertexPopup"; import VertexMarker from "./VertexMarker";
 import '@elfalem/leaflet-curve'
+import Fullscreen from 'react-leaflet-fullscreen-plugin';
 
 let configs = require('../../../../../configurations.json');
 
@@ -59,7 +60,7 @@ class GraphMap extends React.Component {
                 maxZoom={this.props.graphMetadata['zoomLevels'] - 1}
                 tileSize={this.props.graphMetadata.tileSize}
             />
-
+            <Fullscreen {...{position: 'topright'}} />
             <VertexMarker
                 markerObject={this.state.closestVertex}
                 autocompletionTerms={this.props.autocompletionTerms}
@@ -139,7 +140,7 @@ class GraphMap extends React.Component {
             let deltaX = srcPos[0] - targetPos[0]
             let deltaY = srcPos[1] - targetPos[1]
             let edgeLength = Math.sqrt(deltaX**2 + deltaY**2)
-            let curvature = edgeLength * configs['edge_curvature'] * 1.5
+            let curvature = edgeLength * configs['edge_curvature'] * 0.75
 
           let signY = deltaX < 0 ? -1 : 1
           let signX = deltaY < 0 ? 1: -1

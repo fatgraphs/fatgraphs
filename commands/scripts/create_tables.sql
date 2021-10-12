@@ -1,3 +1,12 @@
+CREATE TABLE IF NOT EXISTS gallery_categories
+(
+    id          SERIAL UNIQUE PRIMARY KEY,
+    title       text UNIQUE,
+    description CHAR(155),
+    freetext    text,
+    urlslug     text UNIQUE
+);
+
 CREATE TABLE IF NOT EXISTS tg_graphs
 (
     id                             SERIAL UNIQUE PRIMARY KEY,
@@ -19,7 +28,11 @@ CREATE TABLE IF NOT EXISTS tg_graphs
     min                            real,
     max                            real,
     vertices                       bigint,
-    edges                          bigint
+    edges                          bigint,
+    graph_category                 int,
+    CONSTRAINT fk_graph_category
+        FOREIGN KEY (graph_category)
+            REFERENCES gallery_categories (id)
 );
 
 
@@ -57,6 +70,12 @@ CREATE TABLE IF NOT EXISTS tg_edge
         FOREIGN KEY (graph_id)
             REFERENCES tg_graphs (id)
 ) PARTITION BY LIST (graph_id);
+
+
+INSERT INTO gallery_categories VALUES (1, 'default',  'The default category', '', 'default');
+INSERT INTO gallery_categories VALUES (2, 'token_networks',  'Token networks graphs', '', 'token');
+INSERT INTO gallery_categories VALUES (3, 'dex',  'Decentralised exchanges', '', 'dex');
+INSERT INTO gallery_categories VALUES (4, 'defiapps',  'Decentralised finance applications', '', 'defi');
 
 
 
