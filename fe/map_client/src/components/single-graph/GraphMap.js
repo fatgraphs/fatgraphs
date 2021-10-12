@@ -149,31 +149,13 @@ class GraphMap extends React.Component {
             'C',[srcPos[0] - (deltaX/4) + curvature * signX, srcPos[1] - deltaY/4  + curvature * signY],
                 [srcPos[0] - deltaX/4*3 + curvature * signX, srcPos[1] - deltaY/4*3 + curvature * signY],
                 [targetPos[0], targetPos[1]]],
-                {weight: 3, lineCap: 'round', dashArray: '10', animate: {duration: 5000 * (2**this.state.zoom), iterations: Infinity}}
+                {
+                    color: closestVertex.vertex === edge['src'].vertex ? configs['out_edge_color'] : configs['in_edge_color'],
+                    weight: 3,
+                    lineCap: 'round',
+                    dashArray: '10',
+                    animate: {duration: 5000 * (2**this.state.zoom), iterations: Infinity}}
             ).addTo(this.state.map_ref);
-           //  let isThisSrc = edge['src']['vertex'] === closestVertex['vertex']
-           //  let otherPos = toMapCoordinate(edge[isThisSrc ? 'trg' : 'src']['pos'], this.props.graphMetadata)
-           //  console.log(otherPos)
-           //
-           //  let deltaX = thisPos[0] - otherPos[0]
-           //  let deltaY = thisPos[1] - otherPos[1]
-           //  let edgeLength = Math.sqrt(deltaX**2 + deltaY**2)
-           //  let curvature = edgeLength * configs['edge_curvature'] * 1.1
-           //  curvature = isThisSrc ? curvature : curvature * -1
-           //
-           //
-           // let odl = {color:'red', weight:1, animate: 1}
-           // let tempSize =  Math.log(edge['amount'] + 1) / 10
-           // console.log(">>>>>>> tempSize ", tempSize)
-           // let path = L.curve(
-           // ['M',[thisPos[0], thisPos[1]],
-           //  'C',[thisPos[0] - (deltaX/4) + curvature, thisPos[1] - (deltaY/4)  + curvature],
-           //      [thisPos[0] - (deltaX/4)*3  + curvature, thisPos[1] - (deltaY/4)*3  + curvature],
-           //      [otherPos[0], otherPos[1]]],
-           //      {weight: tempSize, lineCap: 'round', dashArray: '5', animate: {duration: 3000, iterations: Infinity}}
-           //  ).addTo(this.state.map_ref);
-
-
 
 
             paths.push(path)
