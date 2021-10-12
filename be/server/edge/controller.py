@@ -23,7 +23,5 @@ class GetEdges(Resource):
     def get(self, graph_id: int, vertex: str) -> List[Edge]:
         with SessionLocal() as db:
             edges = EdgeService.get_edges(vertex, graph_id, db)
-            edges_100 = random.sample(edges,
-                    min(CONFIGURATIONS['endpoints']['parameters']['edges_fetched_limit'], len(edges)))
-            return edges_100
+            return edges
 

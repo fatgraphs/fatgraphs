@@ -60,30 +60,51 @@ class Edge:
         frame = to_pd_frame(query_result)
         return Edge._map_to_model(frame)
 
-    @staticmethod
-    def get_edges_with_probability(edge_table, vertex_table, vertex, prob, graph_id) -> List[Edge]:
 
+
+    @staticmethod
+    def get_out_edges_with_probability(edge_table, vertex_table, vertex: Vertex, prob, graph_id) -> List[Edge]:
         query = """SELECT %(edge_table)s.src, %(edge_table)s.trg, %(edge_table)s.amount, %(edge_table)s.block_number, 
-            vertexsource.size as src_size, vertextarget.size as trg_size, 
-            ST_AsText(ST_PointFromWKB(vertexsource.pos)) as pos_src, 
+            vertextarget.size as trg_size, 
             ST_AsText(ST_PointFromWKB(vertextarget.pos)) as pos_trg
         FROM %(edge_table)s
         LEFT JOIN %(vertex_table)s vertextarget ON  %(edge_table)s.trg = vertextarget.vertex 
-		LEFT JOIN %(vertex_table)s vertexsource ON %(edge_table)s.src = vertexsource.vertex
-        WHERE (%(edge_table)s.src = %(vertex)s OR %(edge_table)s.trg = %(vertex)s) 
+        WHERE %(edge_table)s.src = %(vertex)s
         AND random() < %(prob)s;
         """
 
         query_result = engine.execute(query, {
             'edge_table': AsIs(edge_table),
             'vertex_table': AsIs(vertex_table),
-            'vertex': vertex,
+            'vertex': vertex.vertex,
             'prob': AsIs(prob)
-            }
-        )
+        }
+                                      )
         frame = to_pd_frame(query_result)
 
-        return Edge._map_to_model(frame, graph_id)
+        return Edge._map_to_model_trg_only(frame, vertex, graph_id)
+
+    @staticmethod
+    def get_in_edges_with_probability(edge_table, vertex_table, vertex: Vertex, prob, graph_id) -> List[Edge]:
+        query = """SELECT %(edge_table)s.src, %(edge_table)s.trg, %(edge_table)s.amount, %(edge_table)s.block_number, 
+                vertexsource.size as src_size,
+                ST_AsText(ST_PointFromWKB(vertexsource.pos)) as pos_src
+            FROM %(edge_table)s
+            LEFT JOIN %(vertex_table)s vertexsource ON %(edge_table)s.src = vertexsource.vertex
+            WHERE %(edge_table)s.trg = %(vertex)s 
+            AND random() < %(prob)s;
+        """
+
+        query_result = engine.execute(query, {
+            'edge_table': AsIs(edge_table),
+            'vertex_table': AsIs(vertex_table),
+            'vertex': vertex.vertex,
+            'prob': AsIs(prob)
+        }
+                                      )
+        frame = to_pd_frame(query_result)
+
+        return Edge._map_to_model_src_only(frame, vertex, graph_id)
 
     @staticmethod
     def get_count(edge_table, vertex):
@@ -96,15 +117,28 @@ class Edge:
         })
         return query_result.fetchall()[0][0]
 
-
     @staticmethod
-    def _map_to_model(frame, graph_id):
+    def _map_to_model_trg_only(frame, src_vertex, graph_id):
         collect = []
         for (i, e) in frame.iterrows():
             pos_trg = wkt_to_x_y_list(e['pos_trg'])
+            trg_vertex = Vertex(graph_id=graph_id, vertex=e['trg'], size=e['trg_size'], pos=pos_trg)
+            edge = Edge(
+                graph_id=graph_id,
+                src=src_vertex,
+                trg=trg_vertex,
+                amount=e['amount'],
+                block_number=e['block_number']
+            )
+            collect.append(edge)
+        return collect
+
+    @staticmethod
+    def _map_to_model_src_only(frame, trg_vertex, graph_id):
+        collect = []
+        for (i, e) in frame.iterrows():
             pos_src = wkt_to_x_y_list(e['pos_src'])
             src_vertex = Vertex(graph_id=graph_id, vertex=e['src'], size=e['src_size'], pos=pos_src)
-            trg_vertex = Vertex(graph_id=graph_id, vertex=e['trg'], size=e['trg_size'], pos=pos_trg)
             edge = Edge(
                 graph_id=graph_id,
                 src=src_vertex,

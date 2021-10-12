@@ -1,3 +1,4 @@
+import random
 from typing import List
 from psycopg2._psycopg import AsIs
 from be.configuration import EDGE_GLOBAL_TABLE, CONFIGURATIONS
@@ -7,6 +8,7 @@ from .. import engine
 import warnings
 from ..graph.service import GraphService
 from ..utils import to_pd_frame
+from ..vertex.service import VertexService
 
 warnings.simplefilter(action='ignore', category=UserWarning)
 
@@ -41,16 +43,35 @@ class EdgeService:
 
     @staticmethod
     def get_edges(vertex, graph_id, db) -> List[Edge]:
-
-        def probability_choosing_edge():
-                count = EdgeService.get_edge_count(edge_table, vertex)
-                prob = 1.0 if count < CONFIGURATIONS['endpoints']['parameters']['edges_fetched_limit'] \
-                            else CONFIGURATIONS['endpoints']['parameters']['edges_fetched_limit']/count
-                return prob
-
         edge_table = GraphService.get_edge_table_name(graph_id, db)
         vertex_table = GraphService.get_vertex_table_name(graph_id, db)
-        prob = probability_choosing_edge()
-        result = Edge.get_edges_with_probability(edge_table, vertex_table, vertex, prob, graph_id)
+        prob = EdgeService._probability_choosing_edge(edge_table, vertex)
+        vertex_object = VertexService.get_by_eths(graph_id, [vertex], db)[0]
+
+        result = []
+        result_in = Edge.get_in_edges_with_probability(edge_table, vertex_table, vertex_object, prob, graph_id)
+        result_out = Edge.get_out_edges_with_probability(edge_table, vertex_table, vertex_object, prob, graph_id)
+
+        half_edge_count = CONFIGURATIONS['endpoints']['parameters']['edges_fetched_limit'] // 2
+
+        result.extend(
+            random.sample(result_in,
+                      min(half_edge_count, len(result_in))
+            )
+        )
+
+        result.extend(
+            random.sample(result_out,
+                          min(half_edge_count*2 - len(result), len(result_out))
+            )
+        )
+
         return result
+
+    @staticmethod
+    def _probability_choosing_edge(edge_table, vertex):
+        count = EdgeService.get_edge_count(edge_table, vertex)
+        prob = 1.0 if count < CONFIGURATIONS['endpoints']['parameters']['edges_fetched_limit'] \
+            else CONFIGURATIONS['endpoints']['parameters']['edges_fetched_limit'] / count
+        return prob
 

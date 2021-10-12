@@ -20,7 +20,6 @@ class SearchBar extends Component {
     render() {
         return (
             <div>
-
                 <Form inline
                     onSubmit={this.onSubmit}
                     onBlur={this.props.onBlur}>
