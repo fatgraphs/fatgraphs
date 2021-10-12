@@ -45,5 +45,11 @@
     "inactive_fake": "assets/vertex_icons/generic/inactive_fake.png",
     "token_icons_home": "assets/vertex_icons/custom"
   },
-  "edge_curvature": 0.1
+  "edge_curvature": 0.1,
+  "gallery_categories": {
+      "default" : "1",
+      "token" : "2",
+      "dex" : "3",
+      "defi" : "4"
+  }
 }

@@ -25,3 +25,4 @@ class GraphSchema(CamelCaseSchema):
     max = fields.Float()
     vertices = fields.Integer()
     edges = fields.Integer()
+    graph_category = fields.Integer()

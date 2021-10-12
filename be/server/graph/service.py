@@ -17,6 +17,7 @@ class GraphService:
 
     @staticmethod
     def create(graph_to_create: GraphInterface, db):
+        assert 'gallery_categories' in db.bind.engine.table_names()
         new_graph = Graph(
             tile_size=graph_to_create['tile_size'],
             max_transparency=graph_to_create['max_transparency'],
@@ -36,7 +37,8 @@ class GraphService:
             tile_based_mean_transparency=graph_to_create['tile_based_mean_transparency'],
             med_edge_thickness=graph_to_create['med_edge_thickness'],
             graph_name=graph_to_create['graph_name'],
-            max_edge_thickness=graph_to_create['max_edge_thickness']
+            max_edge_thickness=graph_to_create['max_edge_thickness'],
+            graph_category=int(graph_to_create['graph_category'])
             )
 
         db.add(new_graph)
