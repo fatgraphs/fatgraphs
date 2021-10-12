@@ -57,7 +57,7 @@ cd ~/tokengallery/be && python -m pytest
 
 ### Postgres & PostGIS installation
 To run the code locally please make sure postgres and the GIS extension are
-correctly set up. This wastested with Ubuntu 20.
+correctly set up. This was tested with Ubuntu 20.
 
 Ubuntu 20 comes with postgres already installed. Refer to this image to know
 what postgres-related paackages are required:
@@ -165,3 +165,26 @@ If you do that remember to update the tile_creator to generate tiles for all the
 
 # Experimetns
 This folder contains jupyter notebooks, previous work & experimental code.
+
+# MACOS setup
+This details the installation steps on macos big sur 11.
+Please note that the target machine did not have a GPU compatibe
+with CUDA, therefore this set-up is only relevant for running
+the FE and the server.
+
+## Postgres
+Use the postgres app: https://postgresapp.com/
+It contains the postgis extension by default.
+
+CREATE ROLE tokengallerist LOGIN PASSWORD '1234';
+GRANT pg_read_server_files TO tokengallerist;
+
+Create a a db called tg_main.
+Open a cmd connected to the tg_main db.
+Load the dump: `\i ~/tg_main_dump.pgsql` wait until it loads.
+
+
+Make a conda env with required dependencies:
+`conda create -n macEnv -c conda-forge -c anaconda flask flask-restx flask-cors geopandas graph-tool marshmallow matplotlib numpy pandas pillow psycopg2 pytest scikit-image sqlalchemy geoalchemy2 mypy_extensions`
+Additionally, add this as well:
+`pip install flask_accepts`
