@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 import getopt, sys, os
+sys.path.append(os.path.abspath('../be'))
 from be.configuration import CONFIGURATIONS
 os.environ["FLASK_ENV"] = "development"
-sys.path.append(os.path.abspath('..'))
 if os.getcwd().split(os.sep)[-1] == "commands":
     # if it's run from the commands frolder then chdire to be in root
     os.chdir(os.path.abspath(".."))
