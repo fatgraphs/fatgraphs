@@ -157,6 +157,9 @@ class GraphMap extends React.Component {
             ...this.state.selectedVertices.filter(v => v.isBeingPersisted),
          newVertex]})
 
+         // TODO
+         // if same vertex is clicked fetch new edges!
+
     }
 
     clearMapMarkersCallback(){

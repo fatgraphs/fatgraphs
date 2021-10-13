@@ -36,8 +36,8 @@ class EdgeService:
         pass
 
     @staticmethod
-    def get_edge_count(edge_table, vertex):
-        result = Edge.get_count(edge_table, vertex)
+    def get_edge_count(edge_table, vertex, inout='both'):
+        result = Edge.get_count(edge_table, vertex, inout)
         return result
 
 
@@ -45,12 +45,12 @@ class EdgeService:
     def get_edges(vertex, graph_id, db) -> List[Edge]:
         edge_table = GraphService.get_edge_table_name(graph_id, db)
         vertex_table = GraphService.get_vertex_table_name(graph_id, db)
-        prob = EdgeService._probability_choosing_edge(edge_table, vertex)
+        prob_in, prob_out = EdgeService._probabilities_choosing_edge(edge_table, vertex)
         vertex_object = VertexService.get_by_eths(graph_id, [vertex], db)[0]
 
         result = []
-        result_in = Edge.get_in_edges_with_probability(edge_table, vertex_table, vertex_object, prob, graph_id)
-        result_out = Edge.get_out_edges_with_probability(edge_table, vertex_table, vertex_object, prob, graph_id)
+        result_in = Edge.get_in_edges_with_probability(edge_table, vertex_table, vertex_object, prob_in, graph_id)
+        result_out = Edge.get_out_edges_with_probability(edge_table, vertex_table, vertex_object, prob_out, graph_id)
 
         half_edge_count = CONFIGURATIONS['endpoints']['parameters']['edges_fetched_limit'] // 2
         result.extend(
@@ -67,9 +67,12 @@ class EdgeService:
         return result
 
     @staticmethod
-    def _probability_choosing_edge(edge_table, vertex):
-        count = EdgeService.get_edge_count(edge_table, vertex)
-        prob = 1.0 if count < CONFIGURATIONS['endpoints']['parameters']['edges_fetched_limit'] \
-            else CONFIGURATIONS['endpoints']['parameters']['edges_fetched_limit'] / count
-        return prob
+    def _probabilities_choosing_edge(edge_table, vertex):
+        count_in = EdgeService.get_edge_count(edge_table, vertex, 'in')
+        count_out = EdgeService.get_edge_count(edge_table, vertex, 'out')
+        prob_in = 1.0 if count_in < CONFIGURATIONS['endpoints']['parameters']['edges_fetched_limit'] \
+            else CONFIGURATIONS['endpoints']['parameters']['edges_fetched_limit'] / count_in
+        prob_out = 1.0 if count_out < CONFIGURATIONS['endpoints']['parameters']['edges_fetched_limit'] \
+            else CONFIGURATIONS['endpoints']['parameters']['edges_fetched_limit'] / count_out
+        return prob_in, prob_out
 

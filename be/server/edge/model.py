@@ -107,10 +107,16 @@ class Edge:
         return Edge._map_to_model_src_only(frame, vertex, graph_id)
 
     @staticmethod
-    def get_count(edge_table, vertex):
+    def get_count(edge_table, vertex, inout='both'):
         query = """SELECT count(*) FROM %(edge_table)s 
             WHERE src = %(vertex)s OR trg = %(vertex)s;
         """
+        if inout == 'in':
+            query = """SELECT count(*) FROM %(edge_table)s 
+                        WHERE trg = %(vertex)s;"""
+        if inout == 'out':
+            query = """SELECT count(*) FROM %(edge_table)s 
+                        WHERE src = %(vertex)s;"""
         query_result = engine.execute(query, {
             'vertex': vertex,
             'edge_table': AsIs(edge_table)
