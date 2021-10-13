@@ -4,13 +4,13 @@ import UrlComposer from "../../utils/UrlComposer";
 import {fetchClosestPoint} from "../../APILayer";
 import {toGraphCoordinate, toMapCoordinate} from "../../utils/CoordinatesUtil";
 import {MapContainer, Marker, TileLayer} from 'react-leaflet'
-import {generateLargeRandom} from "../../utils/Utils";
+import {generateLargeRandom, hashVertexToInt} from "../../utils/Utils";
 import s from './singleGraph.module.scss'
 import "./circleMarker.scss"; import VertexPopup from "./VertexPopup"; import VertexMarker from "./VertexMarker";
 import '@elfalem/leaflet-curve'
 import Fullscreen from 'react-leaflet-fullscreen-plugin';
 
-import './testCustomControl'
+import './clearMapMarkers'
 
 let configs = require('../../../../../configurations.json');
 
@@ -20,28 +20,30 @@ class GraphMap extends React.Component {
         super(props);
         this.state = {
             mapRef: undefined,
-            closestVertex: undefined,
             zoom: 0,
-            showEdgeOverlay: false,
             selectedVertices : []
         }
         this.bindOnClickCallback = this.bindOnClickCallback.bind(this)
         this.bindOnZoomCallback = this.bindOnZoomCallback.bind(this)
         this.bindOnZoomCallback = this.bindOnZoomCallback.bind(this)
         this.mapCreationCallback = this.mapCreationCallback.bind(this)
-        this.toggleEdgeLayoutView = this.toggleEdgeLayoutView.bind(this)
+        this.clearMapMarkersCallback = this.clearMapMarkersCallback.bind(this)
         this.checkboxCallback = this.checkboxCallback.bind(this)
+        this.doFlyToVertexLogic = this.doFlyToVertexLogic.bind(this)
     }
 
     async componentDidUpdate(prevProps, prevState, snapshot) {
-        if(this.props.selectedMetadataMarkers !== undefined
-            && this.props.flyToLast
-            && this.props.selectedMetadataMarkers.length > 0){
-                this.state.map_ref.flyTo(this.props.selectedMetadataMarkers[this.props.selectedMetadataMarkers.length - 1].pos,
-                this.props.graphMetadata['zoomLevels'] - 1)
-                this.props.afterFlyToLast()
-        }
+        this.doFlyToVertexLogic();
+    }
 
+    doFlyToVertexLogic() {
+        if (this.props.selectedMetadataMarkers !== undefined
+            && this.props.flyToLast
+            && this.props.selectedMetadataMarkers.length > 0) {
+            this.state.map_ref.flyTo(this.props.selectedMetadataMarkers[this.props.selectedMetadataMarkers.length - 1].pos,
+                this.props.graphMetadata['zoomLevels'] - 1)
+            this.props.afterFlyToLast()
+        }
     }
 
     render() {
@@ -67,15 +69,12 @@ class GraphMap extends React.Component {
             />
             <Fullscreen {...{position: 'topright'}} />
 
-            {/* last clicked vertex */}
-
-            {/* vertices with edges persisted using checkbox*/}
             {this.state.selectedVertices.map(
                 (e, i) => {
-                    console.log("e of selectedVertices: ", e)
+
                 return  <VertexMarker
-                    key={(i+1)*99}
-                    fetchEdges={this.state.showEdgeOverlay}
+                    key={hashVertexToInt(e['vertex'])}
+                    fetchEdges
                     zoom={this.state.zoom}
                     mapRef={this.state.map_ref}
                     graphMetadata={this.props.graphMetadata}
@@ -84,12 +83,11 @@ class GraphMap extends React.Component {
                     graphName={this.props.graphName}
                     graphId={this.props.graphId}
                     checkboxCallback={this.checkboxCallback}
-                    ticked>
+                    ticked={!!e.isBeingPersisted}>
                 </VertexMarker>
                 })
             }
 
-            {/* vertices selected with search bar*/}
             {this.props.selectedMetadataMarkers.map(
                 (e, i) => {
                 return  <VertexMarker
@@ -105,8 +103,6 @@ class GraphMap extends React.Component {
         </MapContainer>
     }
 
-
-
     mapCreationCallback(map) {
         this.centerView(map);
         this.bindOnZoomCallback(map);
@@ -114,7 +110,7 @@ class GraphMap extends React.Component {
         this.setState({
             map_ref: map
         })
-        L.control.testControl({ position: 'bottomleft', callback: this.toggleEdgeLayoutView }).addTo(map);
+        L.control.clearMapMarkersControl({callback: this.clearMapMarkersCallback }).addTo(map);
     }
 
     centerView(map) {
@@ -133,43 +129,49 @@ class GraphMap extends React.Component {
     }
 
     bindOnClickCallback(mapRef) {
-        mapRef.on('click', function (clickEvent) {
-            let coord = clickEvent.latlng;
-            let lat = coord.lat;
-            let lng = coord.lng;
-            let pos = toGraphCoordinate([lat, lng], this.props.graphMetadata)
-            this.fetchClosestAndUpdate(pos);
+
+        function getGraphPosFromMapClick(clickEvent, graphMetadata){
+            return toGraphCoordinate([
+                clickEvent.latlng.lat,
+                clickEvent.latlng.lng],
+                graphMetadata)
+        }
+
+        mapRef.on('click', async function (clickEvent) {
+            let graphPosClicked = getGraphPosFromMapClick(clickEvent, this.props.graphMetadata)
+            let vertex = await this.fetchClosestVertex(graphPosClicked);
+            this.updateDisplayedVertices(vertex);
         }.bind(this));
+
     }
 
-
-    async fetchClosestAndUpdate(pos) {
+    async fetchClosestVertex(pos) {
         let closestVertex = await fetchClosestPoint(this.props.graphId, pos)
-
         closestVertex['pos'] = toMapCoordinate(closestVertex['pos'], this.props.graphMetadata);
-
-        this.setState({selectedVertices: [
-            ...this.state.selectedVertices.filter(v => v.persist),
-         closestVertex]})
-
-        this.props.setDisplayedAddress(closestVertex)
+        return closestVertex;
     }
 
-    toggleEdgeLayoutView(){
-        this.setState({showEdgeOverlay: ! this.state.showEdgeOverlay})
+     updateDisplayedVertices(newVertex) {
+        this.props.setDisplayedAddress(newVertex)
+        this.setState({selectedVertices: [
+            ...this.state.selectedVertices.filter(v => v.isBeingPersisted),
+         newVertex]})
+
+    }
+
+    clearMapMarkersCallback(){
+        this.setState({selectedVertices: []})
     }
 
     checkboxCallback(vertexObject, ticked){
+
+        vertexObject.isBeingPersisted = ticked
         
-        if(this.state.selectedVertices.some(v => v.vertex === vertexObject.vertex)){
-            console.log("removing persisted markers")
+        if(! ticked){
+            let selectedVertices = this.state.selectedVertices.filter(v => v.vertex !== vertexObject.vertex);
+            console.log("vertices without selected: ", selectedVertices)
             this.setState({
-                selectedVertices: this.state.selectedVertices.filter(v => v.vertex !== vertexObject.vertex)
-            })
-            
-        } else {
-            this.setState({
-                selectedVertices: [...this.state.selectedVertices, vertexObject]
+                selectedVertices: selectedVertices
             })
         }
     }

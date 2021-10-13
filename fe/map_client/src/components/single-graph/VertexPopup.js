@@ -5,7 +5,7 @@ import SearchBar from "../searchBar/SearchBar";
 import Autocompletion from "../autocompletion/Autocompletion";
 import './leafletPopup.scss'
 import {postVertexMetadata} from "../../APILayer";
-import './testCustomControl.css'
+import './clearMapMarkersControl.css'
 
 class VertexPopup extends Component {
 
@@ -15,6 +15,7 @@ class VertexPopup extends Component {
             recentlyAddedMetadata: [],
             currentInput: '',
             showAutocompletion: false,
+            selfTicked: false
         }
         this.onBlur = this.onBlur.bind(this);
     }
@@ -56,8 +57,11 @@ class VertexPopup extends Component {
                                     <input className={"map-checkbox-small"}
                                         id="persist-edges"
                                         type="checkbox"
-                                        checked={this.props.ticked}
-                                        onChange={this.props.checkboxCallback}>
+                                        checked={this.props.ticked || this.state.selfTicked}
+                                        onChange={(e) => {
+                                            this.props.checkboxCallback(e)
+                                            this.setState({selfTicked: true})
+                                        }}>
                                     </input>
                                     <span>Persist</span>
                                 </label>

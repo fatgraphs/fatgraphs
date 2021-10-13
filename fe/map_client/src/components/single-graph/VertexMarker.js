@@ -1,7 +1,7 @@
 import React, { Component } from 'react'; import {generateLargeRandom} from "../../utils/Utils";
 import VertexPopup from "./VertexPopup";
 import {Marker} from "react-leaflet";
-import {fetchEdges, postVertexMetadata} from "../../APILayer"; import {toMapCoordinate} from "../../utils/CoordinatesUtil"; import L from "leaflet";
+import {fetchEdges} from "../../APILayer"; import {toMapCoordinate} from "../../utils/CoordinatesUtil"; import L from "leaflet";
 const configs = require('../../../../../configurations.json');
 
 
@@ -13,21 +13,17 @@ class VertexMarker extends Component {
             edges: []
         }
         this.receiveNotification = this.receiveNotification.bind(this)
+        this.udpdateEdges = this.udpdateEdges.bind(this)
     }
 
-    async componentDidUpdate(prevProps, prevState) {
-        // console.log("vertex marker upfating")
-        if(! this.props.fetchEdges && this.state.edges.length !== 0){
-            this.state.edges.forEach(e => this.props.mapRef.removeLayer(e))
-            this.setState({edges: []})
-        }
-        // console.log("(prevProps.vertexObject !== this.props.vertexObject || this.state.edges.length === 0) && this.props.fetchEdges ", (prevProps.vertexObject !== this.props.vertexObject || this.state.edges.length === 0) && this.props.fetchEdges)
-        if(this.state.edges.length === 0 && this.props.fetchEdges){
-            // console.log("removing edges 2")
+    async componentDidMount() {
+        await this.udpdateEdges();
+    }
+
+    async udpdateEdges() {
+        if (this.state.edges.length === 0 && this.props.fetchEdges) {
             let paths = []
-            // console.log(" this.props.vertexObject[",  this.props.vertexObject)
             let edges = await fetchEdges(this.props.graphId, this.props.vertexObject['vertex'])
-            // console.log("edges >>>> ", edges)
             for (const edge of edges) {
                 let srcPos = toMapCoordinate(edge['src']['pos'], this.props.graphMetadata)
                 let targetPos = toMapCoordinate(edge['trg']['pos'], this.props.graphMetadata)
@@ -61,7 +57,7 @@ class VertexMarker extends Component {
         }
     }
 
-     render() {
+    render() {
           if (this.props.vertexObject !== undefined) {
             return (
 
@@ -84,12 +80,12 @@ class VertexMarker extends Component {
       }
 
       componentWillUnmount() {
-        console.log("COMPONENT WILL UNMOUNT")
-        this.state.edges.forEach(e => this.props.mapRef.removeLayer(e))
+        this.state.edges.forEach(e => {
+            this.props.mapRef.removeLayer(e);
+        })
       }
 
       receiveNotification(event){
-        console.log("event event ", event, "event.target.checked", event.target.checked)
         this.props.checkboxCallback(this.props.vertexObject, event.target.checked)
       }
 }

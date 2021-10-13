@@ -36,3 +36,9 @@ export function truncateEth(string, _len){
     let suffix = string.slice(string.length - len, string.length)
     return prefix + '...' + suffix;
 }
+
+
+export function hashVertexToInt(vertex){
+    let byteArray = new TextEncoder().encode(vertex);
+    return byteArray.reduceRight((a, b)=>a+b)
+}
