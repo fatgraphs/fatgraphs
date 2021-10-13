@@ -10,6 +10,8 @@ import "./circleMarker.scss"; import VertexPopup from "./VertexPopup"; import Ve
 import '@elfalem/leaflet-curve'
 import Fullscreen from 'react-leaflet-fullscreen-plugin';
 
+import './testCustomControl'
+
 let configs = require('../../../../../configurations.json');
 
 class GraphMap extends React.Component {
@@ -26,7 +28,7 @@ class GraphMap extends React.Component {
         this.bindOnZoomCallback = this.bindOnZoomCallback.bind(this)
         this.bindOnZoomCallback = this.bindOnZoomCallback.bind(this)
         this.mapCreationCallback = this.mapCreationCallback.bind(this)
-
+        this.toggleEdgeLayoutView = this.toggleEdgeLayoutView.bind(this)
     }
 
     async componentDidUpdate(prevProps, prevState, snapshot) {
@@ -91,6 +93,7 @@ class GraphMap extends React.Component {
         this.setState({
             map_ref: map
         })
+        L.control.testControl({ position: 'bottomleft', callback: this.toggleEdgeLayoutView }).addTo(map);
     }
 
     centerView(map) {
@@ -121,7 +124,6 @@ class GraphMap extends React.Component {
 
     async fetchClosestAndUpdate(pos) {
         let closestVertex = await fetchClosestPoint(this.props.graphId, pos)
-        let edges = await fetchEdges(this.props.graphId, closestVertex['vertex'])
 
         for (const path of this.state.paths) {
           this.state.map_ref.removeLayer(path)
@@ -131,39 +133,47 @@ class GraphMap extends React.Component {
 
         let paths = []
 
-        console.log("edges >>>> ", edges)
-        for (const edge of edges) {
-            let srcPos = toMapCoordinate(edge['src']['pos'], this.props.graphMetadata)
-            let targetPos = toMapCoordinate(edge['trg']['pos'], this.props.graphMetadata)
+        if(this.state.showEdgeOverlay) {
+            let edges = await fetchEdges(this.props.graphId, closestVertex['vertex'])
+            console.log("edges >>>> ", edges)
+            for (const edge of edges) {
+                let srcPos = toMapCoordinate(edge['src']['pos'], this.props.graphMetadata)
+                let targetPos = toMapCoordinate(edge['trg']['pos'], this.props.graphMetadata)
 
 
-            let deltaX = srcPos[0] - targetPos[0]
-            let deltaY = srcPos[1] - targetPos[1]
-            let edgeLength = Math.sqrt(deltaX**2 + deltaY**2)
-            let curvature = edgeLength * configs['edge_curvature'] * 0.75
+                let deltaX = srcPos[0] - targetPos[0]
+                let deltaY = srcPos[1] - targetPos[1]
+                let edgeLength = Math.sqrt(deltaX ** 2 + deltaY ** 2)
+                let curvature = edgeLength * configs['edge_curvature'] * 0.75
 
-          let signY = deltaX < 0 ? -1 : 1
-          let signX = deltaY < 0 ? 1: -1
-           let path = L.curve(
-           ['M',[srcPos[0], srcPos[1]],
-            'C',[srcPos[0] - (deltaX/4) + curvature * signX, srcPos[1] - deltaY/4  + curvature * signY],
-                [srcPos[0] - deltaX/4*3 + curvature * signX, srcPos[1] - deltaY/4*3 + curvature * signY],
-                [targetPos[0], targetPos[1]]],
-                {
-                    color: closestVertex.vertex === edge['src'].vertex ? configs['out_edge_color'] : configs['in_edge_color'],
-                    weight: 3,
-                    lineCap: 'round',
-                    dashArray: '10',
-                    animate: {duration: 5000 * (2**this.state.zoom), iterations: Infinity}}
-            ).addTo(this.state.map_ref);
+                let signY = deltaX < 0 ? -1 : 1
+                let signX = deltaY < 0 ? 1 : -1
+                let path = L.curve(
+                    ['M', [srcPos[0], srcPos[1]],
+                        'C', [srcPos[0] - (deltaX / 4) + curvature * signX, srcPos[1] - deltaY / 4 + curvature * signY],
+                        [srcPos[0] - deltaX / 4 * 3 + curvature * signX, srcPos[1] - deltaY / 4 * 3 + curvature * signY],
+                        [targetPos[0], targetPos[1]]],
+                    {
+                        color: closestVertex.vertex === edge['src'].vertex ? configs['out_edge_color'] : configs['in_edge_color'],
+                        weight: 3,
+                        lineCap: 'round',
+                        dashArray: '10',
+                        animate: {duration: 5000 * (2 ** this.state.zoom), iterations: Infinity}
+                    }
+                ).addTo(this.state.map_ref);
 
 
-            paths.push(path)
+                paths.push(path)
 
+            }
         }
 
         this.setState({closestVertex: closestVertex, paths: paths})
         this.props.setDisplayedAddress(closestVertex)
+    }
+
+    toggleEdgeLayoutView(){
+        this.setState({showEdgeOverlay: ! this.state.showEdgeOverlay})
     }
 
 
