@@ -22,8 +22,10 @@ L.Control.Command = L.Control.extend({
         controlDiv.innerHTML = `
             <div>
               <form>
-                <input class="leaflet-control-layers-overlays map-checkbox" id="show-edges-command" 
-                  type="checkbox">
+                <input 
+                    class="leaflet-control-layers-overlays map-checkbox" 
+                    id="show-edges-command" 
+                    type="checkbox">
                   edge overlay
                 </input>
               </form>

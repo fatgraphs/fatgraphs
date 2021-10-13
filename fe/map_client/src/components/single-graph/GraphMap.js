@@ -1,7 +1,7 @@
 import React from 'react';
 import L from 'leaflet';
 import UrlComposer from "../../utils/UrlComposer";
-import {fetchClosestPoint,fetchEdges, postVertexMetadata} from "../../APILayer";
+import {fetchClosestPoint} from "../../APILayer";
 import {toGraphCoordinate, toMapCoordinate} from "../../utils/CoordinatesUtil";
 import {MapContainer, Marker, TileLayer} from 'react-leaflet'
 import {generateLargeRandom} from "../../utils/Utils";
@@ -22,13 +22,15 @@ class GraphMap extends React.Component {
             mapRef: undefined,
             closestVertex: undefined,
             zoom: 0,
-            paths: []
+            showEdgeOverlay: false,
+            selectedVertices : []
         }
         this.bindOnClickCallback = this.bindOnClickCallback.bind(this)
         this.bindOnZoomCallback = this.bindOnZoomCallback.bind(this)
         this.bindOnZoomCallback = this.bindOnZoomCallback.bind(this)
         this.mapCreationCallback = this.mapCreationCallback.bind(this)
         this.toggleEdgeLayoutView = this.toggleEdgeLayoutView.bind(this)
+        this.checkboxCallback = this.checkboxCallback.bind(this)
     }
 
     async componentDidUpdate(prevProps, prevState, snapshot) {
@@ -39,6 +41,7 @@ class GraphMap extends React.Component {
                 this.props.graphMetadata['zoomLevels'] - 1)
                 this.props.afterFlyToLast()
         }
+
     }
 
     render() {
@@ -63,21 +66,39 @@ class GraphMap extends React.Component {
                 tileSize={this.props.graphMetadata.tileSize}
             />
             <Fullscreen {...{position: 'topright'}} />
-            <VertexMarker
-                markerObject={this.state.closestVertex}
-                autocompletionTerms={this.props.autocompletionTerms}
-                graphName={this.props.graphName}
-                graphId={this.props.graphId}>
-            </VertexMarker>
 
+            {/* last clicked vertex */}
+
+            {/* vertices with edges persisted using checkbox*/}
+            {this.state.selectedVertices.map(
+                (e, i) => {
+                    console.log("e of selectedVertices: ", e)
+                return  <VertexMarker
+                    key={(i+1)*99}
+                    fetchEdges={this.state.showEdgeOverlay}
+                    zoom={this.state.zoom}
+                    mapRef={this.state.map_ref}
+                    graphMetadata={this.props.graphMetadata}
+                    vertexObject={e}
+                    autocompletionTerms={this.props.autocompletionTerms}
+                    graphName={this.props.graphName}
+                    graphId={this.props.graphId}
+                    checkboxCallback={this.checkboxCallback}
+                    ticked>
+                </VertexMarker>
+                })
+            }
+
+            {/* vertices selected with search bar*/}
             {this.props.selectedMetadataMarkers.map(
                 (e, i) => {
                 return  <VertexMarker
                     key={i}
-                    markerObject={e}
+                    fetchEdges={false}
+                    vertexObject={e}
                     autocompletionTerms={this.props.autocompletionTerms}
                     graphName={this.props.graphName}
-                    graphId={this.props.graphId}>
+                    graphId={this.props.graphId} >
                 </VertexMarker>
                 })
             }
@@ -125,50 +146,12 @@ class GraphMap extends React.Component {
     async fetchClosestAndUpdate(pos) {
         let closestVertex = await fetchClosestPoint(this.props.graphId, pos)
 
-        for (const path of this.state.paths) {
-          this.state.map_ref.removeLayer(path)
-        }
-
         closestVertex['pos'] = toMapCoordinate(closestVertex['pos'], this.props.graphMetadata);
 
-        let paths = []
+        this.setState({selectedVertices: [
+            ...this.state.selectedVertices.filter(v => v.persist),
+         closestVertex]})
 
-        if(this.state.showEdgeOverlay) {
-            let edges = await fetchEdges(this.props.graphId, closestVertex['vertex'])
-            console.log("edges >>>> ", edges)
-            for (const edge of edges) {
-                let srcPos = toMapCoordinate(edge['src']['pos'], this.props.graphMetadata)
-                let targetPos = toMapCoordinate(edge['trg']['pos'], this.props.graphMetadata)
-
-
-                let deltaX = srcPos[0] - targetPos[0]
-                let deltaY = srcPos[1] - targetPos[1]
-                let edgeLength = Math.sqrt(deltaX ** 2 + deltaY ** 2)
-                let curvature = edgeLength * configs['edge_curvature'] * 0.75
-
-                let signY = deltaX < 0 ? -1 : 1
-                let signX = deltaY < 0 ? 1 : -1
-                let path = L.curve(
-                    ['M', [srcPos[0], srcPos[1]],
-                        'C', [srcPos[0] - (deltaX / 4) + curvature * signX, srcPos[1] - deltaY / 4 + curvature * signY],
-                        [srcPos[0] - deltaX / 4 * 3 + curvature * signX, srcPos[1] - deltaY / 4 * 3 + curvature * signY],
-                        [targetPos[0], targetPos[1]]],
-                    {
-                        color: closestVertex.vertex === edge['src'].vertex ? configs['out_edge_color'] : configs['in_edge_color'],
-                        weight: 3,
-                        lineCap: 'round',
-                        dashArray: '10',
-                        animate: {duration: 5000 * (2 ** this.state.zoom), iterations: Infinity}
-                    }
-                ).addTo(this.state.map_ref);
-
-
-                paths.push(path)
-
-            }
-        }
-
-        this.setState({closestVertex: closestVertex, paths: paths})
         this.props.setDisplayedAddress(closestVertex)
     }
 
@@ -176,7 +159,20 @@ class GraphMap extends React.Component {
         this.setState({showEdgeOverlay: ! this.state.showEdgeOverlay})
     }
 
-
+    checkboxCallback(vertexObject, ticked){
+        
+        if(this.state.selectedVertices.some(v => v.vertex === vertexObject.vertex)){
+            console.log("removing persisted markers")
+            this.setState({
+                selectedVertices: this.state.selectedVertices.filter(v => v.vertex !== vertexObject.vertex)
+            })
+            
+        } else {
+            this.setState({
+                selectedVertices: [...this.state.selectedVertices, vertexObject]
+            })
+        }
+    }
 
 
 }

@@ -1,10 +1,11 @@
 import React, {Component} from 'react';
 import {Popup} from "react-leaflet";
-import {array, func, string} from "prop-types";
+import {array, object, string} from "prop-types";
 import SearchBar from "../searchBar/SearchBar";
 import Autocompletion from "../autocompletion/Autocompletion";
 import './leafletPopup.scss'
 import {postVertexMetadata} from "../../APILayer";
+import './testCustomControl.css'
 
 class VertexPopup extends Component {
 
@@ -13,27 +14,23 @@ class VertexPopup extends Component {
         this.state = {
             recentlyAddedMetadata: [],
             currentInput: '',
-            showAutocompletion: false
+            showAutocompletion: false,
         }
         this.onBlur = this.onBlur.bind(this);
     }
 
-    componentDidMount() {
-
-    }
-
     render() {
         let addedMetadata = this.getAddedMetadata();
-        let labelsString = this.props.labels === null ? 'NA' : this.props.labels.join(', ');
-        let typesString = this.props.types === null ? 'NA' : this.props.types.join(', ');
+        let labelsString = this.props.vertexObject['labels'] === null ? 'NA' : this.props.vertexObject['labels'].join(', ');
+        let typesString = this.props.vertexObject['types'] === null ? 'NA' : this.props.vertexObject['types'].join(', ');
         return (
             <Popup>
                 <>
                     <div><span>Types : </span> <span>{typesString + addedMetadata['type']}</span></div>
                     <div><span>Labels : </span> <span>{labelsString + addedMetadata['label']}</span>
                     </div>
-                    <a href={'https://etherscan.io/address/' + this.props.vertex}
-                       target="_blank">{this.props.vertex}</a>
+                    <a href={'https://etherscan.io/address/' + this.props.vertexObject['vertex']}
+                       target="_blank">{this.props.vertexObject['vertex']}</a>
 
                     <SearchBar
                         onChange={(v) => this.setState({
@@ -49,9 +46,24 @@ class VertexPopup extends Component {
                         shouldRender={this.state.showAutocompletion}
                         recentMetadataSearches={[]}
                         onClick={(metadataObject) => {
-                            postVertexMetadata(this.props.vertex, metadataObject)
+                            postVertexMetadata(this.props.vertexObject['vertex'], metadataObject)
                             this.setState({recentlyAddedMetadata: [...this.state.recentlyAddedMetadata, metadataObject]})
                     }}/>
+                    <div>
+                        <form>
+                            <div className={"map-checkbox-container"}>
+                                <label>
+                                    <input className={"map-checkbox-small"}
+                                        id="persist-edges"
+                                        type="checkbox"
+                                        checked={this.props.ticked}
+                                        onChange={this.props.checkboxCallback}>
+                                    </input>
+                                    <span>Persist</span>
+                                </label>
+                            </div>
+                        </form>
+                    </div>
                 </>
             </Popup>
         );
@@ -81,11 +93,10 @@ class VertexPopup extends Component {
 }
 
 VertexPopup.propTypes = {
-    vertex: string.isRequired,
+    vertexObject: object.isRequired,
     typesConcatenated: string.isRequired,
     labelsConcatenated: string.isRequired,
-    graphName: string.isRequired,
-    recentMetadataSearches: array.isRequired
+    graphName: string.isRequired
 }
 
 VertexPopup.defaultProps = {

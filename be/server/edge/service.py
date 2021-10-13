@@ -53,13 +53,11 @@ class EdgeService:
         result_out = Edge.get_out_edges_with_probability(edge_table, vertex_table, vertex_object, prob, graph_id)
 
         half_edge_count = CONFIGURATIONS['endpoints']['parameters']['edges_fetched_limit'] // 2
-
         result.extend(
             random.sample(result_in,
                       min(half_edge_count, len(result_in))
             )
         )
-
         result.extend(
             random.sample(result_out,
                           min(half_edge_count*2 - len(result), len(result_out))
