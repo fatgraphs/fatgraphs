@@ -21,7 +21,7 @@ class VertexMarker extends Component {
     }
 
     async udpdateEdges() {
-        if (this.state.edges.length === 0 && this.props.fetchEdges) {
+        if (this.props.fetchEdges) {
             let paths = []
             let edges = await fetchEdges(this.props.graphId, this.props.vertexObject['vertex'])
             for (const edge of edges) {

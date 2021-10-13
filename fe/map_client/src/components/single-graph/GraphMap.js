@@ -73,7 +73,7 @@ class GraphMap extends React.Component {
                 (e, i) => {
 
                 return  <VertexMarker
-                    key={hashVertexToInt(e['vertex'])}
+                    key={hashVertexToInt(e['vertex']) + e['refetch']}
                     fetchEdges
                     zoom={this.state.zoom}
                     mapRef={this.state.map_ref}
@@ -84,6 +84,7 @@ class GraphMap extends React.Component {
                     graphId={this.props.graphId}
                     checkboxCallback={this.checkboxCallback}
                     ticked={!!e.isBeingPersisted}>
+                    >
                 </VertexMarker>
                 })
             }
@@ -148,17 +149,19 @@ class GraphMap extends React.Component {
     async fetchClosestVertex(pos) {
         let closestVertex = await fetchClosestPoint(this.props.graphId, pos)
         closestVertex['pos'] = toMapCoordinate(closestVertex['pos'], this.props.graphMetadata);
+        closestVertex['refetch'] = 0;
         return closestVertex;
     }
 
      updateDisplayedVertices(newVertex) {
         this.props.setDisplayedAddress(newVertex)
+        let refetchCount = this.state.selectedVertices
+            .filter(v => v.vertex === newVertex.vertex)
+            .forEach(v => newVertex['refetch'] = v['refetch'] + 1);
+
         this.setState({selectedVertices: [
             ...this.state.selectedVertices.filter(v => v.isBeingPersisted),
          newVertex]})
-
-         // TODO
-         // if same vertex is clicked fetch new edges!
 
     }
 
