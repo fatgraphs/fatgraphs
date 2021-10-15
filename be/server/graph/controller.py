@@ -10,6 +10,7 @@ from .service import GraphService
 from .model import Graph
 from .. import SessionLocal
 from ..vertex.service import VertexService
+from ...configuration import CONFIGURATIONS
 
 api = Namespace("Graph", description="Graphs are saved with their metadata, but the actual vertices and edges are in the vertex and edge endpoints")
 
@@ -20,6 +21,16 @@ class GraphResource(Resource):
     def get(self) -> List[Graph]:
         with SessionLocal() as db:
             return GraphService.get_all(db)
+
+@api.route("/<string:gallery_type>")
+@api.param("gallery_type", "Gallery type")
+class GraphResource(Resource):
+
+    @responds(schema=GraphSchema(many=True))
+    def get(self, gallery_type: str) -> List[Graph]:
+        with SessionLocal() as db:
+            type_id = CONFIGURATIONS['galleryTypes'][gallery_type]
+            return GraphService.get_by_type(type_id, db)
 
 
 @api.route("/<int:graph_id>")

@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {fetchGraphs} from "../../APILayer";
 import {MyContext} from "../../Context";
 import GraphList from "./GraphList";
-import TagListGallery from "../tagList/tagListGallery";
+import TagListGallery from "../tagList/tagListGallery"; import {withRouter} from "react-router-dom";
 
 class Gallery extends Component {
 
@@ -21,10 +21,19 @@ class Gallery extends Component {
     }
 
     async componentDidMount() {
-        let graphs = await fetchGraphs()
-        this.setState({
-            availableGraphs: graphs
-        })
+        let graphs = await fetchGraphs(this.props.match.params.galleryType)
+                this.setState({
+                    availableGraphs: graphs
+                })
+    }
+
+    async componentDidUpdate(prevProps) {
+        if(prevProps.match.params.galleryType !== this.props.match.params.galleryType){
+            let graphs = await fetchGraphs(this.props.match.params.galleryType)
+                this.setState({
+                    availableGraphs: graphs
+                })
+            }
     }
 
 
@@ -38,11 +47,12 @@ class Gallery extends Component {
                     }}/>
 
                 <GraphList
+                    availableGraphs={this.state.availableGraphs}
                     filterTerms={this.state.searchTerms}/>
             </div> :
             <div>Loading . . .</div>
     }
 }
 
-export default Gallery;
+export default withRouter(Gallery);
 

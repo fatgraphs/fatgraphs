@@ -10,17 +10,6 @@ import * as PropTypes from "prop-types";
 class GraphList extends React.Component {
     constructor(props) {
         super(props);
-
-        this.state = {
-            availableGraphs: []
-        };
-    }
-
-    async componentDidMount() {
-        let graphs = await fetchGraphs()
-        this.setState({
-            availableGraphs: graphs,
-        })
     }
 
     parseDate(date) {
@@ -33,19 +22,18 @@ class GraphList extends React.Component {
 
     openGraph(graph) {
         const {match, location, history} = this.props;
-        console.log(">>>> ", graph)
         history.push("/graph/" + graph.graphName + '/' + graph.id);
     }
 
     render() {
         let filteredGraphs = this.props.filterTerms.length > 0
-            ? this.state.availableGraphs.filter(
+            ? this.props.availableGraphs.filter(
                 (grap) => this.props.filterTerms.some(
                     (filterTerm) => {
                         return grap.graphName.toLowerCase().includes(filterTerm)
                     })
             )
-            : this.state.availableGraphs
+            : this.props.availableGraphs
 
         return (
             <div className={s.root}>

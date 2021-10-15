@@ -1,7 +1,7 @@
 {
   "endpoints": {
     "base": "http://127.0.0.1:5000/tokengallery/",
-    "availableGraphs": "graph",
+    "availableGraphs": "graph/{galleryType}",
     "autocompletionTerms": "searches/autocomplete-term/{graphId}",
     "tile": "tile/{graphId}/{z}/{x}/{y}.png?{randint}",
     "edgePlot": "tile/plot/{graphId}/{z}",
@@ -46,7 +46,7 @@
     "token_icons_home": "assets/vertex_icons/custom"
   },
   "edge_curvature": 0.1,
-  "gallery_categories": {
+  "galleryTypes": {
       "default" : "1",
       "token" : "2",
       "dex" : "3",

@@ -16,7 +16,6 @@ class UrlComposer {
         let parametrisedUrlFragment = toParametriseUrlFragment.replace(/{graphId}/g, String(graphId));
         parametrisedUrlFragment = parametrisedUrlFragment.replace(/{x}/g, x);
         parametrisedUrlFragment = parametrisedUrlFragment.replace(/{y}/g, y);
-        console.log("parametrisedUrlFragment " , parametrisedUrlFragment)
         return configs['endpoints']['base'] + parametrisedUrlFragment
     }
 
@@ -47,8 +46,10 @@ class UrlComposer {
         return configs['endpoints']['base'] + configs['endpoints']['addVertexMetadata'] ;
     }
 
-    static graphs() {
-        return configs['endpoints']['base'] + configs['endpoints']['availableGraphs'];
+    static graphs(galleryType) {
+        let toParametriseUrlFragment = configs['endpoints']['availableGraphs'];
+        let parametrisedUrlFragment = toParametriseUrlFragment.replace(/{galleryType}/g, String(galleryType));
+        return configs['endpoints']['base'] + parametrisedUrlFragment
     }
 
     static autocompletionTerms(graphId) {
@@ -79,6 +80,10 @@ class UrlComposer {
         let parametrisedUrlFragment = toParametriseUrlFragment.replace(/{graphId}/g, graphId);
         parametrisedUrlFragment = parametrisedUrlFragment.replace(/{vertex}/g, vertex);
         return configs['endpoints']['base'] + parametrisedUrlFragment;
+    }
+
+    static galleryTypes() {
+        return configs['endpoints']['base'] + configs['endpoints']['galleryTypes'];
     }
 }
 

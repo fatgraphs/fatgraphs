@@ -1,7 +1,7 @@
 from .model import GalleryCategory  # noqa
 from .schema import GalleryCategorySchema  # noqa
 
-BASE_ROUTE = "gallery_category"
+BASE_ROUTE = "gallery_categories"
 
 
 def register_routes(api, app):
