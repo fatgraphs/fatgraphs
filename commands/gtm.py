@@ -16,7 +16,7 @@ def extractArguments():
     print(argumentList)
     shortOptions = "n:z:"
     longOptions = ["csv=", "ts=", "min_t=", "max_t=", "std=", "med_thick=", "max_thick=", "med_size=",
-                    "max_size=", "curvature=", "mean_t=", "gc="]
+                    "max_size=", "curvature=", "mean_t=", "gt="]
     try:
         arguments, values = getopt.getopt(argumentList, shortOptions, longOptions)
         print(">>> ", arguments)
@@ -47,7 +47,7 @@ def getFinalConfigurations(args, graph_name):
         "max_vertex_size": float(args.get("--max_size", 10)),
         "med_vertex_size": float(args.get("--med_size", 0.5)),
         "curvature": float(args.get("--curvature", CONFIGURATIONS['edge_curvature'])),
-        "graph_category": CONFIGURATIONS['gallery_categories'][args.get("--gc", 'default')],
+        "graph_category": CONFIGURATIONS['galleryTypes'][args.get("--gt", 'default')],
         "bg_color": "grey",
         "source": args['--csv']
     }
