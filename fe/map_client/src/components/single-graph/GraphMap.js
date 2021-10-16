@@ -166,6 +166,7 @@ class GraphMap extends React.Component {
     clearMapMarkersCallback(){
         this.setState({selectedVertices: []})
         this.props.clearParent()
+        this.props.history.push({search: ''})
     }
 
     checkboxCallback(vertexObject, ticked){
