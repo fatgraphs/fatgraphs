@@ -52,6 +52,6 @@
       "dex" : "3",
       "defi" : "4"
   },
-  "out_edge_color": "red",
-  "in_edge_color": "blue"
+  "out_edge_color": "#ED8417",
+  "in_edge_color": "#DDE93F"
 }

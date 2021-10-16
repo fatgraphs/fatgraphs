@@ -10,10 +10,9 @@ L.Control.Command = L.Control.extend({
                 this.options.callback()}.bind(this)
 
         var controlDiv = L.DomUtil.create('div');
+        controlDiv.className += "leaflet-bar leaflet-control leaflet-control-clear";
         controlDiv.innerHTML = `
-            <div>
-              <button>Clear</button>
-            </div>`;
+            <a href="#" role="button" title="Clear edges" aria-label="Clear edges">✗</a>`;
         L.DomEvent
             .addListener(controlDiv, 'click', L.DomEvent.stopPropagation)
             .addListener(controlDiv, 'click', L.DomEvent.preventDefault)
@@ -24,6 +23,6 @@ L.Control.Command = L.Control.extend({
 });
 
 L.control.clearMapMarkersControl = function (options) {
-    options['position'] = 'bottomleft'
+    options['position'] = 'topright'
     return new L.Control.Command(options);
 };
