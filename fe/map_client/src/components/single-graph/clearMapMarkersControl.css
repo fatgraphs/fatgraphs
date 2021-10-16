@@ -15,3 +15,14 @@
 .map-checkbox-container span {
     padding-left: 0.25rem;
 }
+
+/* leaflet control "clear-button" */
+
+.leaflet-control-clear {
+  font-size: 22px;
+}
+
+.leaflet-control-clear a {
+  font: bold 18px 'Lucida Console', Monaco, monospace;
+  text-indent: 1px;
+}
