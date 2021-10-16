@@ -19,44 +19,73 @@ class SingleGraphView extends Component {
         super(props);
         this.state = {
             graphMetadata: undefined,
-            isMarkerVisible: false,
-            closestVertex: undefined,
             selectedMetadata: [],
             recentMetadataSearches: [],
             metadataObjects: [],
-            markersSelectedMetadata: []
+            markersSelectedMetadata: [],
+            isFlyToLastVertex: false,
+            clearSignal: false
         }
-        this.setClosestVertex = this.setClosestVertex.bind(this)
+        this.receiveClearAck = this.receiveClearAck.bind(this)
     }
 
     async componentDidMount() {
+	// const urlVertex = new URLSearchParams(this.props.location.search).get("vertex");
+	// console.log(urlVertex);
         let graphMetadata = await fetchGraph(this.props.match.params.graphId);
         let autocompletionTerms = await fetchAutocompletionTerms(this.props.match.params.graphId);
         this.setState({
             graphMetadata: graphMetadata,
             autocompletionTerms: autocompletionTerms,
-            recentMetadataSearches: [],
-            flyToLast: false
+            recentMetadataSearches: []
         })
+
+
+        let newUrlVertex = new URLSearchParams(this.props.location.search).get('vertex');
+
+        if(!!newUrlVertex){
+            this.setState({
+                isFlyToLastVertex: true,
+                selectedMetadata: [
+                    ...this.state.selectedMetadata,
+                    {
+                        type: 'eth',
+                        value: newUrlVertex,
+                        fetchEdges: true
+                    }
+                ]
+            })
+        }
+
     }
 
     async componentDidUpdate(prevProps, prevState) {
-        // let recentMetadataSearches = await fetchRecentMetadata('default_user');
-        // if (_.isEqual(this.state.recentMetadataSearches, recentMetadataSearches)) {
-        //     return
-        // }
-        // this.setState({recentMetadataSearches: recentMetadataSearches})
+
+
         if (_.isEqual(this.state.selectedMetadata, prevState.selectedMetadata)) {
             return
         }
+        let fecthEdgesOfThose = this.state.selectedMetadata
+            .filter(m => m.fetchEdges && m.type === 'eth')
+            .map(m => m.value);
+        console.log("fecthEdgesOfThose ", fecthEdgesOfThose)
+
         let markers = await this.getVerticesMatchingMetadata(this.state.selectedMetadata);
+
+
+        markers.forEach(m => {
+            console.log("m.vertex: ", m.vertex)
+            m['removeOnNewClick'] = false
+            m['refetch'] = 0
+            m['fetchEdges'] =  fecthEdgesOfThose.includes(m.vertex)
+        })
+
+
+
         this.setState({markersSelectedMetadata: markers})
     }
 
-    // className={'grid grid-rows-tokenGraphLayout grid-cols-tokenGraphLayout grid-cols-3 gap-1 p-4 h-full'}>
-
     render() {
-
         if (this.state.graphMetadata === undefined) {
             return <div>Loading . . . </div>
         } else {
@@ -65,6 +94,8 @@ class SingleGraphView extends Component {
             for(let z = 0; z < this.state.graphMetadata['zoomLevels']; z++){
                 plot_urls.push(UrlComposer.edgePlot(this.props.match.params.graphId, z))
             }
+
+	    const urlVertex = new URLSearchParams(this.props.location.search).get("vertex");
 
             return (
                 <div className={s.singleGraphGrid}>
@@ -75,9 +106,17 @@ class SingleGraphView extends Component {
                     <TagListGraph
                         autocompletionTerms={this.state.autocompletionTerms}
                         onChange={(currentSelection) => this.setState({selectedMetadata: currentSelection})}
-                        onSpecificVertexSearch={() => {
-                            this.setState({flyToLast: true})
-                        }}/>
+                        onSpecificVertexSearch={(vertex) => {
+                            this.props.history.push({
+                                search: '?vertex=' + vertex
+                            })
+                            this.setState({
+                                isFlyToLastVertex: true
+                            })
+                        }}
+                        receiveClearSignal={this.state.clearSignal}
+                        sendClearAck={this.receiveClearAck}
+                        />
 
 
                     <CopyGtmCommand
@@ -86,7 +125,6 @@ class SingleGraphView extends Component {
 
                     <div>
                         <SidePanel
-                            closestVertex={this.state.closestVertex}
                             selectedVertices={this.state.selectedMetadata}/>
                         <div className={'mt-2'}>
                             <Fillable>
@@ -100,15 +138,25 @@ class SingleGraphView extends Component {
                         graphMetadata={this.state.graphMetadata}
                         graphId={this.props.match.params.graphId}
                         graphName={this.props.match.params.graphName}
-                        setDisplayedAddress={this.setClosestVertex}
-                        selectedMetadataMarkers={this.state.markersSelectedMetadata}
+                        markersFromParent={this.state.markersSelectedMetadata}
                         recentMetadataSearches={this.state.recentMetadataSearches}
-                        flyToLast={this.state.flyToLast}
-                        afterFlyToLast={() => this.setState({flyToLast: false})}
+			            isFlyToLastVertex={this.state.isFlyToLastVertex}
+                        afterFlyToLast={() => this.setState({isFlyToLastVertex: false})}
+                        clearParent={() => {
+                            this.setState({
+                                markersSelectedMetadata: [],
+                                clearSignal: true
+                            })
+                        }}
+                        filterOutFromParent={(vertex) => {
+                            let selectedVertices = this.state.markersSelectedMetadata.filter(v => v.vertex !== vertex);
+                            this.setState({markersSelectedMetadata: selectedVertices})
+                        }}
                     />
 
                     <Fillable>
-                        {plot_urls.map(url => <img
+                        {plot_urls.map((url, i) => <img
+                            key={i*63 + 1}
                             className={s.plot}
                             src={url}/>
                        )}
@@ -116,10 +164,6 @@ class SingleGraphView extends Component {
                 </div>
             );
         }
-    }
-
-    setClosestVertex(address) {
-        this.setState({closestVertex: address})
     }
 
     async getVerticesMatchingMetadata(metadataObjects) {
@@ -152,10 +196,13 @@ class SingleGraphView extends Component {
             size: size,
             vertex: vertex
         })
-        // this.setState({markersSelectedMetadata: markers})
-
     }
 
+    receiveClearAck(){
+        this.setState({
+            clearSignal: false
+        })
+    }
 }
 
 export default withRouter(SingleGraphView);

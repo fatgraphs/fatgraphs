@@ -19,6 +19,15 @@ class TagListGraph extends Component {
         this.onAutocompletionElementClick = this.onAutocompletionElementClick.bind(this);
     }
 
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if(this.props.receiveClearSignal){
+            this.props.sendClearAck()
+            this.setState({
+                metadataObjects: []
+            })
+        }
+    }
+
     render() {
         return (
             <div className={'d-flex flex-row flex-wrap overflow-auto'}>
@@ -31,7 +40,7 @@ class TagListGraph extends Component {
                         if(v.slice(0,2) === '0x'){
                             this.onAutocompletionElementClick({type: 'eth', value: v})
                             this.setState({currentInput: ""});
-                            this.props.onSpecificVertexSearch();
+                            this.props.onSpecificVertexSearch(v);
                         }
                     }}
                     onBlur={this.onBlur}

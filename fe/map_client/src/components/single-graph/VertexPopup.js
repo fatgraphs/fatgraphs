@@ -22,8 +22,12 @@ class VertexPopup extends Component {
 
     render() {
         let addedMetadata = this.getAddedMetadata();
-        let labelsString = this.props.vertexObject['labels'] === null ? 'NA' : this.props.vertexObject['labels'].join(', ');
-        let typesString = this.props.vertexObject['types'] === null ? 'NA' : this.props.vertexObject['types'].join(', ');
+
+        let uniqueLabels = new Set(this.props.vertexObject['labels']);
+        let uniqueTypes =  new Set(this.props.vertexObject['types']);
+
+        let labelsString = uniqueLabels.length === 0 ? 'NA' : Array.from(uniqueLabels).join(', ');
+        let typesString = uniqueTypes === null ? 'NA' :  Array.from(uniqueTypes).join(', ');
         return (
             <Popup>
                 <>

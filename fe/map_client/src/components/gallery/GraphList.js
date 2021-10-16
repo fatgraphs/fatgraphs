@@ -21,8 +21,7 @@ class GraphList extends React.Component {
     }
 
     openGraph(graph) {
-        const {match, location, history} = this.props;
-        history.push("/graph/" + graph.graphName + '/' + graph.id);
+        this.props.history.push("/graph/" + graph.graphName + '/' + graph.id);
     }
 
     render() {
@@ -43,11 +42,13 @@ class GraphList extends React.Component {
                 </h2>
 
                 <div className={s.myGrid}>
-                    {filteredGraphs.map((row, id) => {
+                    {filteredGraphs.map((row, i) => {
                             let imageUrl = UrlComposer.tileLayer(row.id, 0, 0, 0);
                             imageUrl = imageUrl.replace(/{randint}/g, 43);
 
-                            return <Card className={s.myCard}
+                            return <Card
+                                key={i*23 + 1}
+                                className={s.myCard}
                                          onClick={() => {
                                              this.openGraph(row)
                                          }}>
