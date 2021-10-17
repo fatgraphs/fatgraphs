@@ -22,7 +22,8 @@ class GraphMap extends React.Component {
         this.state = {
             mapRef: undefined,
             zoom: 0,
-            selectedVertices : []
+            selectedVertices : [],
+            lastFlyLocation: undefined
         }
         this.mapCreationCallback = this.mapCreationCallback.bind(this)
         this.bindOnClickCallback = this.bindOnClickCallback.bind(this)
@@ -30,11 +31,22 @@ class GraphMap extends React.Component {
         this.bindOnPanCallback = this.bindOnPanCallback.bind(this)
         this.clearMapMarkersCallback = this.clearMapMarkersCallback.bind(this)
         this.checkboxCallback = this.checkboxCallback.bind(this)
-        this.doFlyToVertexLogic = this.doFlyToVertexLogic.bind(this)
+        // this.doFlyToVertexLogic = this.doFlyToVertexLogic.bind(this)
     }
 
     async componentDidUpdate(prevProps, prevState, snapshot) {
-        this.doFlyToVertexLogic();
+        if (this.props.markersFromParent.length > 0){
+            let flyTarget = this.props.markersFromParent.filter(m => m.flyTo)[0];
+            if(flyTarget.vertex !== this.state.lastFlyLocation){
+                this.state.map_ref.flyTo(
+                flyTarget.pos,
+                this.props.graphMetadata['zoomLevels'] - 1)
+                this.setState({
+                    lastFlyLocation: flyTarget.vertex
+                })
+            }
+
+        }
     }
 
     render() {
@@ -48,7 +60,6 @@ class GraphMap extends React.Component {
 
         allMarkers = [...new Map(allMarkers.map(item =>
             [item['vertex'], item])).values()];
-
 
         return <MapContainer
             whenCreated={this.mapCreationCallback}
@@ -70,8 +81,6 @@ class GraphMap extends React.Component {
             {allMarkers.map(
                 (e, i) => {
 
-                    console.log(e)
-
                 return  <VertexMarker
                     key={hashVertexToInt(e.vertex) + e.refetch}
                     fetchEdges={e.fetchEdges}
@@ -91,14 +100,7 @@ class GraphMap extends React.Component {
         </MapContainer>
     }
 
-    doFlyToVertexLogic() {
-        if (this.props.isFlyToLastVertex && this.props.markersFromParent.length > 0){
-            this.state.map_ref.flyTo(
-                this.props.markersFromParent[this.props.markersFromParent.length - 1].pos,
-                this.props.graphMetadata['zoomLevels'] - 1)
-        this.props.afterFlyToLast()
-        }
-    }
+
 
     mapCreationCallback(map) {
         this.bindOnZoomCallback(map);

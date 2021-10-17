@@ -12,7 +12,7 @@ import TagListGraph from "../tagList/tagListGraph";
 import {toMapCoordinate} from "../../utils/CoordinatesUtil"; import Fillable from "../../reactBlueTemplate/src/pages/tables/static/Fillable"; import UrlComposer from "../../utils/UrlComposer"; import {IconsLegend} from "./IconsLegend";
 import EdgePlots from "./EdgePlots";
 import LoadingComponent from "../LoadingComponent";
-import {updateQueryParam} from "../../utils/Utils";
+import {getQueryParam, updateQueryParam} from "../../utils/Utils";
 
 class SingleGraphView extends Component {
 
@@ -22,11 +22,10 @@ class SingleGraphView extends Component {
         super(props);
         this.state = {
             graphMetadata: undefined,
-            selectedMetadata: [],
+            selectedTags: [],
             recentMetadataSearches: [],
             metadataObjects: [],
-            markersSelectedMetadata: [],
-            isFlyToLastVertex: false,
+            mapMarkers: [],
             clearSignal: false
         }
         this.receiveClearAck = this.receiveClearAck.bind(this)
@@ -44,51 +43,39 @@ class SingleGraphView extends Component {
             recentMetadataSearches: []
         })
 
+        // TODO: MOVE TO graph map?
         function processUrlVertexIfPresent() {
-            let newUrlVertex = new URLSearchParams(this.props.location.search).get('vertex');
-            if (!!newUrlVertex) {
+            if (!!getQueryParam(this.props, 'vertex')) {
                 this.setState({
-                    isFlyToLastVertex: true,
-                    selectedMetadata: [
-                        ...this.state.selectedMetadata,
+                    selectedTags: [
+                        ...this.state.selectedTags,
                         {
                             type: 'eth',
-                            value: newUrlVertex,
-                            fetchEdges: true
+                            value: getQueryParam(this.props, 'vertex'),
+                            fetchEdges: true,
+                            flyTo: true
                         }
                     ]
                 })
             }
         }
-
         processUrlVertexIfPresent.call(this);
-
     }
 
     async componentDidUpdate(prevProps, prevState) {
 
-
-        if (_.isEqual(this.state.selectedMetadata, prevState.selectedMetadata)) {
+        if (_.isEqual(this.state.selectedTags, prevState.selectedTags)) {
             return
         }
-        let fecthEdgesOfThose = this.state.selectedMetadata
-            .filter(m => m.fetchEdges && m.type === 'eth')
-            .map(m => m.value);
-        console.log("fecthEdgesOfThose ", fecthEdgesOfThose)
 
-        let markers = await this.getVerticesMatchingMetadata(this.state.selectedMetadata);
-
+        let markers = await this.getVerticesMatchingTags(this.state.selectedTags);
 
         markers.forEach(m => {
-            console.log("m.vertex: ", m.vertex)
             m['removeOnNewClick'] = false
             m['refetch'] = 0
-            m['fetchEdges'] = fecthEdgesOfThose.includes(m.vertex)
         })
 
-
-
-        this.setState({markersSelectedMetadata: markers})
+        this.setState({mapMarkers: markers})
     }
 
     render() {
@@ -116,7 +103,7 @@ class SingleGraphView extends Component {
 
                     <div>
                         <SidePanel
-                            selectedVertices={this.state.selectedMetadata}/>
+                            selectedVertices={this.state.selectedTags}/>
                         <div className={'mt-2'}>
                             <Fillable>
                                 <IconsLegend></IconsLegend>
@@ -129,19 +116,18 @@ class SingleGraphView extends Component {
                         graphMetadata={this.state.graphMetadata}
                         graphId={this.props.match.params.graphId}
                         graphName={this.props.match.params.graphName}
-                        markersFromParent={this.state.markersSelectedMetadata}
+                        markersFromParent={this.state.mapMarkers}
                         recentMetadataSearches={this.state.recentMetadataSearches}
-			            isFlyToLastVertex={this.state.isFlyToLastVertex}
                         afterFlyToLast={() => this.setState({isFlyToLastVertex: false})}
                         clearParent={() => {
                             this.setState({
-                                markersSelectedMetadata: [],
+                                mapMarkers: [],
                                 clearSignal: true
                             })
                         }}
                         filterOutFromParent={(vertex) => {
-                            let selectedVertices = this.state.markersSelectedMetadata.filter(v => v.vertex !== vertex);
-                            this.setState({markersSelectedMetadata: selectedVertices})
+                            let selectedVertices = this.state.mapMarkers.filter(v => v.vertex !== vertex);
+                            this.setState({mapMarkers: selectedVertices})
                         }}
                     />
 
@@ -152,36 +138,47 @@ class SingleGraphView extends Component {
         }
     }
 
-    async getVerticesMatchingMetadata(metadataObjects) {
-        let verticesMatchingMetadata = []
-        for (const metadataObject of metadataObjects) {
-            let response = await fetchMatchingVertices(this.props.match.params.graphId, metadataObject);
-            verticesMatchingMetadata.push(...response)
+    async getVerticesMatchingTags(metadataObjects) {
+
+        async function fetchVertices() {
+            let verticesMatchingMetadata = []
+            for (const metadataObject of metadataObjects) {
+                let response = await fetchMatchingVertices(this.props.match.params.graphId, metadataObject);
+                response.forEach(v => v['fetchEdges'] = metadataObject['fetchEdges'])
+                response.forEach(v => v['flyTo'] = metadataObject['flyTo'])
+                verticesMatchingMetadata.push(...response)
+            }
+            return verticesMatchingMetadata;
         }
+
+        let verticesMatchingMetadata = await fetchVertices.call(this);
 
         // the same eth may have multiple types and labels
         let groupedByEth = _.groupBy(verticesMatchingMetadata, 'vertex');
 
         let markers = []
         for (const vertex in groupedByEth) {
-            this.populateMarkers(groupedByEth, vertex, markers);
+            markers.push(this.convertToMarker(groupedByEth, vertex));
         }
+
         return markers
     }
 
-    populateMarkers(groupedByEth, vertex, markers) {
-        const types = groupedByEth[vertex].map(obj => obj.types).flat()
-        const labels = groupedByEth[vertex].map(obj => obj.labels).flat()
-        const {pos, size} = groupedByEth[vertex][0]
-        let mapCoordinate = toMapCoordinate(pos, this.state.graphMetadata)
+    convertToMarker(groupedByEth, vertex) {
+        const types = [... new Set(groupedByEth[vertex].map(obj => obj.types).flat())]
+        const labels = [... new Set(groupedByEth[vertex].map(obj => obj.labels).flat())]
+        const {pos, size, fetchEdges, flyTo} = groupedByEth[vertex][0]
+        const mapCoordinate = toMapCoordinate(pos, this.state.graphMetadata)
 
-        markers.push({
+        return {
             types: types,
             labels: labels,
             pos: mapCoordinate,
             size: size,
-            vertex: vertex
-        })
+            vertex: vertex,
+            fetchEdges: fetchEdges,
+            flyTo: flyTo
+        }
     }
 
     receiveClearAck(){
@@ -191,14 +188,11 @@ class SingleGraphView extends Component {
     }
 
     receiveSelectedTags(currentSelection){
-        this.setState({selectedMetadata: currentSelection})
+        this.setState({selectedTags: currentSelection})
     }
 
     receiveSingleVertexSearch(vertex){
         updateQueryParam(this.props, {vertex: vertex})
-        this.setState({
-            isFlyToLastVertex: true
-        })
     }
 }
 

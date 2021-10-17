@@ -45,9 +45,11 @@ export function hashVertexToInt(vertex){
 }
 
 export function updateQueryParam(props, newQueryParam){
-    console.log("newQueryParam ", newQueryParam)
     const queryParams = qs.parse(props.location.search);
-    console.log("queryParams ", queryParams)
     const newQueries = { ...queryParams, ...newQueryParam};
     props.history.push({ search: qs.stringify(newQueries) })
+}
+
+export function getQueryParam(props, queryParam){
+    return new URLSearchParams(props.location.search).get(queryParam);
 }

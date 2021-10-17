@@ -40,7 +40,7 @@ class TagListGraph extends Component {
                     searchCallback={(v) => {
                         this.setState({currentInput: v});
                         if(v.slice(0,2) === '0x'){
-                            this.onAutocompletionElementClick({type: 'eth', value: v, fetchEdges: true})
+                            this.onAutocompletionElementClick({type: 'eth', value: v, fetchEdges: true, flyTo: true})
                             this.setState({currentInput: ""});
                             this.props.sendSingleVertexSearch(v);
                         }
