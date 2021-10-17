@@ -40,9 +40,9 @@ class TagListGraph extends Component {
                     searchCallback={(v) => {
                         this.setState({currentInput: v});
                         if(v.slice(0,2) === '0x'){
-                            this.onAutocompletionElementClick({type: 'eth', value: v})
+                            this.onAutocompletionElementClick({type: 'eth', value: v, fetchEdges: true})
                             this.setState({currentInput: ""});
-                            this.props.onSpecificVertexSearch(v);
+                            this.props.sendSingleVertexSearch(v);
                         }
                     }}
                     onBlur={this.onBlur}
@@ -71,7 +71,7 @@ class TagListGraph extends Component {
             let tagsWithoutOne = [...this.state.metadataObjects.slice(0, indexToRemove),
                 ...this.state.metadataObjects.slice(indexToRemove + 1,
                 this.state.metadataObjects.length)];
-            this.props.onChange(tagsWithoutOne)
+            this.props.sendSelectedTags(tagsWithoutOne)
             this.setState({metadataObjects: tagsWithoutOne})
         }.bind(this)
     }
@@ -90,7 +90,7 @@ class TagListGraph extends Component {
 
     onAutocompletionElementClick(e) {
         let metadataObjects = [...this.state.metadataObjects, e];
-        this.props.onChange(metadataObjects)
+        this.props.sendSelectedTags(metadataObjects)
         this.setState({metadataObjects: metadataObjects, showAutocompletion: false})
     }
 }

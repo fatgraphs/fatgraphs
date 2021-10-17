@@ -23,11 +23,12 @@ class TagListGallery extends Component {
             <div className={'d-flex flex-row flex-wrap'}>
                 <SearchBar
                     searchCallback={this.add}/>
-                    {this.state.tags.map((tag, i) => <TagElement
-                    key={i}
-                    closeCallback={this.removeWrapper(i)}>
-                        <div>{tag}</div>
-                </TagElement>)}
+                    {this.state.tags.map((tag, i) =>
+                        <TagElement
+                            key={i}
+                            closeCallback={this.removeWrapper(i)}>
+                                <div>{tag}</div>
+                        </TagElement>)}
             </div>
         );
     }

@@ -10,6 +10,9 @@ import CopyGtmCommand from "./CopyGtmCommand";
 import s from './singleGraph.module.scss';
 import TagListGraph from "../tagList/tagListGraph";
 import {toMapCoordinate} from "../../utils/CoordinatesUtil"; import Fillable from "../../reactBlueTemplate/src/pages/tables/static/Fillable"; import UrlComposer from "../../utils/UrlComposer"; import {IconsLegend} from "./IconsLegend";
+import EdgePlots from "./EdgePlots";
+import LoadingComponent from "../LoadingComponent";
+import {updateQueryParam} from "../../utils/Utils";
 
 class SingleGraphView extends Component {
 
@@ -27,6 +30,8 @@ class SingleGraphView extends Component {
             clearSignal: false
         }
         this.receiveClearAck = this.receiveClearAck.bind(this)
+        this.receiveSelectedTags = this.receiveSelectedTags.bind(this)
+        this.receiveSingleVertexSearch = this.receiveSingleVertexSearch.bind(this)
     }
 
     async componentDidMount() {
@@ -78,7 +83,7 @@ class SingleGraphView extends Component {
             console.log("m.vertex: ", m.vertex)
             m['removeOnNewClick'] = false
             m['refetch'] = 0
-            m['fetchEdges'] =  fecthEdgesOfThose.includes(m.vertex)
+            m['fetchEdges'] = fecthEdgesOfThose.includes(m.vertex)
         })
 
 
@@ -88,16 +93,8 @@ class SingleGraphView extends Component {
 
     render() {
         if (this.state.graphMetadata === undefined) {
-            return <div>Loading . . . </div>
+            return <LoadingComponent/>
         } else {
-
-            let plot_urls = []
-            for(let z = 0; z < this.state.graphMetadata['zoomLevels']; z++){
-                plot_urls.push(UrlComposer.edgePlot(this.props.match.params.graphId, z))
-            }
-
-	    const urlVertex = new URLSearchParams(this.props.location.search).get("vertex");
-
             return (
                 <div className={s.singleGraphGrid}>
 
@@ -106,15 +103,8 @@ class SingleGraphView extends Component {
 
                     <TagListGraph
                         autocompletionTerms={this.state.autocompletionTerms}
-                        onChange={(currentSelection) => this.setState({selectedMetadata: currentSelection})}
-                        onSpecificVertexSearch={(vertex) => {
-                            this.props.history.push({
-                                search: '?vertex=' + vertex
-                            })
-                            this.setState({
-                                isFlyToLastVertex: true
-                            })
-                        }}
+                        sendSelectedTags={this.receiveSelectedTags}
+                        sendSingleVertexSearch={this.receiveSingleVertexSearch}
                         receiveClearSignal={this.state.clearSignal}
                         sendClearAck={this.receiveClearAck}
                         />
@@ -155,13 +145,8 @@ class SingleGraphView extends Component {
                         }}
                     />
 
-                    <Fillable>
-                        {plot_urls.map((url, i) => <img
-                            key={i*63 + 1}
-                            className={s.plot}
-                            src={url}/>
-                       )}
-                    </Fillable>
+                    <EdgePlots
+                        zoomLevels={this.state.graphMetadata['zoomLevels']}/>
                 </div>
             );
         }
@@ -202,6 +187,17 @@ class SingleGraphView extends Component {
     receiveClearAck(){
         this.setState({
             clearSignal: false
+        })
+    }
+
+    receiveSelectedTags(currentSelection){
+        this.setState({selectedMetadata: currentSelection})
+    }
+
+    receiveSingleVertexSearch(vertex){
+        updateQueryParam(this.props, {vertex: vertex})
+        this.setState({
+            isFlyToLastVertex: true
         })
     }
 }

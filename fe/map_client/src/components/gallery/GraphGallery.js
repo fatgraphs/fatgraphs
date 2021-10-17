@@ -3,6 +3,7 @@ import {fetchGraphs} from "../../APILayer";
 import {MyContext} from "../../Context";
 import GraphList from "./GraphList";
 import TagListGallery from "../tagList/tagListGallery"; import {withRouter} from "react-router-dom";
+import LoadingComponent from "../LoadingComponent";
 
 class Gallery extends Component {
 
@@ -50,7 +51,7 @@ class Gallery extends Component {
                     availableGraphs={this.state.availableGraphs}
                     filterTerms={this.state.searchTerms}/>
             </div> :
-            <div>Loading . . .</div>
+            <LoadingComponent/>
     }
 }
 
