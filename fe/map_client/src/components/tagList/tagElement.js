@@ -1,9 +1,10 @@
 import React, {Component} from "react"; import {TYPE_ICONS} from "../single-graph/TypeIcons";
-export class TagElement extends Component {
+import './tagContainer.scss';
 
+export class TagElement extends Component {
     render() {
         return <div
-            className={'d-flex flex-row'}
+            className={'d-flex flex-row tag-container'}
             key={this.props.key}>
             <div className={'tagBox'}>
                 {this.props.children}

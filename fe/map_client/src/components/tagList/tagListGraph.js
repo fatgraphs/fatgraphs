@@ -3,6 +3,8 @@ import SearchBar from "../searchBar/SearchBar";
 import './tagBox.scss'
 import './closeIcon.scss'
 import './closeBox.scss'
+import './tagContainer.scss'
+
 import Autocompletion from "../autocompletion/Autocompletion"; import {TagElement} from "./tagElement"; import {TYPE_ICONS} from "../single-graph/TypeIcons";
 
 class TagListGraph extends Component {

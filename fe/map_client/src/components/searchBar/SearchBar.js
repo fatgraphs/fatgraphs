@@ -19,14 +19,14 @@ class SearchBar extends Component {
 
     render() {
         return (
-            <div>
+            <div className={s.searchbarContainer}>
                 <Form inline
                     onSubmit={this.onSubmit}
                     onBlur={this.props.onBlur}>
                     <FormGroup>
-                        <InputGroup className={`input-group-no-border ${s.searchForm}`}>
+                        <InputGroup className={`input-group-no-border`}>
                             <InputGroupAddon addonType="prepend">
-                                <InputGroupText className={s.inputGroupText}>
+                                <InputGroupText>
                                     <SearchIcon className={s.headerIcon}/>
                                 </InputGroupText>
                             </InputGroupAddon>
