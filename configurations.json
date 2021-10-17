@@ -53,5 +53,6 @@
       "defi" : "4"
   },
   "out_edge_color": "#ED8417",
-  "in_edge_color": "#DDE93F"
+  "in_edge_color": "#DDE93F",
+  "tile_size": 256
 }

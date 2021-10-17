@@ -36,7 +36,7 @@ def getCwd():
 def getFinalConfigurations(args, graph_name):
     configurations = {
         'graph_name': graph_name,
-        "tile_size": int(args.get('--ts', 256)),
+        "tile_size": int(args.get('--ts', CONFIGURATIONS['tile_size'])),
         "zoom_levels": int(args.get('-z', 2)),
         "min_transparency": float(args.get('--min_t', 0)),
         "max_transparency": float(args.get('--max_t', 0.1)),
