@@ -1,4 +1,5 @@
 import React from "react";
+import qs from "query-string";
 
 export function symmetricDifference(a, b) {
     /**
@@ -41,4 +42,12 @@ export function truncateEth(string, _len){
 export function hashVertexToInt(vertex){
     let byteArray = new TextEncoder().encode(vertex);
     return byteArray.reduceRight((a, b)=>a+b)
+}
+
+export function updateQueryParam(props, newQueryParam){
+    console.log("newQueryParam ", newQueryParam)
+    const queryParams = qs.parse(props.location.search);
+    console.log("queryParams ", queryParams)
+    const newQueries = { ...queryParams, ...newQueryParam};
+    props.history.push({ search: qs.stringify(newQueries) })
 }
