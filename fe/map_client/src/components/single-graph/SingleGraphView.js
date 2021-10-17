@@ -30,8 +30,7 @@ class SingleGraphView extends Component {
     }
 
     async componentDidMount() {
-	// const urlVertex = new URLSearchParams(this.props.location.search).get("vertex");
-	// console.log(urlVertex);
+
         let graphMetadata = await fetchGraph(this.props.match.params.graphId);
         let autocompletionTerms = await fetchAutocompletionTerms(this.props.match.params.graphId);
         this.setState({
@@ -40,22 +39,24 @@ class SingleGraphView extends Component {
             recentMetadataSearches: []
         })
 
-
-        let newUrlVertex = new URLSearchParams(this.props.location.search).get('vertex');
-
-        if(!!newUrlVertex){
-            this.setState({
-                isFlyToLastVertex: true,
-                selectedMetadata: [
-                    ...this.state.selectedMetadata,
-                    {
-                        type: 'eth',
-                        value: newUrlVertex,
-                        fetchEdges: true
-                    }
-                ]
-            })
+        function processUrlVertexIfPresent() {
+            let newUrlVertex = new URLSearchParams(this.props.location.search).get('vertex');
+            if (!!newUrlVertex) {
+                this.setState({
+                    isFlyToLastVertex: true,
+                    selectedMetadata: [
+                        ...this.state.selectedMetadata,
+                        {
+                            type: 'eth',
+                            value: newUrlVertex,
+                            fetchEdges: true
+                        }
+                    ]
+                })
+            }
         }
+
+        processUrlVertexIfPresent.call(this);
 
     }
 
