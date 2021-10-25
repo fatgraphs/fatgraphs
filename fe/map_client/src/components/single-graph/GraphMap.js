@@ -6,12 +6,12 @@ import {toGraphCoordinate, toMapCoordinate} from "../../utils/CoordinatesUtil";
 import {MapContainer, Marker, TileLayer} from 'react-leaflet'
 import {generateLargeRandom, hashVertexToInt, updateQueryParam} from "../../utils/Utils";
 import s from './singleGraph.module.scss'
-import "./circleMarker.scss"; import VertexPopup from "./VertexPopup"; import VertexMarker from "./VertexMarker";
+import "./circleMarker.scss"; import VertexPopup from "./marker/VertexPopup"; import VertexMarker from "./marker/VertexMarker";
 import '@elfalem/leaflet-curve'
 import Fullscreen from 'react-leaflet-fullscreen-plugin';
 import {withRouter} from "react-router-dom";
 
-import './clearMapMarkers'
+import './clearMapControl/clearMapMarkers'
 
 let configs = require('../../../../../configurations.json');
 

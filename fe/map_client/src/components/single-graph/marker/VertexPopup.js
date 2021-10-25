@@ -1,11 +1,11 @@
 import React, {Component} from 'react';
 import {Popup} from "react-leaflet";
 import {array, object, string} from "prop-types";
-import SearchBar from "../searchBar/SearchBar";
-import Autocompletion from "../autocompletion/Autocompletion";
+import SearchBar from "../../searchBar/SearchBar";
+import Autocompletion from "../../autocompletion/Autocompletion";
 import './leafletPopup.scss'
-import {postVertexMetadata} from "../../APILayer";
-import './clearMapMarkersControl.css'
+import {postVertexMetadata} from "../../../APILayer";
+import '../clearMapControl/clearMapMarkersControl.css'
 
 class VertexPopup extends Component {
 

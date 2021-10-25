@@ -1,8 +1,8 @@
-import React, { Component } from 'react'; import {generateLargeRandom} from "../../utils/Utils";
+import React, { Component } from 'react'; import {generateLargeRandom} from "../../../utils/Utils";
 import VertexPopup from "./VertexPopup";
 import {Marker} from "react-leaflet";
-import {fetchEdges} from "../../APILayer"; import {toMapCoordinate} from "../../utils/CoordinatesUtil"; import L from "leaflet";
-const configs = require('../../../../../configurations.json');
+import {fetchEdges} from "../../../APILayer"; import {toMapCoordinate} from "../../../utils/CoordinatesUtil"; import L from "leaflet";
+const configs = require('../../../../../../configurations.json');
 
 
 class VertexMarker extends Component {
