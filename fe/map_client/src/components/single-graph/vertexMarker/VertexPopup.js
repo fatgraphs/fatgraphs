@@ -6,6 +6,8 @@ import Autocompletion from "../../autocompletion/Autocompletion";
 import './leafletPopup.scss'
 import {postVertexMetadata} from "../../../APILayer";
 import '../clearMapControl/clearMapMarkersControl.css'
+import PopupCheckbox from "./PopupCheckbox";
+import {truncateEth} from "../../../utils/Utils";
 
 class VertexPopup extends Component {
 
@@ -24,18 +26,22 @@ class VertexPopup extends Component {
         let addedMetadata = this.getAddedMetadata();
 
         let uniqueLabels = new Set(this.props.vertexObject['labels']);
-        let uniqueTypes =  new Set(this.props.vertexObject['types']);
+        let uniqueTypes = new Set(this.props.vertexObject['types']);
 
         let labelsString = uniqueLabels.length === 0 ? 'NA' : Array.from(uniqueLabels).join(', ');
-        let typesString = uniqueTypes === null ? 'NA' :  Array.from(uniqueTypes).join(', ');
+        let typesString = uniqueTypes === null ? 'NA' : Array.from(uniqueTypes).join(', ');
         return (
             <Popup>
                 <>
+                    <span>Look vertex up: </span>
+                    <a href={'https://etherscan.io/address/' + this.props.vertexObject['vertex']}
+                       target="_blank">{truncateEth(this.props.vertexObject['vertex'])}</a>
+
+
+
                     <div><span>Types : </span> <span>{typesString + addedMetadata['type']}</span></div>
                     <div><span>Labels : </span> <span>{labelsString + addedMetadata['label']}</span>
                     </div>
-                    <a href={'https://etherscan.io/address/' + this.props.vertexObject['vertex']}
-                       target="_blank">{this.props.vertexObject['vertex']}</a>
 
                     <SearchBar
                         onChange={(v) => this.setState({
@@ -53,25 +59,10 @@ class VertexPopup extends Component {
                         onClick={(metadataObject) => {
                             postVertexMetadata(this.props.vertexObject['vertex'], metadataObject)
                             this.setState({recentlyAddedMetadata: [...this.state.recentlyAddedMetadata, metadataObject]})
-                    }}/>
-                    <div>
-                        <form>
-                            <div className={"map-checkbox-container"}>
-                                <label>
-                                    <input className={"map-checkbox-small"}
-                                        id="persist-edges"
-                                        type="checkbox"
-                                        checked={this.props.ticked || this.state.selfTicked}
-                                        onChange={(e) => {
-                                            this.props.checkboxCallback(e)
-                                            this.setState({selfTicked: true})
-                                        }}>
-                                    </input>
-                                    <span>Persist</span>
-                                </label>
-                            </div>
-                        </form>
-                    </div>
+                        }}/>
+                    <PopupCheckbox
+                        checkboxCallback={this.props.checkboxCallback}
+                        ticked={this.props.ticked}/>
                 </>
             </Popup>
         );
