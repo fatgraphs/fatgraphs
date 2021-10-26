@@ -1,7 +1,11 @@
-import React, { Component } from 'react'; import {generateLargeRandom} from "../../../utils/Utils";
+import React, {Component} from 'react';
+import {generateLargeRandom} from "../../../utils/Utils";
 import VertexPopup from "./VertexPopup";
 import {Marker} from "react-leaflet";
-import {fetchEdges} from "../../../APILayer"; import {toMapCoordinate} from "../../../utils/CoordinatesUtil"; import L from "leaflet";
+import {fetchEdges} from "../../../APILayer";
+import {toMapCoordinate} from "../../../utils/CoordinatesUtil";
+import L from "leaflet";
+
 const configs = require('../../../../../../configurations.json');
 
 
@@ -58,9 +62,8 @@ class VertexMarker extends Component {
     }
 
     render() {
-          if (this.props.vertexObject !== undefined) {
+        if (this.props.vertexObject !== undefined) {
             return (
-
                 <Marker key={generateLargeRandom()}
                         position={this.props.vertexObject['pos']}
                 >
@@ -73,21 +76,22 @@ class VertexMarker extends Component {
                         checkboxCallback={this.receiveNotification}
                         ticked={this.props.ticked}
                     />
-                </Marker>)
-          } else {
+                </Marker>
+            )
+        } else {
             return <></>
-          }
-      }
+        }
+    }
 
-      componentWillUnmount() {
+    componentWillUnmount() {
         this.state.edges.forEach(e => {
             this.props.mapRef.removeLayer(e);
         })
-      }
+    }
 
-      receiveNotification(event){
+    receiveNotification(event) {
         this.props.checkboxCallback(this.props.vertexObject, event.target.checked)
-      }
+    }
 }
 
 

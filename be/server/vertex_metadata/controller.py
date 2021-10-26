@@ -30,3 +30,13 @@ class MetadataResource(Resource):
         with SessionLocal() as db:
             by_eth = VertexMetadataService.create(request.parsed_obj, db)
             return by_eth
+
+
+@api.route("/<string:eth>/<string:typee>/<string:value>")
+class MetadataResource(Resource):
+
+    @responds(schema=VertexMetadataSchema)
+    def delete(self, eth: str, typee: str, value: str) -> VertexMetadata:
+        with SessionLocal() as db:
+            VertexMetadataService.delete(eth, typee, value, db)
+            return {}

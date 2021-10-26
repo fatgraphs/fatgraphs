@@ -109,6 +109,21 @@ class VertexMetadata:
                 'vertex': self.vertex,
                 'account_type': self.account_type
             })
+
+    @staticmethod
+    def delete(vertex, typee, value, db):
+        query = """UPDATE %(type_label_table)s 
+        SET %(type_or_label)s = ''
+        WHERE vertex = %(vertex)s AND %(type_or_label)s = %(value)s; 
+        """
+        result = db.bind.engine.execute(query, {
+            'type_label_table': AsIs(VertexMetadata.__type_labels__),
+            'type_or_label': AsIs(typee),
+            'vertex': vertex,
+            'value': value
+        })
+        return result
+
     @staticmethod
     def from_row(row):
         result = VertexMetadata(vertex=row[1]['vertex'],

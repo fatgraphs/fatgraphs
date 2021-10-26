@@ -41,6 +41,10 @@ class VertexMetadataService:
         return new_metadata
 
     @staticmethod
+    def delete(vertex, typee, value, db):
+        return VertexMetadata.delete(vertex, typee, value, db)
+
+    @staticmethod
     def merge_graph_vertices_with_account_type(db, graph_id: int):
         table_name = GraphService.get_vertex_table_name(graph_id, db)
         query = """SELECT tg_account_type.vertex, tg_account_type.type FROM %(table_name)s

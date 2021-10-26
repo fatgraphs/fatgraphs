@@ -94,3 +94,11 @@ export function postVertexMetadata(vertex, metadataObject) {
     }
     return doRequest(url, init);
 }
+
+export function deleteVertexMetadata(vertex, metadataObject) {
+    let url = UrlComposer.deleteVertexMetadata(vertex, metadataObject);
+    let init = {
+        method: 'DELETE'
+    }
+    return doRequest(url, init);
+}

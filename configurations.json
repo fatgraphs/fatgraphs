@@ -16,6 +16,7 @@
     "user": "user/{userName}",
     "recentMetadataSearches": "searches/",
     "addVertexMetadata": "vertex-metadata/create",
+    "deleteVertexMetadata": "vertex-metadata/{vertex}/{type}/{value}",
     "edges": "edge/{graphId}/{vertex}",
     "parameters": {
       "edges_fetched_limit": 100

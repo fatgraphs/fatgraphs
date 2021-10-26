@@ -45,6 +45,15 @@ class UrlComposer {
     static addVertexMetadata() {
         return configs['endpoints']['base'] + configs['endpoints']['addVertexMetadata'] ;
     }
+    static deleteVertexMetadata(vertex, metadataObject) {
+        let toParametriseUrlFragment = configs['endpoints']['deleteVertexMetadata'] ;
+
+        let parametrisedUrlFragment = toParametriseUrlFragment.replace(/{vertex}/g, String(vertex));
+        parametrisedUrlFragment = parametrisedUrlFragment.replace(/{type}/g, String(metadataObject['type']));
+        parametrisedUrlFragment = parametrisedUrlFragment.replace(/{value}/g, String(metadataObject['value']));
+
+        return configs['endpoints']['base'] + parametrisedUrlFragment;
+    }
 
     static graphs(galleryType) {
         let toParametriseUrlFragment = configs['endpoints']['availableGraphs'];

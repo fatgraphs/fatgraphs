@@ -37,7 +37,7 @@ class GraphMap extends React.Component {
     async componentDidUpdate(prevProps, prevState, snapshot) {
         if (this.props.markersFromParent.length > 0){
             let flyTarget = this.props.markersFromParent.filter(m => m.flyTo)[0];
-            if(flyTarget.vertex !== this.state.lastFlyLocation){
+            if(flyTarget !== undefined && flyTarget.vertex !== this.state.lastFlyLocation){
                 this.state.map_ref.flyTo(
                 flyTarget.pos,
                 this.props.graphMetadata['zoomLevels'] - 1)

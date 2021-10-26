@@ -1,11 +1,18 @@
-.autocompletionOuter{
+.autocompletionOuter {
   //'fixed z-50 mt-8'
   position: fixed;
   z-index: 50;
   margin-top: 2.75rem;
 }
 
-.autocompletionInner{
+// bottom alignment for vertex popup
+.autocompletionOuterBottom {
+  position: fixed;
+  z-index: 50;
+  bottom: 2.75rem;
+}
+
+.autocompletionInner {
   padding: 1rem;
   display: flex;
   flex-direction: column;

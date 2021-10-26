@@ -28,7 +28,7 @@ class Autocompletion extends Component {
 
         return (
             matchingAutocompleteTerms.length > 0 && this.props.shouldRender ?
-            <div className={'autocompletionOuter'}>
+            <div className={this.props.isBottomAligned ?  'autocompletionOuterBottom': 'autocompletionOuter'}>
                 <ul
                     onScroll={this.handleScroll}
                     className={'autocompletionInner'}>
