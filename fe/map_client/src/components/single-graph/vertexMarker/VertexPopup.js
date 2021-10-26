@@ -3,7 +3,6 @@ import {Popup} from "react-leaflet";
 import {array, object, string} from "prop-types";
 import './leafletPopup.scss'
 import {deleteVertexMetadata, postVertexMetadata} from "../../../APILayer";
-import '../clearMapControl/clearMapMarkersControl.css'
 import PopupCheckbox from "./PopupCheckbox";
 import {truncateEth} from "../../../utils/Utils";
 import TagListVertex from "../../tagList/tagListVertex";

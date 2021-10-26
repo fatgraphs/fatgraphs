@@ -11,7 +11,7 @@ import '@elfalem/leaflet-curve'
 import Fullscreen from 'react-leaflet-fullscreen-plugin';
 import {withRouter} from "react-router-dom";
 
-import './clearMapControl/clearMapMarkers'
+import makeCustomControl from "./customMapControl/customMapControl";
 
 let configs = require('../../../../../configurations.json');
 
@@ -23,7 +23,8 @@ class GraphMap extends React.Component {
             mapRef: undefined,
             zoom: 0,
             selectedVertices : [],
-            lastFlyLocation: undefined
+            lastFlyLocation: undefined,
+            persistAllClicks: false
         }
         this.mapCreationCallback = this.mapCreationCallback.bind(this)
         this.bindOnClickCallback = this.bindOnClickCallback.bind(this)
@@ -31,6 +32,7 @@ class GraphMap extends React.Component {
         this.bindOnPanCallback = this.bindOnPanCallback.bind(this)
         this.clearMapMarkersCallback = this.clearMapMarkersCallback.bind(this)
         this.checkboxCallback = this.checkboxCallback.bind(this)
+        this.persistAllClicksCallback = this.persistAllClicksCallback.bind(this)
         // this.doFlyToVertexLogic = this.doFlyToVertexLogic.bind(this)
     }
 
@@ -106,10 +108,12 @@ class GraphMap extends React.Component {
         this.bindOnZoomCallback(map);
         this.bindOnClickCallback(map);
         this.bindOnPanCallback(map);
+        this.addClearEdgesControl(map);
+        this.addPersistAllClicksControl(map);
+
         this.setState({
             map_ref: map
         })
-        L.control.clearMapMarkersControl({callback: this.clearMapMarkersCallback }).addTo(map);
 
         function setInitialMapView() {
             let urlZoom = new URLSearchParams(this.props.location.search).get('z') || 0;
@@ -123,6 +127,20 @@ class GraphMap extends React.Component {
             })
         }
         setInitialMapView.call(this);
+    }
+
+    addPersistAllClicksControl(map) {
+        makeCustomControl(this.persistAllClicksCallback,
+            `<a href="#" role="button" title="Clear edges" aria-label="Clear edges">P</a>`,
+            'topright'
+        ).addTo(map);
+    }
+
+    addClearEdgesControl(map) {
+        makeCustomControl(this.clearMapMarkersCallback,
+            `<a href="#" role="button" title="Clear edges" aria-label="Clear edges">✗</a>`,
+            'topright'
+        ).addTo(map);
     }
 
     bindOnZoomCallback(map) {
@@ -167,7 +185,7 @@ class GraphMap extends React.Component {
         let closestVertex = await fetchClosestPoint(this.props.graphId, pos)
         closestVertex['pos'] = toMapCoordinate(closestVertex['pos'], this.props.graphMetadata);
         closestVertex['refetch'] = 0;
-        closestVertex['removeOnNewClick'] = true;
+        closestVertex['removeOnNewClick'] = ! this.state.persistAllClicks;
         closestVertex['fetchEdges'] = true;
         return closestVertex;
     }
@@ -188,6 +206,12 @@ class GraphMap extends React.Component {
         this.setState({selectedVertices: []})
         this.props.clearParent()
         this.props.history.push({search: ''})
+    }
+
+    persistAllClicksCallback(){
+        this.setState({
+            persistAllClicks: ! this.state.persistAllClicks
+        })
     }
 
     checkboxCallback(vertexObject, ticked){
