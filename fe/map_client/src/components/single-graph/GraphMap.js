@@ -6,7 +6,9 @@ import {toGraphCoordinate, toMapCoordinate} from "../../utils/CoordinatesUtil";
 import {MapContainer, Marker, TileLayer} from 'react-leaflet'
 import {generateLargeRandom, hashVertexToInt, updateQueryParam} from "../../utils/Utils";
 import s from './singleGraph.module.scss'
-import "./circleMarker.scss"; import VertexPopup from "./vertexMarker/VertexPopup"; import VertexMarker from "./vertexMarker/VertexMarker";
+import "./circleMarker.scss";
+import VertexPopup from "./vertexMarker/VertexPopup";
+import VertexMarker from "./vertexMarker/VertexMarker";
 import '@elfalem/leaflet-curve'
 import Fullscreen from 'react-leaflet-fullscreen-plugin';
 import {withRouter} from "react-router-dom";
@@ -22,7 +24,7 @@ class GraphMap extends React.Component {
         this.state = {
             mapRef: undefined,
             zoom: 0,
-            selectedVertices : [],
+            selectedVertices: [],
             lastFlyLocation: undefined,
             persistAllClicks: false
         }
@@ -38,12 +40,12 @@ class GraphMap extends React.Component {
     }
 
     async componentDidUpdate(prevProps, prevState, snapshot) {
-        if (this.props.markersFromParent.length > 0){
+        if (this.props.markersFromParent.length > 0) {
             let flyTarget = this.props.markersFromParent.filter(m => m.flyTo)[0];
-            if(flyTarget !== undefined && flyTarget.vertex !== this.state.lastFlyLocation){
+            if (flyTarget !== undefined && flyTarget.vertex !== this.state.lastFlyLocation) {
                 this.state.map_ref.flyTo(
-                flyTarget.pos,
-                this.props.graphMetadata['zoomLevels'] - 1)
+                    flyTarget.pos,
+                    this.props.graphMetadata['zoomLevels'] - 1)
                 this.setState({
                     lastFlyLocation: flyTarget.vertex
                 })
@@ -84,25 +86,24 @@ class GraphMap extends React.Component {
             {allMarkers.map(
                 (e, i) => {
 
-                return  <VertexMarker
-                    key={hashVertexToInt(e.vertex) + e.refetch}
-                    fetchEdges={e.fetchEdges}
-                    zoom={this.state.zoom}
-                    mapRef={this.state.map_ref}
-                    graphMetadata={this.props.graphMetadata}
-                    vertexObject={e}
-                    autocompletionTerms={this.props.autocompletionTerms}
-                    graphName={this.props.graphName}
-                    graphId={this.props.graphId}
-                    checkboxCallback={this.checkboxCallback}
-                    ticked={ !e.removeOnNewClick}>
-                    >
-                </VertexMarker>
+                    return <VertexMarker
+                        key={hashVertexToInt(e.vertex) + e.refetch}
+                        fetchEdges={e.fetchEdges}
+                        zoom={this.state.zoom}
+                        mapRef={this.state.map_ref}
+                        graphMetadata={this.props.graphMetadata}
+                        vertexObject={e}
+                        autocompletionTerms={this.props.autocompletionTerms}
+                        graphName={this.props.graphName}
+                        graphId={this.props.graphId}
+                        checkboxCallback={this.checkboxCallback}
+                        ticked={!e.removeOnNewClick}>
+                        >
+                    </VertexMarker>
                 })
             }
         </MapContainer>
     }
-
 
 
     mapCreationCallback(map) {
@@ -119,7 +120,7 @@ class GraphMap extends React.Component {
 
         function setInitialMapView() {
             let urlZoom = new URLSearchParams(this.props.location.search).get('z') || 0;
-            let urlLat= new URLSearchParams(this.props.location.search).get('lat') || - configs['tile_size'] / 2;
+            let urlLat = new URLSearchParams(this.props.location.search).get('lat') || -configs['tile_size'] / 2;
             let urlLng = new URLSearchParams(this.props.location.search).get('lng') || configs['tile_size'] / 2;
             map.setView([urlLat, urlLng], urlZoom)
             updateQueryParam(this.props, {
@@ -128,6 +129,7 @@ class GraphMap extends React.Component {
                 lng: urlLng
             })
         }
+
         setInitialMapView.call(this);
     }
 
@@ -154,7 +156,7 @@ class GraphMap extends React.Component {
 
     bindOnZoomCallback(map) {
         let zoomCallback = function () {
-            updateQueryParam(this.props, {z:map.getZoom()})
+            // updateQueryParam(this.props, {z:map.getZoom()})
             this.setState({
                 zoom: map.getZoom()
             })
@@ -164,10 +166,10 @@ class GraphMap extends React.Component {
 
     bindOnClickCallback(mapRef) {
 
-        function getGraphPosFromMapClick(clickEvent, graphMetadata){
+        function getGraphPosFromMapClick(clickEvent, graphMetadata) {
             return toGraphCoordinate([
-                clickEvent.latlng.lat,
-                clickEvent.latlng.lng],
+                    clickEvent.latlng.lat,
+                    clickEvent.latlng.lng],
                 graphMetadata)
         }
 
@@ -179,13 +181,17 @@ class GraphMap extends React.Component {
 
     }
 
-    bindOnPanCallback(mapRef){
+    bindOnPanCallback(mapRef) {
         let panCallback = function () {
             let currentLocation = mapRef.getCenter();
-            updateQueryParam(this.props, {
-                lat : Math.round(currentLocation.lat),
-                lng: Math.round(currentLocation.lng)
-            })
+            let temp = () => {
+                updateQueryParam(this.props, {
+                    lat: Math.round(currentLocation.lat),
+                    lng: Math.round(currentLocation.lng)
+                })
+            }
+            temp.bind(this)
+            setTimeout(temp, 0)
         }.bind(this);
         mapRef.on('moveend', panCallback);
     }
@@ -194,40 +200,42 @@ class GraphMap extends React.Component {
         let closestVertex = await fetchClosestPoint(this.props.graphId, pos)
         closestVertex['pos'] = toMapCoordinate(closestVertex['pos'], this.props.graphMetadata);
         closestVertex['refetch'] = 0;
-        closestVertex['removeOnNewClick'] = ! this.state.persistAllClicks;
+        closestVertex['removeOnNewClick'] = !this.state.persistAllClicks;
         closestVertex['fetchEdges'] = true;
         return closestVertex;
     }
 
-     updateDisplayedVertices(newVertex) {
+    updateDisplayedVertices(newVertex) {
         updateQueryParam(this.props, {vertex: newVertex['vertex']})
         let refetchCount = this.state.selectedVertices
             .filter(v => v.vertex === newVertex.vertex)
             .forEach(v => newVertex['refetch'] = v['refetch'] + 1);
 
-        this.setState({selectedVertices: [
-            ...this.state.selectedVertices.filter(v => ! v.removeOnNewClick),
-         newVertex]})
+        this.setState({
+            selectedVertices: [
+                ...this.state.selectedVertices.filter(v => !v.removeOnNewClick),
+                newVertex]
+        })
 
     }
 
-    clearMapMarkersCallback(){
+    clearMapMarkersCallback() {
         this.setState({selectedVertices: []})
         this.props.clearParent()
         this.props.history.push({search: ''})
     }
 
-    persistAllClicksCallback(){
+    persistAllClicksCallback() {
         this.setState({
-            persistAllClicks: ! this.state.persistAllClicks
+            persistAllClicks: !this.state.persistAllClicks
         })
     }
 
-    checkboxCallback(vertexObject, ticked){
+    checkboxCallback(vertexObject, ticked) {
 
-        vertexObject.removeOnNewClick = ! ticked
+        vertexObject.removeOnNewClick = !ticked
 
-        if(! ticked){
+        if (!ticked) {
             let selectedVertices = this.state.selectedVertices.filter(v => v.vertex !== vertexObject.vertex);
             this.props.filterOutFromParent(vertexObject.vertex)
             console.log("vertices without selected: ", selectedVertices)
@@ -237,7 +245,7 @@ class GraphMap extends React.Component {
         }
     }
 
-    removeLatMarker(){
+    removeLatMarker() {
         this.setState({
             selectedVertices: this.state.selectedVertices.slice(0, this.state.selectedVertices.length - 1)
         })

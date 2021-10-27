@@ -66,6 +66,13 @@ class VertexMarker extends Component {
             return (
                 <Marker key={generateLargeRandom()}
                         position={this.props.vertexObject['pos']}
+                        // eventHandlers={{
+                        //     mouseover: (e) => {
+                        //         console.log('marker over', e)
+                        //         this.props.mapRef.panTo(e.latlng)
+                        //         e.target.openPopup()
+                        //     },
+                        // }}
                 >
                     <VertexPopup
                         vertexObject={this.props.vertexObject}
