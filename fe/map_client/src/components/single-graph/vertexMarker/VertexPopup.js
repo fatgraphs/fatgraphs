@@ -18,10 +18,6 @@ class VertexPopup extends Component {
         }
     }
 
-    componentDidMount() {
-        console.log("popup mounted ")
-    }
-
     render() {
 
         let uniqueLabels = new Set(this.props.vertexObject['labels']);

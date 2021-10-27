@@ -33,6 +33,7 @@ class GraphMap extends React.Component {
         this.clearMapMarkersCallback = this.clearMapMarkersCallback.bind(this)
         this.checkboxCallback = this.checkboxCallback.bind(this)
         this.persistAllClicksCallback = this.persistAllClicksCallback.bind(this)
+        this.removeLatMarker = this.removeLatMarker.bind(this)
         // this.doFlyToVertexLogic = this.doFlyToVertexLogic.bind(this)
     }
 
@@ -110,6 +111,7 @@ class GraphMap extends React.Component {
         this.bindOnPanCallback(map);
         this.addClearEdgesControl(map);
         this.addPersistAllClicksControl(map);
+        this.addUndoControl(map);
 
         this.setState({
             map_ref: map
@@ -139,6 +141,13 @@ class GraphMap extends React.Component {
     addClearEdgesControl(map) {
         makeCustomControl(this.clearMapMarkersCallback,
             `<a href="#" role="button" title="Clear edges" aria-label="Clear edges">✗</a>`,
+            'topright'
+        ).addTo(map);
+    }
+
+    addUndoControl(map) {
+        makeCustomControl(this.removeLatMarker,
+            `<a href="#" role="button" title="Undo last selection" aria-label="Undo last selection">←</a>`,
             'topright'
         ).addTo(map);
     }
@@ -226,6 +235,12 @@ class GraphMap extends React.Component {
                 selectedVertices: selectedVertices
             })
         }
+    }
+
+    removeLatMarker(){
+        this.setState({
+            selectedVertices: this.state.selectedVertices.slice(0, this.state.selectedVertices.length - 1)
+        })
     }
 
 
