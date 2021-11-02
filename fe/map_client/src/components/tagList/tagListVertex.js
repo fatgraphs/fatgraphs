@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import SearchBar from "../searchBar/SearchBar";
-import {func} from "prop-types";
+import {func, bool} from "prop-types";
 import './tagBox.scss'
 import './closeIcon.scss'
 import './closeBox.scss'
@@ -51,7 +51,9 @@ class TagListVertex extends Component {
                             <div>{metaObject.value}</div>
                         </TagElement>)}
 
-                <SearchBar
+                {this.props.isLabellingEnabled === 'true' ?
+                    <>
+                        <SearchBar
                     searchCallback={(v) => {
                         this.setState({currentInput: v});
 
@@ -93,6 +95,8 @@ class TagListVertex extends Component {
                                 recentMetadataSearches={[]}
                                 onClick={this.onAutocompletionElementClick}
                                 isBottomAligned/>
+                    </> :
+                    <div>Labelling disabled</div>}
             </div>
         );
     }
@@ -134,6 +138,7 @@ class TagListVertex extends Component {
 }
 
 TagListVertex.propTypes = {
+    isLabellingEnabled: bool.isRequired,
     addTag: func.isRequired,
     deleteTag: func.isRequired
 }

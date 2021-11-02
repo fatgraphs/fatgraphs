@@ -7,6 +7,8 @@ import PopupCheckbox from "./PopupCheckbox";
 import {truncateEth} from "../../../utils/Utils";
 import TagListVertex from "../../tagList/tagListVertex";
 
+const configs = require('configurations')
+
 class VertexPopup extends Component {
 
     constructor(props) {
@@ -62,6 +64,7 @@ class VertexPopup extends Component {
                             deleteVertexMetadata(this.props.vertexObject['vertex'], metadataObject)
                         }}
                         metadataObjects={[...uniqueLabels, ...uniqueTypes]}
+                        isLabellingEnabled={configs['is_labelling_enabled']}
                     />
 
                     <PopupCheckbox
