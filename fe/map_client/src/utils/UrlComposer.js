@@ -91,8 +91,8 @@ class UrlComposer {
         return configs['endpoints']['base'] + parametrisedUrlFragment;
     }
 
-    static galleryTypes() {
-        return configs['endpoints']['base'] + configs['endpoints']['galleryTypes'];
+    static getGalleryCategories() {
+        return configs['endpoints']['base'] + configs['endpoints']['galleryCategories'];
     }
 }
 

@@ -19,6 +19,7 @@
     "addVertexMetadata": "vertex-metadata/create",
     "deleteVertexMetadata": "vertex-metadata/{vertex}/{type}/{value}",
     "edges": "edge/{graphId}/{vertex}",
+    "galleryCategories": "gallery_categories/",
     "parameters": {
       "edges_fetched_limit": 100
     }
