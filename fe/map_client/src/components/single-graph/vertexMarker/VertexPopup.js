@@ -55,12 +55,10 @@ class VertexPopup extends Component {
                     <TagListVertex
                         autocompletionTerms={this.props.autocompletionTerms}
                         addTag={(metadataObject) => {
-                            console.log("sendSelectedTags ", metadataObject)
                             postVertexMetadata(this.props.vertexObject['vertex'], metadataObject)
 
                         }}
                         deleteTag={(metadataObject) => {
-                            console.log("removing ", metadataObject)
                             deleteVertexMetadata(this.props.vertexObject['vertex'], metadataObject)
                         }}
                         metadataObjects={[...uniqueLabels, ...uniqueTypes]}
@@ -77,8 +75,9 @@ class VertexPopup extends Component {
 
     assignPopupProperties(popup) {
         if(popup && popup.options){
-            popup.options.autoClose = false;
             popup.options.closeOnClick = false;
+            // Offset to prevent overlapping with controls on right side
+            popup.options.autoPanPaddingBottomRight = L.point(50, 300);
         }
     }
 

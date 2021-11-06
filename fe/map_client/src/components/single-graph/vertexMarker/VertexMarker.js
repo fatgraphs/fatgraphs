@@ -5,6 +5,8 @@ import {Marker} from "react-leaflet";
 import {fetchEdges} from "../../../APILayer";
 import {toMapCoordinate} from "../../../utils/CoordinatesUtil";
 import L from "leaflet";
+import {updatePersistOnNewClick} from "../../../redux/markersSlice";
+import {connect} from "react-redux";
 
 const configs = require('../../../../../../configurations.json');
 
@@ -66,13 +68,12 @@ class VertexMarker extends Component {
             return (
                 <Marker key={generateLargeRandom()}
                         position={this.props.vertexObject['pos']}
-                        // eventHandlers={{
-                        //     mouseover: (e) => {
-                        //         console.log('marker over', e)
-                        //         this.props.mapRef.panTo(e.latlng)
-                        //         e.target.openPopup()
-                        //     },
-                        // }}
+                        eventHandlers={{
+                            // bug prevention: double-clicking a marker should be equivalent to click it once
+                            dblclick: (e) => {
+                                e.stopPropagation();
+                            },
+                        }}
                 >
                     <VertexPopup
                         vertexObject={this.props.vertexObject}
@@ -97,9 +98,15 @@ class VertexMarker extends Component {
     }
 
     receiveNotification(event) {
-        this.props.checkboxCallback(this.props.vertexObject, event.target.checked)
+        this.props.updatePersistOnNewClick(
+            {
+                isChecked: event.target.checked,
+                vertex: this.props.vertexObject.vertex
+            })
     }
+
+
 }
 
 
-export default VertexMarker;
+export default connect(null, {updatePersistOnNewClick})(VertexMarker);

@@ -1,19 +1,24 @@
 import React from 'react';
 import L from 'leaflet';
 import UrlComposer from "../../utils/UrlComposer";
-import {fetchClosestPoint} from "../../APILayer";
-import {toGraphCoordinate, toMapCoordinate} from "../../utils/CoordinatesUtil";
-import {MapContainer, Marker, TileLayer} from 'react-leaflet'
-import {generateLargeRandom, hashVertexToInt, updateQueryParam} from "../../utils/Utils";
+import {toGraphCoordinate} from "../../utils/CoordinatesUtil";
+import {MapContainer, TileLayer} from 'react-leaflet'
+import {generateLargeRandom, hashVertexToInt} from "../../utils/Utils";
 import s from './singleGraph.module.scss'
 import "./circleMarker.scss";
-import VertexPopup from "./vertexMarker/VertexPopup";
 import VertexMarker from "./vertexMarker/VertexMarker";
 import '@elfalem/leaflet-curve'
 import Fullscreen from 'react-leaflet-fullscreen-plugin';
-import {withRouter} from "react-router-dom";
 
 import makeCustomControl from "./customMapControl/customMapControl";
+import {func} from "prop-types";
+import {connect} from "react-redux";
+
+import {clear, fetchClosestVertex, pop, removeVertices, togglePersistClick, updateFlyTo} from "../../redux/markersSlice";
+import {changeUrl} from "../../redux/urlSlice";
+import {graphMounted} from "../../redux/selectedGraphSlice";
+import _ from 'underscore';
+import UrlManager from "../urlManager";
 
 let configs = require('../../../../../configurations.json');
 
@@ -23,48 +28,46 @@ class GraphMap extends React.Component {
         super(props);
         this.state = {
             mapRef: undefined,
-            zoom: 0,
-            selectedVertices: [],
-            lastFlyLocation: undefined,
-            persistAllClicks: false
+            renderingCommitted: false
         }
         this.mapCreationCallback = this.mapCreationCallback.bind(this)
         this.bindOnClickCallback = this.bindOnClickCallback.bind(this)
         this.bindOnZoomCallback = this.bindOnZoomCallback.bind(this)
         this.bindOnPanCallback = this.bindOnPanCallback.bind(this)
         this.clearMapMarkersCallback = this.clearMapMarkersCallback.bind(this)
-        this.checkboxCallback = this.checkboxCallback.bind(this)
-        this.persistAllClicksCallback = this.persistAllClicksCallback.bind(this)
-        this.removeLatMarker = this.removeLatMarker.bind(this)
-        // this.doFlyToVertexLogic = this.doFlyToVertexLogic.bind(this)
+    }
+
+    componentDidMount() {
+        this.props.commitRendering()
+        this.setState({
+            renderingCommitted: true
+        })
+    }
+
+    componentWillUnmount() {
+        this.props.clear()
     }
 
     async componentDidUpdate(prevProps, prevState, snapshot) {
-        if (this.props.markersFromParent.length > 0) {
-            let flyTarget = this.props.markersFromParent.filter(m => m.flyTo)[0];
-            if (flyTarget !== undefined && flyTarget.vertex !== this.state.lastFlyLocation) {
-                this.state.map_ref.flyTo(
-                    flyTarget.pos,
-                    this.props.graphMetadata['zoomLevels'] - 1)
-                this.setState({
-                    lastFlyLocation: flyTarget.vertex
-                })
-            }
 
+        let lastVertexMarker = this.props.verticesFromStore[this.props.verticesFromStore.length - 1];
+        if (lastVertexMarker && lastVertexMarker.flyTo) {
+            this.state.mapRef.flyTo(
+                lastVertexMarker.pos,
+                this.props.graphMetadata['zoomLevels'] - 1
+            )
+            this.props.updateFlyTo(lastVertexMarker)
+        }
+
+        if (this.state.mapRef && ! _.isEqual(prevProps.url, this.props.url)) {
+            this.state.mapRef.setView([this.props.url.x, this.props.url.y], this.props.url.z);
         }
     }
 
     render() {
-        const {match, location, history} = this.props;
         const tileUrl = UrlComposer.tileLayer(this.props.graphId);
         const position = [this.props.graphMetadata.tileSize / -2.0,
             this.props.graphMetadata.tileSize / 2.0]
-
-
-        let allMarkers = [...this.state.selectedVertices, ...this.props.markersFromParent]
-
-        allMarkers = [...new Map(allMarkers.map(item =>
-            [item['vertex'], item])).values()];
 
         return <MapContainer
             whenCreated={this.mapCreationCallback}
@@ -72,6 +75,7 @@ class GraphMap extends React.Component {
             center={position}
             zoom={0}
             scrollWheelZoom={true}
+            closePopupOnClick={false}
             noWrap={true}
             crs={L.CRS.Simple}>
             <TileLayer
@@ -83,26 +87,26 @@ class GraphMap extends React.Component {
             />
             <Fullscreen {...{position: 'topright'}} />
 
-            {allMarkers.map(
+            {this.props.verticesFromStore.map(
                 (e, i) => {
 
                     return <VertexMarker
-                        key={hashVertexToInt(e.vertex) + e.refetch}
+                        key={hashVertexToInt(e.vertex)}
                         fetchEdges={e.fetchEdges}
-                        zoom={this.state.zoom}
-                        mapRef={this.state.map_ref}
+                        zoom={this.state.mapRef.getZoom()}
+                        mapRef={this.state.mapRef}
                         graphMetadata={this.props.graphMetadata}
                         vertexObject={e}
                         autocompletionTerms={this.props.autocompletionTerms}
                         graphName={this.props.graphName}
                         graphId={this.props.graphId}
-                        checkboxCallback={this.checkboxCallback}
-                        ticked={!e.removeOnNewClick}>
-                        >
+                        ticked={e.persistOnNewClick}>
                     </VertexMarker>
                 })
             }
+             <UrlManager/>
         </MapContainer>
+
     }
 
 
@@ -115,26 +119,17 @@ class GraphMap extends React.Component {
         this.addUndoControl(map);
 
         this.setState({
-            map_ref: map
+            mapRef: map
         })
 
-        function setInitialMapView() {
-            let urlZoom = new URLSearchParams(this.props.location.search).get('z') || 0;
-            let urlLat = new URLSearchParams(this.props.location.search).get('lat') || -configs['tile_size'] / 2;
-            let urlLng = new URLSearchParams(this.props.location.search).get('lng') || configs['tile_size'] / 2;
-            map.setView([urlLat, urlLng], urlZoom)
-            updateQueryParam(this.props, {
-                z: urlZoom,
-                lat: urlLat,
-                lng: urlLng
-            })
-        }
-
-        setInitialMapView.call(this);
+        map.toJSON = () => ({hidden: 'to help redux devtools :)'})
+        this.props.graphMounted({
+            graphMapRef: map
+        })
     }
 
     addPersistAllClicksControl(map) {
-        makeCustomControl(this.persistAllClicksCallback,
+        makeCustomControl(this.props.togglePersistClick,
             `<a href="#" role="button" title="Clear edges" aria-label="Clear edges">P</a>`,
             'topright'
         ).addTo(map);
@@ -148,7 +143,7 @@ class GraphMap extends React.Component {
     }
 
     addUndoControl(map) {
-        makeCustomControl(this.removeLatMarker,
+        makeCustomControl(this.props.pop,
             `<a href="#" role="button" title="Undo last selection" aria-label="Undo last selection">←</a>`,
             'topright'
         ).addTo(map);
@@ -156,10 +151,7 @@ class GraphMap extends React.Component {
 
     bindOnZoomCallback(map) {
         let zoomCallback = function () {
-            // updateQueryParam(this.props, {z:map.getZoom()})
-            this.setState({
-                zoom: map.getZoom()
-            })
+            this.props.changeUrl({z: map.getZoom()})
         }.bind(this);
         map.on('zoom', zoomCallback)
     }
@@ -175,8 +167,19 @@ class GraphMap extends React.Component {
 
         mapRef.on('click', async function (clickEvent) {
             let graphPosClicked = getGraphPosFromMapClick(clickEvent, this.props.graphMetadata)
-            let vertex = await this.fetchClosestVertex(graphPosClicked);
-            this.updateDisplayedVertices(vertex);
+            this.props.fetchClosestVertex(
+                {
+                    graphId: this.props.graphId,
+                    pos: graphPosClicked,
+                    graphMetadata: this.props.graphMetadata,
+                    flyTo: false
+                })
+
+            this.props.removeVertices(
+                {
+                    persistOnNewClick: false
+                }
+            )
         }.bind(this));
 
     }
@@ -184,79 +187,51 @@ class GraphMap extends React.Component {
     bindOnPanCallback(mapRef) {
         let panCallback = function () {
             let currentLocation = mapRef.getCenter();
-            let temp = () => {
-                updateQueryParam(this.props, {
-                    lat: Math.round(currentLocation.lat),
-                    lng: Math.round(currentLocation.lng)
-                })
-            }
-            temp.bind(this)
-            setTimeout(temp, 0)
+
+            // URL update is delayed to allow the map to autopan when a popup is opened
+            clearTimeout(this.state.timeout)
+            let timeout = setTimeout(() => {
+                this.props.changeUrl({
+                y: String(Math.round(currentLocation.lng)),
+                x: String(Math.round(currentLocation.lat)),
+                z: String(mapRef.getZoom())
+            })
+            }, 300);
+            this.setState({
+                timeout: timeout
+            })
         }.bind(this);
+
         mapRef.on('moveend', panCallback);
     }
 
-    async fetchClosestVertex(pos) {
-        let closestVertex = await fetchClosestPoint(this.props.graphId, pos)
-        closestVertex['pos'] = toMapCoordinate(closestVertex['pos'], this.props.graphMetadata);
-        closestVertex['refetch'] = 0;
-        closestVertex['removeOnNewClick'] = !this.state.persistAllClicks;
-        closestVertex['fetchEdges'] = true;
-        return closestVertex;
-    }
-
-    updateDisplayedVertices(newVertex) {
-        updateQueryParam(this.props, {vertex: newVertex['vertex']})
-        let refetchCount = this.state.selectedVertices
-            .filter(v => v.vertex === newVertex.vertex)
-            .forEach(v => newVertex['refetch'] = v['refetch'] + 1);
-
-        this.setState({
-            selectedVertices: [
-                ...this.state.selectedVertices.filter(v => !v.removeOnNewClick),
-                newVertex]
-        })
-
-    }
-
     clearMapMarkersCallback() {
-        this.setState({selectedVertices: []})
-        this.props.clearParent()
-        this.props.history.push({search: ''})
+        this.props.clear()
     }
-
-    persistAllClicksCallback() {
-        this.setState({
-            persistAllClicks: !this.state.persistAllClicks
-        })
-    }
-
-    checkboxCallback(vertexObject, ticked) {
-
-        vertexObject.removeOnNewClick = !ticked
-
-        if (!ticked) {
-            let selectedVertices = this.state.selectedVertices.filter(v => v.vertex !== vertexObject.vertex);
-            this.props.filterOutFromParent(vertexObject.vertex)
-            console.log("vertices without selected: ", selectedVertices)
-            this.setState({
-                selectedVertices: selectedVertices
-            })
-        }
-    }
-
-    removeLatMarker() {
-        this.setState({
-            selectedVertices: this.state.selectedVertices.slice(0, this.state.selectedVertices.length - 1)
-        })
-    }
-
-
 }
 
 GraphMap
-    .propTypes = {};
+    .propTypes = {
+    clearSearches: func.isRequired
+};
 GraphMap
     .defaultProps = {};
 
-export default withRouter(GraphMap);
+let mapStateToProps = (store) => {
+    return {
+        verticesFromStore: store.marker.vertices,
+        persistAllClicks: store.marker.isPersistClick,
+        url: store.url
+    }
+};
+
+export default connect(mapStateToProps, {
+    togglePersistClick,
+    clear,
+    pop,
+    removeVertices,
+    updateFlyTo,
+    fetchClosestVertex,
+    changeUrl,
+    graphMounted
+})(GraphMap);

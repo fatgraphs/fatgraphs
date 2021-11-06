@@ -5,6 +5,7 @@ import {Nav, Navbar, NavItem,} from "reactstrap";
 import s from "./Navbar.module.scss";
 import "animate.css";
 import {Link} from "react-router-dom";
+import {connect} from "react-redux";
 const configs = require('configurations')
 
 class NavBar extends React.Component {
@@ -14,7 +15,6 @@ class NavBar extends React.Component {
     }
 
     render() {
-        let gts = Object.keys(configs['galleryTypes'])
         return (
             <Navbar className={`d-print-none p-3 ${s.navbar}`}>
 
@@ -27,15 +27,15 @@ class NavBar extends React.Component {
                     <Nav className="ml-md-0 p-3">
 
                         {
-                            gts.map((e, i) => {
+                            this.props.categories.map((categoryObject, i) => {
                                 return(
                                 <React.Fragment key={i*98}>
                                     <NavItem>
                                     <Link
                                         className={`${s.navItem} text-white`}
-                                        to={"/gallery/" + e}>
+                                        to={"/gallery/" + categoryObject.urlslug}>
 
-                                        {e}
+                                        {categoryObject.title}
 
                                     </Link>
                                 </NavItem>
@@ -63,4 +63,10 @@ class NavBar extends React.Component {
     }
 }
 
-export default NavBar;
+const mapCategoriesToProps = (state) => {
+    return {
+        categories: state.categories.categories
+    }
+}
+
+export default connect(mapCategoriesToProps, null)(NavBar);

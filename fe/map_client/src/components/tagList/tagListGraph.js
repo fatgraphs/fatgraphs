@@ -5,7 +5,11 @@ import './closeIcon.scss'
 import './closeBox.scss'
 import './tagContainer.scss'
 
-import Autocompletion from "../autocompletion/Autocompletion"; import {TagElement} from "./tagElement"; import {TYPE_ICONS} from "../single-graph/TypeIcons";
+import Autocompletion from "../autocompletion/Autocompletion";
+import {TagElement} from "./tagElement";
+import {TYPE_ICONS} from "../single-graph/TypeIcons";
+import {connect} from "react-redux";
+import {fetchVertices, removeVertices} from "../../redux/markersSlice";
 
 class TagListGraph extends Component {
 
@@ -14,7 +18,8 @@ class TagListGraph extends Component {
         this.state = {
             currentInput: '',
             metadataObjects: [],
-            showAutocompletion: false
+            showAutocompletion: false,
+            previousClearSignal: 0
         }
         this.onBlur = this.onBlur.bind(this);
         this.removeWrapper = this.removeWrapper.bind(this);
@@ -22,24 +27,30 @@ class TagListGraph extends Component {
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
-        if(this.props.receiveClearSignal){
-            this.props.sendClearAck()
+        if (this.props.clearSignal !== this.state.previousClearSignal) {
             this.setState({
-                metadataObjects: []
+                metadataObjects: [],
+                previousClearSignal: this.props.clearSignal
             })
         }
     }
 
     render() {
         return (
-            <div className={'d-flex flex-row flex-wrap overflow-auto'}>
+            <div
+                // the clear signal prop needs to be passed with connect and a derive propsFromState.
+                // when the clar button is pressed the clearSignal in the slice is incremented. The side effect is that
+                // the tagListGraph will re-render, deleting it's state!
+                key={this.props.clearSignal + 89843}
+                className={'d-flex flex-row flex-wrap overflow-auto'}>
 
-            {/*The current input from search bar is only used to filter the autocompletion list*/}
+                {/*The current input from search bar is only used to filter the autocompletion list*/}
 
                 <SearchBar
+                    placeholder={"Search graph"}
                     searchCallback={(v) => {
                         this.setState({currentInput: v});
-                        if(v.slice(0,2) === '0x'){
+                        if (v.slice(0, 2) === '0x') {
                             this.onAutocompletionElementClick({type: 'eth', value: v, fetchEdges: true, flyTo: true})
                             this.setState({currentInput: ""});
                             this.props.sendSingleVertexSearch(v);
@@ -51,11 +62,11 @@ class TagListGraph extends Component {
                 />
 
                 {this.state.metadataObjects.map((metaObject, i) => <TagElement
-                        key={i}
-                        closeCallback={this.removeWrapper(i)}>
-                            <div className={'d-flex mr-1'}>{TYPE_ICONS[metaObject.type]}</div>
-                            <div>{metaObject.value}</div>
-                    </TagElement>)}
+                    key={i}
+                    closeCallback={this.removeWrapper(i)}>
+                    <div className={'d-flex mr-1'}>{TYPE_ICONS[metaObject.type]}</div>
+                    <div>{metaObject.value}</div>
+                </TagElement>)}
 
                 <Autocompletion currentInput={this.state.currentInput}
                                 shouldRender={this.state.showAutocompletion}
@@ -67,18 +78,23 @@ class TagListGraph extends Component {
     }
 
     removeWrapper(indexToRemove) {
+
         return function () {
+
+            let removed = this.state.metadataObjects[indexToRemove]
+
             let tagsWithoutOne = [...this.state.metadataObjects.slice(0, indexToRemove),
                 ...this.state.metadataObjects.slice(indexToRemove + 1,
-                this.state.metadataObjects.length)];
-            this.props.sendSelectedTags(tagsWithoutOne)
+                    this.state.metadataObjects.length)];
+
+            this.props.removeVertices(removed.type === 'type' ? {type: removed.value} : {label: removed.value})
+
             this.setState({metadataObjects: tagsWithoutOne})
         }.bind(this)
     }
 
     onBlur(e) {
         let wasAutocompleteTermClicked = e.relatedTarget !== null && e.relatedTarget.className.includes('dont-lose-focus');
-        console.log("blurring, wasAutocompleteTermClicked ", wasAutocompleteTermClicked)
         if (wasAutocompleteTermClicked) {
             return
         }
@@ -90,9 +106,20 @@ class TagListGraph extends Component {
 
     onAutocompletionElementClick(e) {
         let metadataObjects = [...this.state.metadataObjects, e];
-        this.props.sendSelectedTags(metadataObjects)
+        this.props.fetchVertices({
+            graphId: this.props.graphId,
+            metadataObject: e,
+            fetchEdges: false,
+            flyTo: false,
+            persistOnNewClick: true,
+            graphMetadata: this.props.graphMetadata
+        })
         this.setState({metadataObjects: metadataObjects, showAutocompletion: false})
     }
 }
 
-export default TagListGraph;
+let mapStateToProps = (reduxStore) => {
+    return {clearSignal: reduxStore.marker.clearSignal}
+};
+
+export default connect(mapStateToProps, {fetchVertices, removeVertices})(TagListGraph);
