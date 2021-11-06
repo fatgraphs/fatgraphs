@@ -21,8 +21,8 @@ class SearchBar extends Component {
         return (
             <div className={s.searchbarContainer}>
                 <Form inline
-                    onSubmit={this.onSubmit}
-                    onBlur={this.props.onBlur}>
+                      onSubmit={this.onSubmit}
+                      onBlur={this.props.onBlur}>
                     <FormGroup>
                         <InputGroup className={`input-group-no-border`}>
                             <InputGroupAddon addonType="prepend">
@@ -33,7 +33,7 @@ class SearchBar extends Component {
                             <Input
                                 id="search-input"
                                 className="input-transparent"
-                                placeholder="Search Dashboard"
+                                placeholder={this.props.placeholder}
                                 value={this.state.currentInput}
                                 onChange={(e) => {
                                     this.setState({currentInput: e.target.value})
@@ -48,10 +48,10 @@ class SearchBar extends Component {
         );
     }
 
-    onSubmit(e){
+    onSubmit(e) {
         e.target[0].blur();
         e.preventDefault();
-        if(this.state.currentInput.length === 0){
+        if (this.state.currentInput.length === 0) {
             return;
         }
         this.props.searchCallback(this.state.currentInput)
@@ -61,7 +61,10 @@ class SearchBar extends Component {
 }
 
 SearchBar
-    .propTypes = {searchCallback: PropTypes.func};
+    .propTypes = {
+    searchCallback: PropTypes.func,
+    placeholder: PropTypes.string
+};
 
 SearchBar.defaultProps = {
     onChange: (e) => e

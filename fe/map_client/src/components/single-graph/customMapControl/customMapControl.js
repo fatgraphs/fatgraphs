@@ -13,7 +13,6 @@ export default function makeCustomControl(callback, innerHTML, position) {
             // bug prevention: double-clicking a custom control should not make the map zoom
             controlDiv.ondblclick = (e) => {
                 e.stopPropagation();
-                console.log('On Dbl Click');
             };
 
             L.DomEvent
