@@ -9,7 +9,7 @@
     "matchingVertex": {
       "type": "vertex/type/{value}",
       "label": "vertex/label/{value}",
-      "eth": "vertex/eth/{value}"
+      "vertex": "vertex/vertex/{value}"
     },
     "graphById": "graph/{graphId}",
     "edgeDistributions": "edge-distributions",
