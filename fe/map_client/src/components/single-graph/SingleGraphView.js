@@ -1,6 +1,12 @@
 import React, {Component} from 'react';
 import {withRouter} from "react-router-dom";
-import {fetchAutocompletionTerms,fetchEdges, fetchGraph, fetchMatchingVertices} from "../../APILayer";
+import {
+    fetchAutocompletionTerms,
+    fetchEdges,
+    fetchGraph,
+    fetchMatchingVertices,
+    getGalleryCategories
+} from "../../APILayer";
 import _ from 'underscore';
 import {MyContext} from "../../Context";
 import GraphMap from "./GraphMap";
@@ -9,10 +15,16 @@ import GraphTitle from "./GraphTitle";
 import CopyGtmCommand from "./CopyGtmCommand";
 import s from './singleGraph.module.scss';
 import TagListGraph from "../tagList/tagListGraph";
-import {toMapCoordinate} from "../../utils/CoordinatesUtil"; import Fillable from "../../reactBlueTemplate/src/pages/tables/static/Fillable"; import UrlComposer from "../../utils/UrlComposer"; import {IconsLegend} from "./IconsLegend";
+import {toMapCoordinate} from "../../utils/CoordinatesUtil";
+import Fillable from "../../reactBlueTemplate/src/pages/tables/static/Fillable";
+import UrlComposer from "../../utils/UrlComposer";
+import {IconsLegend} from "./IconsLegend";
 import EdgePlots from "./EdgePlots";
 import LoadingComponent from "../LoadingComponent";
 import {getQueryParam, updateQueryParam} from "../../utils/Utils";
+import UrlManager from "../urlManager";
+import {graphSelected} from "../../redux/selectedGraphSlice";
+import {connect} from "react-redux";
 
 class SingleGraphView extends Component {
 
@@ -22,60 +34,33 @@ class SingleGraphView extends Component {
         super(props);
         this.state = {
             graphMetadata: undefined,
-            selectedTags: [],
-            recentMetadataSearches: [],
             metadataObjects: [],
-            mapMarkers: [],
-            clearSignal: false
+            renderingCommitted: false,
         }
-        this.receiveClearAck = this.receiveClearAck.bind(this)
-        this.receiveSelectedTags = this.receiveSelectedTags.bind(this)
         this.receiveSingleVertexSearch = this.receiveSingleVertexSearch.bind(this)
     }
 
     async componentDidMount() {
 
         let graphMetadata = await fetchGraph(this.props.match.params.graphId);
+
+        this.props.graphSelected({
+            graphId: this.props.match.params.graphId,
+            graphMetadata: graphMetadata
+        })
+
+
         let autocompletionTerms = await fetchAutocompletionTerms(this.props.match.params.graphId);
+
         this.setState({
             graphMetadata: graphMetadata,
             autocompletionTerms: autocompletionTerms,
-            recentMetadataSearches: []
         })
-
-        // TODO: MOVE TO graph map?
-        function processUrlVertexIfPresent() {
-            if (!!getQueryParam(this.props, 'vertex')) {
-                this.setState({
-                    selectedTags: [
-                        ...this.state.selectedTags,
-                        {
-                            type: 'eth',
-                            value: getQueryParam(this.props, 'vertex'),
-                            fetchEdges: true,
-                            flyTo: true
-                        }
-                    ]
-                })
-            }
-        }
-        processUrlVertexIfPresent.call(this);
     }
 
-    async componentDidUpdate(prevProps, prevState) {
 
-        if (_.isEqual(this.state.selectedTags, prevState.selectedTags)) {
-            return
-        }
-
-        let markers = await this.getVerticesMatchingTags(this.state.selectedTags);
-
-        markers.forEach(m => {
-            m['removeOnNewClick'] = false
-            m['refetch'] = 0
-        })
-
-        this.setState({mapMarkers: markers})
+    shouldComponentUpdate(nextProps, nextState, nextContext) {
+        return !this.state.renderingCommitted
     }
 
     render() {
@@ -90,20 +75,19 @@ class SingleGraphView extends Component {
 
                     <TagListGraph
                         autocompletionTerms={this.state.autocompletionTerms}
-                        sendSelectedTags={this.receiveSelectedTags}
-                        sendSingleVertexSearch={this.receiveSingleVertexSearch}
+                        sendSingleVertexSearch={this.receiveSingleVertexSearch} // TODO remove
                         receiveClearSignal={this.state.clearSignal}
-                        sendClearAck={this.receiveClearAck}
-                        />
+                        graphId={this.props.match.params.graphId}
+                        graphMetadata={this.state.graphMetadata}
+                    />
 
 
                     <CopyGtmCommand
                         graphMetadata={this.state.graphMetadata}/>
 
-
                     <div>
                         <SidePanel
-                            selectedVertices={this.state.selectedTags}/>
+                        />
                         <div className={'mt-2'}>
                             <Fillable>
                                 <IconsLegend></IconsLegend>
@@ -116,23 +100,16 @@ class SingleGraphView extends Component {
                         graphMetadata={this.state.graphMetadata}
                         graphId={this.props.match.params.graphId}
                         graphName={this.props.match.params.graphName}
-                        markersFromParent={this.state.mapMarkers}
-                        recentMetadataSearches={this.state.recentMetadataSearches}
-                        afterFlyToLast={() => this.setState({isFlyToLastVertex: false})}
-                        clearParent={() => {
+                        commitRendering={() => {
                             this.setState({
-                                mapMarkers: [],
-                                clearSignal: true
+                                renderingCommitted: true
                             })
-                        }}
-                        filterOutFromParent={(vertex) => {
-                            let selectedVertices = this.state.mapMarkers.filter(v => v.vertex !== vertex);
-                            this.setState({mapMarkers: selectedVertices})
                         }}
                     />
 
                     <EdgePlots
-                        zoomLevels={this.state.graphMetadata['zoomLevels']}/>
+                        zoomLevels={this.state.graphMetadata['zoomLevels']}
+                    />
                 </div>
             );
         }
@@ -165,8 +142,8 @@ class SingleGraphView extends Component {
     }
 
     convertToMarker(groupedByEth, vertex) {
-        const types = [... new Set(groupedByEth[vertex].map(obj => obj.types).flat())]
-        const labels = [... new Set(groupedByEth[vertex].map(obj => obj.labels).flat())]
+        const types = [...new Set(groupedByEth[vertex].map(obj => obj.types).flat())]
+        const labels = [...new Set(groupedByEth[vertex].map(obj => obj.labels).flat())]
         const {pos, size, fetchEdges, flyTo} = groupedByEth[vertex][0]
         const mapCoordinate = toMapCoordinate(pos, this.state.graphMetadata)
 
@@ -181,19 +158,9 @@ class SingleGraphView extends Component {
         }
     }
 
-    receiveClearAck(){
-        this.setState({
-            clearSignal: false
-        })
-    }
-
-    receiveSelectedTags(currentSelection){
-        this.setState({selectedTags: currentSelection})
-    }
-
-    receiveSingleVertexSearch(vertex){
+    receiveSingleVertexSearch(vertex) {
         updateQueryParam(this.props, {vertex: vertex})
     }
 }
 
-export default withRouter(SingleGraphView);
+export default connect(null, {graphSelected})(SingleGraphView);

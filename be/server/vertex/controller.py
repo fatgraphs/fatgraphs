@@ -53,16 +53,16 @@ class GetVerticesByLabel(Resource):
             #     vertices = VertexService.attach_position(vertices, graph_id, db)
             return vertices
 
-@api.route("/eth/<string:eth>")
-@api.param("eth", "Ethereum address")
+@api.route("/vertex/<string:vertex>")
+@api.param("vertex", "Ethereum address")
 class GetVerticesByEth(Resource):
     @api.doc(params={'graphId': {'description':  'If you provide a graph id your query will be scoped to that graph only',
                                  'type': 'int'}})
     @responds(schema=VertexSchema(many=True))
-    def get(self, eth: str) -> Vertex:
+    def get(self, vertex: str) -> Vertex:
         with SessionLocal() as db:
             graph_id = request.args.get('graphId')
-            vertices = VertexService.get_by_eths(graph_id, [eth], db)
+            vertices = VertexService.get_by_eths(graph_id, [vertex], db)
             vertices = VertexService.attach_metadata(vertices, db)
             # if graph_id is not None:
             #     vertices = VertexService.attach_position(vertices, graph_id, db)

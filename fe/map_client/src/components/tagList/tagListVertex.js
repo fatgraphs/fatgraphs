@@ -17,15 +17,12 @@ class TagListVertex extends Component {
         this.state = {
             currentInput: '',
             showAutocompletion: false,
-            isAddingType: true,
-            isAddingLabel: false,
             recentlyDeleted: [],
             recentlyAdded: [],
         }
         this.onBlur = this.onBlur.bind(this);
         this.removeWrapper = this.removeWrapper.bind(this);
         this.onAutocompletionElementClick = this.onAutocompletionElementClick.bind(this);
-        this.handleChangingAddedType = this.handleChangingAddedType.bind(this);
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
@@ -54,47 +51,41 @@ class TagListVertex extends Component {
                 {this.props.isLabellingEnabled === 'true' ?
                     <>
                         <SearchBar
-                    searchCallback={(v) => {
-                        this.setState({currentInput: v});
+                            placeholder={"Add Type"}
+                            searchCallback={(v) => {
+                                this.onAutocompletionElementClick({
+                                    type: 'type',
+                                    value: v
+                                })
+                                this.setState({currentInput: ""});
 
-                        this.onAutocompletionElementClick({
-                            type: this.state.isAddingType ? 'type' : 'label',
-                            value: v
-                        })
-                        this.setState({currentInput: ""});
-                        // this.props.sendSingleVertexSearch(v);
+                            }}
+                            onBlur={this.onBlur}
+                            onFocus={() => this.setState({showAutocompletion: true})}
+                            onChange={(v) => this.setState({currentInput: v})}
+                        />
+                         <SearchBar
+                            placeholder={"Add Label"}
+                            searchCallback={(v) => {
+                                this.onAutocompletionElementClick({
+                                    type: 'label',
+                                    value: v
+                                })
+                                this.setState({currentInput: ""});
 
-                    }}
-                    onBlur={this.onBlur}
-                    onFocus={() => this.setState({showAutocompletion: true})}
-                    onChange={(v) => this.setState({currentInput: v})}
-                />
+                            }}
+                            onBlur={this.onBlur}
+                            onFocus={() => this.setState({showAutocompletion: true})}
+                            onChange={(v) => this.setState({currentInput: v})}
+                        />
 
-                <div>
-                    <div>
-                        <span>Add TYPE</span>
-                        <input type="checkbox"
-                               name="isAddingType"
-                               value="1"
-                               checked={this.state.isAddingType}
-                               onChange={this.handleChangingAddedType}/>
-                    </div>
-                    <div>
-                        <span>Add LABEL</span>
-                        <input type="checkbox"
-                               name="isAddingLabel"
-                               value="1"
-                               checked={this.state.isAddingLabel}
-                               onChange={this.handleChangingAddedType}/>
-                    </div>
-                </div>
 
-                <Autocompletion currentInput={this.state.currentInput}
-                                shouldRender={this.state.showAutocompletion}
-                                autocompletionTerms={this.props.autocompletionTerms}
-                                recentMetadataSearches={[]}
-                                onClick={this.onAutocompletionElementClick}
-                                isBottomAligned/>
+                        <Autocompletion currentInput={this.state.currentInput}
+                                        shouldRender={this.state.showAutocompletion}
+                                        autocompletionTerms={this.props.autocompletionTerms}
+                                        recentMetadataSearches={[]}
+                                        onClick={this.onAutocompletionElementClick}
+                                        isBottomAligned/>
                     </> :
                     <div>Labelling disabled</div>}
             </div>
@@ -126,13 +117,6 @@ class TagListVertex extends Component {
     onAutocompletionElementClick(e) {
         this.props.addTag(e)
         this.setState({showAutocompletion: false, recentlyAdded: [...this.state.recentlyAdded, e]})
-    }
-
-    handleChangingAddedType(e) {
-        this.setState({
-            isAddingType: e.target.name === "isAddingType" ? e.target.checked : !e.target.checked,
-            isAddingLabel: e.target.name === "isAddingLabel" ? e.target.checked : !e.target.checked
-        })
     }
 
 }

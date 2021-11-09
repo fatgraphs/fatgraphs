@@ -102,3 +102,8 @@ export function deleteVertexMetadata(vertex, metadataObject) {
     }
     return doRequest(url, init);
 }
+
+export function getGalleryCategories() {
+    let url = UrlComposer.getGalleryCategories();
+    return doRequest(url, {});
+}
