@@ -1,7 +1,7 @@
 import random
 from typing import List
 from psycopg2._psycopg import AsIs
-from be.configuration import EDGE_GLOBAL_TABLE, CONFIGURATIONS
+from be.configuration import EDGE_GLOBAL_TABLE, CONFIGURATIONS, VERTEX_TABLE_NAME, EDGE_TABLE_NAME
 from . import Edge
 from .. import engine
 
@@ -43,8 +43,8 @@ class EdgeService:
 
     @staticmethod
     def get_edges(vertex, graph_id, db) -> List[Edge]:
-        edge_table = GraphService.get_edge_table_name(graph_id, db)
-        vertex_table = GraphService.get_vertex_table_name(graph_id, db)
+        edge_table = EDGE_TABLE_NAME(graph_id)
+        vertex_table = VERTEX_TABLE_NAME(graph_id)
         prob_in, prob_out = EdgeService._probabilities_choosing_edge(edge_table, vertex)
         vertex_object = VertexService.get_by_eths(graph_id, [vertex], db)[0]
 

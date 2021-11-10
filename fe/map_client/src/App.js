@@ -35,7 +35,7 @@ class App extends Component {
                     <Route path="/graph/:graphName/:graphId" component={SingleGraphView}>
                     </Route>
 
-                    <Route path={'/gallery/:galleryType'}>
+                    <Route path={'/gallery/:galleryCategory'}>
                         <Gallery/>
                     </Route>
 

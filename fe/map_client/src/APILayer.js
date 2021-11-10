@@ -19,8 +19,8 @@ export function fetchClosestPoint(graphId, graphCoordinate) {
     return doRequest(url, {});
 }
 
-export async function fetchGraphs(galleryType) {
-    let url = UrlComposer.graphs(galleryType)
+export async function fetchGraphs(galleryCategory) {
+    let url = UrlComposer.graphs(galleryCategory)
     let response = await doRequest(url, {});
     return response.map(raw => new Graph(raw))
 }

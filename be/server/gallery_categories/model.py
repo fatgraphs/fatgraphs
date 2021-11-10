@@ -1,8 +1,6 @@
-from sqlalchemy import Integer, Column, String, Float, ForeignKey
-from sqlalchemy.orm import relationship
+from sqlalchemy import Integer, Column, String
 
 from be.server import Base
-from be.server.graph.interface import GraphInterface
 
 
 class GalleryCategory(Base):

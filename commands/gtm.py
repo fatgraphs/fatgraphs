@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 import getopt, sys, os
+
+from be.server import SessionLocal
+from be.server.gallery_categories.service import GalleryCategoryService
+
 sys.path.append(os.path.abspath('../be'))
 from be.configuration import CONFIGURATIONS
 os.environ["FLASK_ENV"] = "development"
@@ -16,7 +20,7 @@ def extractArguments():
     print(argumentList)
     shortOptions = "n:z:"
     longOptions = ["csv=", "ts=", "min_t=", "max_t=", "std=", "med_thick=", "max_thick=", "med_size=",
-                    "max_size=", "curvature=", "mean_t=", "gt="]
+                    "max_size=", "curvature=", "mean_t=", "gc="]
     try:
         arguments, values = getopt.getopt(argumentList, shortOptions, longOptions)
         print(">>> ", arguments)
@@ -33,7 +37,7 @@ def getCwd():
 
 # default value as second arg of 'get'
 # TODO find a way of ensuring that htis dict keys are the same as defined in configuration.json
-def getFinalConfigurations(args, graph_name):
+def getFinalConfigurations(args, graph_name, category_id):
     configurations = {
         'graph_name': graph_name,
         "tile_size": int(args.get('--ts', CONFIGURATIONS['tile_size'])),
@@ -47,7 +51,7 @@ def getFinalConfigurations(args, graph_name):
         "max_vertex_size": float(args.get("--max_size", 10)),
         "med_vertex_size": float(args.get("--med_size", 0.5)),
         "curvature": float(args.get("--curvature", CONFIGURATIONS['edge_curvature'])),
-        "graph_category": CONFIGURATIONS['galleryTypes'][args.get("--gt", 'default')],
+        "graph_category": category_id,
         "bg_color": "grey",
         "source": args['--csv']
     }
@@ -57,9 +61,14 @@ def getFinalConfigurations(args, graph_name):
 if __name__ == "__main__":
     args = extractArguments()
 
+    # resolve gallery category with categories in db
+    with SessionLocal() as db:
+        categories = GalleryCategoryService.get_all(db)
+        category_id = next(filter(lambda cat: cat.title == args.get("--gc", 'default'), categories)).id
+
     # graph names should be lower case and don't contain spaces
     graph_name = args["-n"].lower().strip()
     graph_name = '_'.join(graph_name.split(' '))
 
-    configurations = getFinalConfigurations(args, graph_name)
+    configurations = getFinalConfigurations(args, graph_name, category_id)
     main(configurations)

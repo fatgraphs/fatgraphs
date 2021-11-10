@@ -34,15 +34,5 @@ class GraphService:
         return update
 
     @staticmethod
-    def get_vertex_table_name(graph_id: int, db) -> str:
-        graph = GraphService.get_by_id(graph_id, db)
-        return graph.graph_name + '_' + str(graph.id)
-
-    @staticmethod
-    def get_edge_table_name(graph_id: int, db) -> str:
-        graph = GraphService.get_by_id(graph_id, db)
-        return graph.graph_name + '_' + str(graph.id) + '_edge'
-
-    @staticmethod
     def get_by_type(gallery_type, db):
         return db.query(Graph).filter_by(graph_category=gallery_type).all()

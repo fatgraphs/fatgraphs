@@ -55,9 +55,9 @@ class UrlComposer {
         return configs['endpoints']['base'] + parametrisedUrlFragment;
     }
 
-    static graphs(galleryType) {
+    static graphs(galleryCategory) {
         let toParametriseUrlFragment = configs['endpoints']['availableGraphs'];
-        let parametrisedUrlFragment = toParametriseUrlFragment.replace(/{galleryType}/g, String(galleryType));
+        let parametrisedUrlFragment = toParametriseUrlFragment.replace(/{galleryCategory}/g, String(galleryCategory));
         return configs['endpoints']['base'] + parametrisedUrlFragment
     }
 

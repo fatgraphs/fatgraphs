@@ -1,8 +1,5 @@
-from flask_admin.contrib.sqla import ModelView
-
 from .model import GalleryCategory  # noqa
 from .schema import GalleryCategorySchema  # noqa
-from .. import admin, SessionLocal
 
 BASE_ROUTE = "gallery_categories"
 
@@ -12,4 +9,3 @@ def register_routes(api, app):
     root = app.config['API_ROOT']
     api.add_namespace(user_api, path=f"/{root}/{BASE_ROUTE}")
     # make the gallery categories accessible via the flask admin interface
-    admin.add_view(ModelView(GalleryCategory, SessionLocal()))

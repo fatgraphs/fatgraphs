@@ -66,7 +66,7 @@ def main(configurations):
         config_db = GraphConfigurationService.create(temp, db)
 
         # save vertices in DB
-        vertex_table = VERTEX_TABLE_NAME(graph_name, graph_id)
+        vertex_table = VERTEX_TABLE_NAME(graph_id)
         VertexService.ensure_vertex_table_exists(vertex_table, graph_id)
         vertices = graph.address_to_id.merge(visualLayout.vertexPositions)
         vertices['size'] = visualLayout.vertexSizes
@@ -77,7 +77,7 @@ def main(configurations):
         geo_frame.to_sql(vertex_table, engine, if_exists='append', index=False, dtype=column_types)
 
         # save edges to DB
-        edge_table = EDGE_TABLE_NAME(graph_name, graph_id)
+        edge_table = EDGE_TABLE_NAME(graph_id)
         EdgeService.ensure_edge_table_exists(edge_table, graph_id)
         edges = graph.preprocessed_data.rename(columns={'blockNumber': 'block_number', 'source': 'src', 'target': 'trg'})
         edges['graph_id'] = [str(graph_id)] * len(edges)

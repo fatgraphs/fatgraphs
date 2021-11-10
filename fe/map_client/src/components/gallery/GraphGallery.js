@@ -22,15 +22,15 @@ class Gallery extends Component {
     }
 
     async componentDidMount() {
-        let graphs = await fetchGraphs(this.props.match.params.galleryType)
+        let graphs = await fetchGraphs(this.props.match.params.galleryCategory)
                 this.setState({
                     availableGraphs: graphs
                 })
     }
 
     async componentDidUpdate(prevProps) {
-        if(prevProps.match.params.galleryType !== this.props.match.params.galleryType){
-            let graphs = await fetchGraphs(this.props.match.params.galleryType)
+        if(prevProps.match.params.galleryCategory !== this.props.match.params.galleryCategory){
+            let graphs = await fetchGraphs(this.props.match.params.galleryCategory)
                 this.setState({
                     availableGraphs: graphs
                 })

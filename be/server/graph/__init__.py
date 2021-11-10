@@ -12,6 +12,12 @@ def register_routes(api, app):
     root = app.config['API_ROOT']
     api.add_namespace(user_api, path=f"/{root}/{BASE_ROUTE}")
     # make the graphs accessible via the flask admin interface
-    admin.add_view(ModelView(Graph, SessionLocal()))
+
+    class GraphAdminView(ModelView):
+        column_display_pk = True  # optional, but I like to see the IDs in the list
+        column_hide_backrefs = False
+        column_list = ('id', 'graph_name', 'vertices', 'edges', 'graph_category')
+
+    admin.add_view(GraphAdminView(Graph, SessionLocal()))
 
 

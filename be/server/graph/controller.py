@@ -20,15 +20,15 @@ class GraphResource(Resource):
         with SessionLocal() as db:
             return GraphService.get_all(db)
 
-@api.route("/<string:gallery_type>")
-@api.param("gallery_type", "Gallery type")
+@api.route("/<string:gallery_category>")
+@api.param("gallery_category", "Gallery category")
 class GraphResource(Resource):
 
     @responds(schema=GraphSchema(many=True))
-    def get(self, gallery_type: str) -> List[Graph]:
+    def get(self, gallery_category: str) -> List[Graph]:
         with SessionLocal() as db:
             # resolve type provided as readable word to id
-            type_id = list(filter(lambda c: c.title == gallery_type, GalleryCategoryService.get_all(db)))[0].id
+            type_id = list(filter(lambda c: c.urlslug == gallery_category, GalleryCategoryService.get_all(db)))[0].id
             return GraphService.get_by_type(type_id, db)
 
 
