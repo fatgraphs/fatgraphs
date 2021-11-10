@@ -18,6 +18,7 @@ VERTEX_GLOBAL_TABLE = 'tg_vertex'
 EDGE_GLOBAL_TABLE = 'tg_edge'
 VERTEX_TABLE_NAME = lambda graph_id: f"graph_{graph_id}_vertex"
 EDGE_TABLE_NAME = lambda graph_id: f"graph_{graph_id}_edge"
+TILE_FOLDER_NAME = lambda graph_id: f'tiles_graph_{graph_id}'
 USER_TABLE = 'tg_user'
 VERTEX_METADATA_TABLE = "tg_vertex_metadata"
 

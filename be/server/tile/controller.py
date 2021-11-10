@@ -4,6 +4,7 @@ from flask_restx import Namespace, Resource
 from .service import TileService
 from .. import SessionLocal
 from ..graph.service import GraphService
+from ...configuration import TILE_FOLDER_NAME, CONFIGURATIONS
 
 api = Namespace("Tile", description="Single namespace, single entity")  # noqa
 
@@ -19,7 +20,7 @@ class TileNameResource(Resource):
         with SessionLocal() as db:
             graph = GraphService.get_by_id(graph_id, db)
             graph_name = graph.graph_name
-            tile_folder = TileService.get_tile_folder(graph_name, graph_id)
+            tile_folder = os.path.join(CONFIGURATIONS['graphsHome'], TILE_FOLDER_NAME(graph_id))
             tile_name = TileService.get_tile_name(z, x, y)
             return send_from_directory(os.path.abspath(tile_folder), tile_name, mimetype='image/jpeg')
 
@@ -34,6 +35,6 @@ class EdgePlotsResource(Resource):
         with SessionLocal() as db:
             graph = GraphService.get_by_id(graph_id, db)
             graph_name = graph.graph_name
-            tile_folder = TileService.get_tile_folder(graph_name, graph_id)
+            tile_folder = os.path.join(CONFIGURATIONS['graphsHome'], TILE_FOLDER_NAME(graph_id))
             plot_name = "z_{}_distribution.png".format(z)
             return send_from_directory(os.path.abspath(tile_folder), plot_name, mimetype='image/jpeg')

@@ -2,7 +2,7 @@ import os
 
 from geoalchemy2 import Geometry
 
-from be.configuration import CONFIGURATIONS, VERTEX_TABLE_NAME, SRID, EDGE_TABLE_NAME
+from be.configuration import CONFIGURATIONS, VERTEX_TABLE_NAME, SRID, EDGE_TABLE_NAME, TILE_FOLDER_NAME
 from be.server import SessionLocal, engine
 from be.server.edge.service import EdgeService
 from be.server.graph.service import GraphService
@@ -25,7 +25,7 @@ def ensure_directory_exists(path):
 def mkdir_for_graph(graph_name, graph_id):
     graphs_home = os.path.abspath(CONFIGURATIONS['graphsHome'])
     ensure_directory_exists(graphs_home)
-    graph_folder = f'{graph_name}_{graph_id}'
+    graph_folder = TILE_FOLDER_NAME(graph_id)
     path = os.path.join(graphs_home, graph_folder)
     ensure_directory_exists(path)
     return path
