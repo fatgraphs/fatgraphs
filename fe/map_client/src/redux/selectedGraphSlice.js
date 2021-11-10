@@ -4,13 +4,15 @@ export const selectedGraphSlice = createSlice({
     name: 'selectedGraph',
     initialState: {
         graphId: "",
-        graphMetadata: {},
+        graph: {},
+        graphConfiguration: {},
         graphMapRef: {}
     },
     reducers: {
         graphSelected: (state, action) => {
             state.graphId = action.payload.graphId
-            state.graphMetadata = action.payload.graphMetadata
+            state.graphConfiguration = action.payload.graphConfiguration
+            state.graph = action.payload.graph
         },
         graphMounted: (state, action) => {
             state.graphMapRef = action.payload.graphMapRef

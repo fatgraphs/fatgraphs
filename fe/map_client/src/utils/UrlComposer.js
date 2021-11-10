@@ -94,6 +94,12 @@ class UrlComposer {
     static getGalleryCategories() {
         return configs['endpoints']['base'] + configs['endpoints']['galleryCategories'];
     }
+
+    static graphConfiguration(graphId){
+        let toParametriseUrlFragment = configs['endpoints']['graphConfiguration'];
+        let parametrisedUrlFragment = toParametriseUrlFragment.replace(/{graphId}/g, String(graphId));
+        return configs['endpoints']['base'] + parametrisedUrlFragment
+    }
 }
 
 export default UrlComposer;

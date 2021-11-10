@@ -107,3 +107,8 @@ export function getGalleryCategories() {
     let url = UrlComposer.getGalleryCategories();
     return doRequest(url, {});
 }
+
+export function fetchGraphConfiguration(graphId){
+    let url = UrlComposer.graphConfiguration(graphId);
+    return doRequest(url, {});
+}

@@ -6,6 +6,7 @@ def register_routes(api, app, root="api"):
     from .tile import register_routes as attach_tile
     from .edge import register_routes as attach_edge
     from .gallery_categories import register_routes as attach_gallery_categories
+    from .graph_configuration import register_routes as attach_graph_configuration
 
     attach_gallery_categories(api, app)
     attach_graph(api, app)
@@ -14,4 +15,5 @@ def register_routes(api, app, root="api"):
     attach_metadata(api, app)
     attach_tile(api, app)
     attach_edge(api, app)
+    attach_graph_configuration(api, app)
 

@@ -3,7 +3,7 @@ import {withRouter} from "react-router-dom";
 import {
     fetchAutocompletionTerms,
     fetchEdges,
-    fetchGraph,
+    fetchGraph, fetchGraphConfiguration,
     fetchMatchingVertices,
     getGalleryCategories
 } from "../../APILayer";
@@ -33,7 +33,7 @@ class SingleGraphView extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            graphMetadata: undefined,
+            graphConfiguration: undefined,
             metadataObjects: [],
             renderingCommitted: false,
         }
@@ -42,18 +42,24 @@ class SingleGraphView extends Component {
 
     async componentDidMount() {
 
-        let graphMetadata = await fetchGraph(this.props.match.params.graphId);
+        console.log("graph single page mounted")
+
+        let graphConfiguration = await fetchGraphConfiguration(this.props.match.params.graphId);
+        let graph = await fetchGraph(this.props.match.params.graphId);
+
+        console.log("fetched graphConfiguration ", graphConfiguration)
 
         this.props.graphSelected({
             graphId: this.props.match.params.graphId,
-            graphMetadata: graphMetadata
+            graph: graph,
+            graphConfiguration: graphConfiguration
         })
 
 
         let autocompletionTerms = await fetchAutocompletionTerms(this.props.match.params.graphId);
 
         this.setState({
-            graphMetadata: graphMetadata,
+            graphConfiguration: graphConfiguration,
             autocompletionTerms: autocompletionTerms,
         })
     }
@@ -64,26 +70,26 @@ class SingleGraphView extends Component {
     }
 
     render() {
-        if (this.state.graphMetadata === undefined) {
+        if (this.state.graphConfiguration === undefined) {
             return <LoadingComponent/>
         } else {
             return (
                 <div className={s.singleGraphGrid}>
 
                     <GraphTitle
-                        graphMetadata={this.state.graphMetadata}/>
+                        graphMetadata={this.state.graphConfiguration}/>
 
                     <TagListGraph
                         autocompletionTerms={this.state.autocompletionTerms}
                         sendSingleVertexSearch={this.receiveSingleVertexSearch} // TODO remove
                         receiveClearSignal={this.state.clearSignal}
                         graphId={this.props.match.params.graphId}
-                        graphMetadata={this.state.graphMetadata}
+                        graphMetadata={this.state.graphConfiguration}
                     />
 
 
                     <CopyGtmCommand
-                        graphMetadata={this.state.graphMetadata}/>
+                        graphMetadata={this.state.graphConfiguration}/>
 
                     <div>
                         <SidePanel
@@ -97,7 +103,7 @@ class SingleGraphView extends Component {
 
                     <GraphMap
                         autocompletionTerms={this.state.autocompletionTerms}
-                        graphMetadata={this.state.graphMetadata}
+                        graphMetadata={this.state.graphConfiguration}
                         graphId={this.props.match.params.graphId}
                         graphName={this.props.match.params.graphName}
                         commitRendering={() => {
@@ -108,7 +114,7 @@ class SingleGraphView extends Component {
                     />
 
                     <EdgePlots
-                        zoomLevels={this.state.graphMetadata['zoomLevels']}
+                        zoomLevels={this.state.graphConfiguration['zoomLevels']}
                     />
                 </div>
             );
@@ -145,7 +151,7 @@ class SingleGraphView extends Component {
         const types = [...new Set(groupedByEth[vertex].map(obj => obj.types).flat())]
         const labels = [...new Set(groupedByEth[vertex].map(obj => obj.labels).flat())]
         const {pos, size, fetchEdges, flyTo} = groupedByEth[vertex][0]
-        const mapCoordinate = toMapCoordinate(pos, this.state.graphMetadata)
+        const mapCoordinate = toMapCoordinate(pos, this.state.graphConfiguration)
 
         return {
             types: types,

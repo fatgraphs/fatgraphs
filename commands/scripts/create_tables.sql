@@ -15,6 +15,17 @@ CREATE TABLE IF NOT EXISTS tg_graphs
 (
     id                             SERIAL UNIQUE PRIMARY KEY,
     graph_name                     text,
+    graph_category                 int,
+    vertices                       bigint,
+    edges                          bigint,
+    CONSTRAINT fk_graph_category
+        FOREIGN KEY (graph_category)
+            REFERENCES gallery_categories (id)
+);
+
+CREATE TABLE IF NOT EXISTS tg_graph_configs
+(
+    id                             SERIAL UNIQUE PRIMARY KEY,
     tile_size                      bigint,
     zoom_levels                    bigint,
     min_transparency               double precision,
@@ -31,12 +42,10 @@ CREATE TABLE IF NOT EXISTS tg_graphs
     median_pixel_distance          real,
     min                            real,
     max                            real,
-    vertices                       bigint,
-    edges                          bigint,
-    graph_category                 int,
-    CONSTRAINT fk_graph_category
-        FOREIGN KEY (graph_category)
-            REFERENCES gallery_categories (id)
+    graph                 int,
+    CONSTRAINT fk_graph
+        FOREIGN KEY (graph)
+            REFERENCES tg_graphs (id)
 );
 
 

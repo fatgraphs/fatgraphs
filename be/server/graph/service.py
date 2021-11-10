@@ -17,28 +17,11 @@ class GraphService:
     def create(graph_to_create: GraphInterface, db):
         assert 'gallery_categories' in db.bind.engine.table_names()
         new_graph = Graph(
-            tile_size=graph_to_create['tile_size'],
-            max_transparency=graph_to_create['max_transparency'],
-            median_pixel_distance=graph_to_create['median_pixel_distance'],
-            max=graph_to_create['max'],
-            vertices=graph_to_create['vertices'],
-            bg_color=graph_to_create['bg_color'],
-            med_vertex_size=graph_to_create['med_vertex_size'],
-            max_vertex_size=graph_to_create['max_vertex_size'],
-            curvature=graph_to_create['curvature'],
-            min_transparency=graph_to_create['min_transparency'],
-            source=graph_to_create['source'],
-            edges=graph_to_create['edges'],
-            std_transparency_as_percentage=graph_to_create['std_transparency_as_percentage'],
-            min=graph_to_create['min'],
-            zoom_levels=graph_to_create['zoom_levels'],
-            tile_based_mean_transparency=graph_to_create['tile_based_mean_transparency'],
-            med_edge_thickness=graph_to_create['med_edge_thickness'],
             graph_name=graph_to_create['graph_name'],
-            max_edge_thickness=graph_to_create['max_edge_thickness'],
-            graph_category=int(graph_to_create['graph_category'])
-            )
-
+            graph_category=int(graph_to_create['graph_category']),
+            vertices=graph_to_create['vertices'],
+            edges=graph_to_create['edges'],
+        )
         db.add(new_graph)
         db.commit()
         db.flush()

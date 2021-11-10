@@ -20,6 +20,7 @@
     "deleteVertexMetadata": "vertex-metadata/{vertex}/{type}/{value}",
     "edges": "edge/{graphId}/{vertex}",
     "galleryCategories": "gallery_categories/",
+    "graphConfiguration": "graph_configuration/{graphId}",
     "parameters": {
       "edges_fetched_limit": 100
     }

@@ -6,6 +6,7 @@ from be.configuration import CONFIGURATIONS, VERTEX_TABLE_NAME, SRID, EDGE_TABLE
 from be.server import SessionLocal, engine
 from be.server.edge.service import EdgeService
 from be.server.graph.service import GraphService
+from be.server.graph_configuration.service import GraphConfigurationService
 from be.server.vertex.service import VertexService
 from be.tile_creator.src.graph.gt_token_graph import GraphToolTokenGraph
 from be.tile_creator.src.graph.token_graph import TokenGraph
@@ -58,6 +59,11 @@ def main(configurations):
         graph_id = new_graph.id
         graph_name = configurations['graph_name']
         output_folder = mkdir_for_graph(graph_name, graph_id)
+
+        # save the configuration to db
+        temp = metadata.get_config_dict()
+        temp['graph'] = graph_id
+        config_db = GraphConfigurationService.create(temp, db)
 
         # save vertices in DB
         vertex_table = VERTEX_TABLE_NAME(graph_name, graph_id)
