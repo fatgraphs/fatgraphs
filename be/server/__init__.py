@@ -7,7 +7,7 @@ from flask_admin.contrib.sqla import ModelView
 from flask_cors import CORS
 # from vertexObjectlalchemy import SQLAlchemy
 from flask_restx import Api
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, MetaData
 from sqlalchemy.orm import sessionmaker, declarative_base
 from werkzeug.routing import IntegerConverter
 
@@ -57,14 +57,12 @@ def create_app(env=None):
 def register_category_admin_page():
     from be.server.graph import Graph
     from be.server.gallery_categories import GalleryCategory
+
+
     class GraphCategoryView(ModelView):
 
         def delete_model(self, model):
-            """
-                Delete model.
-                :param model:
-                    Model to delete
-            """
+
             try:
                 if len(self.session.query(Graph).filter_by(graph_category=model.id).all()) > 0:
                     flash(gettext('Failed to delete. \n'
