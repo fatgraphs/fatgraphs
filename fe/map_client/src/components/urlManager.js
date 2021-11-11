@@ -97,19 +97,14 @@ class UrlManager extends Component {
     }
 
     getCurrentQueryParams() {
-        let empty = getQueryParam(this.props, 'x') === null &&
-        getQueryParam(this.props, 'y') === null &&
-        getQueryParam(this.props, 'z') === null &&
-        getQueryParam(this.props, 'vertex') === null;
-        if(empty){
-            return {}
+        let result = {}
+
+        for (const queryParam of ['x', 'y', 'z', 'vertex']) {
+            getQueryParam(this.props, queryParam) ?
+            result[queryParam] = getQueryParam(this.props, queryParam) : false;
         }
-        return {
-            x: getQueryParam(this.props, 'x'),
-            y: getQueryParam(this.props, 'y'),
-            z: getQueryParam(this.props, 'z'),
-            vertex: getQueryParam(this.props, 'vertex'),
-        }
+
+        return result;
     }
 }
 
