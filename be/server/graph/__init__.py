@@ -18,6 +18,7 @@ def register_routes(api, app):
     from .controller import api as user_api
     root = app.config['API_ROOT']
     api.add_namespace(user_api, path=f"/{root}/{BASE_ROUTE}")
+
     # make the graphs accessible via the flask admin interface
 
     class GraphAdminView(ModelView):
@@ -28,44 +29,32 @@ def register_routes(api, app):
         def delete_model(self, graph):
 
             try:
-                try:
 
-                    delte_vertex_table = """DROP TABLE %(table_name)s;"""
-                    result = self.session.bind.engine.execute(delte_vertex_table, {
-                        'table_name': AsIs(VERTEX_TABLE_NAME(graph.id)),
-                    })
+                delete_vertex_edge_configs = """
+                BEGIN;
+                    DROP TABLE %(vertex_table)s;
+                    DROP TABLE %(edge_table)s;
+                    DELETE FROM tg_graph_configs WHERE tg_graph_configs.graph = %(graph_id)s;
+                    DELETE FROM tg_graphs WHERE tg_graphs.id = %(graph_id)s;
+                COMMIT;
+                """
+                self.session.bind.engine.execute(delete_vertex_edge_configs, {
+                    'graph_id': AsIs(graph.id),
+                    'vertex_table': AsIs(VERTEX_TABLE_NAME(graph.id)),
+                    'edge_table': AsIs(EDGE_TABLE_NAME(graph.id))
+                })
 
-                    delte_edge_table = """DROP TABLE %(table_name)s;"""
-                    result = self.session.bind.engine.execute(delte_edge_table, {
-                        'table_name': AsIs(EDGE_TABLE_NAME(graph.id)),
-                    })
-
-                    delete_configuration_entry = """DELETE FROM tg_graph_configs WHERE tg_graph_configs.graph = %(graph_id)s;"""
-                    result = self.session.bind.engine.execute(delete_configuration_entry, {
-                        'graph_id': AsIs(graph.id),
-                    })
-                except Exception as e:
-                    self.session.rollback()
-                    return False
-
-                self.on_model_delete(graph)
-                self.session.flush()
-                self.session.delete(graph)
-                self.session.commit()
-
-                shutil.rmtree(os.path.join(CONFIGURATIONS['graphsHome'], TILE_FOLDER_NAME(graph.id)))
-
-            except Exception as ex:
-                if not self.handle_view_exception(ex):
-                    flash(gettext('Failed to delete record. %(error)s', error=str(ex)), 'error')
-                self.session.rollback()
-
+            except Exception as e:
+                flash(gettext('Failed to delete the graph: %(error)s', error=str(e)), 'error')
                 return False
-            else:
-                self.after_model_delete(graph)
 
+            try:
+                shutil.rmtree(os.path.join(CONFIGURATIONS['graphsHome'], TILE_FOLDER_NAME(graph.id)))
+            except Exception as e:
+                flash(gettext('The graph was deleted in the db but the tiles deletion failed: %(error)s', error=str(e)), 'error')
+                return False
+
+            self.after_model_delete(graph)
             return True
 
     admin.add_view(GraphAdminView(Graph, SessionLocal()))
-
-
