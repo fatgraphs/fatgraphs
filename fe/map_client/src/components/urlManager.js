@@ -15,30 +15,26 @@ class UrlManager extends Component {
     }
 
     render() {
-        return (
-            <></>
-        );
+        return <></>
     }
 
     componentDidMount() {
         window.onhashchange = function (e) {
             if (!_.isEqual(this.getCurrentQueryParams(), this.props.queryParams)) {
-                // console.log("onhashchange")
-                // console.log("this.getCurrentQueryParams()", this.getCurrentQueryParams())
-                // console.log("this.props.queryParams", this.props.queryParams)
+                // when the url is updated manually or wby clicking on an anchor, this will run
                 this.props.changeUrl(this.getCurrentQueryParams())
             }
         }.bind(this)
 
-        if (this.getCurrentQueryParams()['vertex']) {
-            console.log("url manager mounted, fetching existing vertex", this.getCurrentQueryParams())
+        if (this.getCurrentQueryParams()['vertex'] !== undefined) {
+
             this.props.fetchVertices(
                 {
                     graphId: this.props.graphId,
                     fetchEdges: true,
                     flyTo: true,
                     persistOnNewClick: true,
-                    graphMetadata: this.props.graphMetadata,
+                    graphConfiguration: this.props.graphConfiguration,
                     metadataObject: {
                         type: 'vertex',
                         value: this.getCurrentQueryParams().vertex
@@ -70,7 +66,7 @@ class UrlManager extends Component {
                         fetchEdges: true,
                         flyTo: false,
                         persistOnNewClick: false,
-                        graphMetadata: this.props.graphMetadata,
+                        graphConfiguration: this.props.graphConfiguration,
                         metadataObject: {
                             type: 'vertex',
                             value: this.props.queryParams.vertex
@@ -112,7 +108,7 @@ const mapUrlToProps = (state) => {
     return {
         queryParams: state.url,
         graphId: state.graph.graphId,
-        graphMetadata: state.graph.graphMetadata,
+        graphConfiguration: state.graph.graphConfiguration,
         verticesSelected: state.marker.vertices
     }
 };

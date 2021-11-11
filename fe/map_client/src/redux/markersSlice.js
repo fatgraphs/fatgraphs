@@ -9,11 +9,11 @@ export const fetchVertices = createAsyncThunk(
     async (argObj, thunkAPI) => {
 
 
-        function convertToMarker(groupedByEth, vertex, graphMetadata) {
+        function convertToMarker(groupedByEth, vertex, graphConfiguration) {
             const types = [...new Set(groupedByEth[vertex].map(obj => obj.types).flat())]
             const labels = [...new Set(groupedByEth[vertex].map(obj => obj.labels).flat())]
             const {pos, size} = groupedByEth[vertex][0]
-            const mapCoordinate = toMapCoordinate(pos, graphMetadata)
+            const mapCoordinate = toMapCoordinate(pos, graphConfiguration)
 
             return {
                 types: types,
@@ -37,7 +37,7 @@ export const fetchVertices = createAsyncThunk(
 
         let markers = []
         for (const vertex in groupedByEth) {
-            markers.push(convertToMarker(groupedByEth, vertex, argObj.graphMetadata));
+            markers.push(convertToMarker(groupedByEth, vertex, argObj.graphConfiguration));
         }
         markers.forEach(v => v['fetchEdges'] = argObj.fetchEdges)
         markers.forEach(v => v['flyTo'] = argObj.flyTo)
@@ -53,7 +53,7 @@ export const fetchClosestVertex = createAsyncThunk(
         const response = await fetchClosestPoint(argObj.graphId, argObj.pos)
 
         response['persistOnNewClick'] = thunkAPI.getState().marker.isPersistClick
-        response['pos'] = toMapCoordinate(response["pos"], argObj.graphMetadata)
+        response['pos'] = toMapCoordinate(response["pos"], argObj.graphConfiguration)
         response['fetchEdges'] = true
         response['flyTo'] = argObj.flyTo
 

@@ -54,7 +54,7 @@ class GraphMap extends React.Component {
         if (lastVertexMarker && lastVertexMarker.flyTo) {
             this.state.mapRef.flyTo(
                 lastVertexMarker.pos,
-                this.props.graphMetadata['zoomLevels'] - 1
+                this.props.graphConfiguration['zoomLevels'] - 1
             )
             this.props.updateFlyTo(lastVertexMarker)
         }
@@ -66,8 +66,8 @@ class GraphMap extends React.Component {
 
     render() {
         const tileUrl = UrlComposer.tileLayer(this.props.graphId);
-        const position = [this.props.graphMetadata.tileSize / -2.0,
-            this.props.graphMetadata.tileSize / 2.0]
+        const position = [this.props.graphConfiguration.tileSize / -2.0,
+            this.props.graphConfiguration.tileSize / 2.0]
 
         return <MapContainer
             whenCreated={this.mapCreationCallback}
@@ -82,8 +82,8 @@ class GraphMap extends React.Component {
                 attribution='tokengallery 2.0'
                 url={tileUrl}
                 randint={generateLargeRandom()}
-                maxZoom={this.props.graphMetadata['zoomLevels'] - 1}
-                tileSize={this.props.graphMetadata.tileSize}
+                maxZoom={this.props.graphConfiguration['zoomLevels'] - 1}
+                tileSize={this.props.graphConfiguration.tileSize}
             />
             <Fullscreen {...{position: 'topright'}} />
 
@@ -95,7 +95,7 @@ class GraphMap extends React.Component {
                         fetchEdges={e.fetchEdges}
                         zoom={this.state.mapRef.getZoom()}
                         mapRef={this.state.mapRef}
-                        graphMetadata={this.props.graphMetadata}
+                        graphConfiguration={this.props.graphConfiguration}
                         vertexObject={e}
                         autocompletionTerms={this.props.autocompletionTerms}
                         graphName={this.props.graphName}
@@ -158,20 +158,20 @@ class GraphMap extends React.Component {
 
     bindOnClickCallback(mapRef) {
 
-        function getGraphPosFromMapClick(clickEvent, graphMetadata) {
+        function getGraphPosFromMapClick(clickEvent, graphConfiguration) {
             return toGraphCoordinate([
                     clickEvent.latlng.lat,
                     clickEvent.latlng.lng],
-                graphMetadata)
+                graphConfiguration)
         }
 
         mapRef.on('click', async function (clickEvent) {
-            let graphPosClicked = getGraphPosFromMapClick(clickEvent, this.props.graphMetadata)
+            let graphPosClicked = getGraphPosFromMapClick(clickEvent, this.props.graphConfiguration)
             this.props.fetchClosestVertex(
                 {
                     graphId: this.props.graphId,
                     pos: graphPosClicked,
-                    graphMetadata: this.props.graphMetadata,
+                    graphConfiguration: this.props.graphConfiguration,
                     flyTo: false
                 })
 

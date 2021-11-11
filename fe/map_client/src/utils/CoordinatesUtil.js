@@ -7,29 +7,29 @@ export function parseTuple(t) {
     return JSON.parse("[" + t.replace(/\(/g, "[").replace(/\)/g, "]") + "]")[0];
 }
 
-export function toMapCoordinate(coordinate, graphMetadata) {
+export function toMapCoordinate(coordinate, graphConfiguration) {
     let graphCoord = coordinate;
     if (!Array.isArray(coordinate)) {
         graphCoord = parseTuple(coordinate)
     }
     let pos = convertGraphCoordinateToMap(
         graphCoord,
-        graphMetadata['min'],
-        graphMetadata['max'],
-        graphMetadata['tileSize']);
+        graphConfiguration['min'],
+        graphConfiguration['max'],
+        graphConfiguration['tileSize']);
     return pos;
 }
 
-export function toGraphCoordinate(coordinate, graphMetadata) {
+export function toGraphCoordinate(coordinate, graphConfiguration) {
     let mapCoord = coordinate;
     if (!Array.isArray(coordinate)) {
         mapCoord = parseTuple(coordinate)
     }
     let pos = convertMapCoordinateToGraph(
         mapCoord,
-        graphMetadata['min'],
-        graphMetadata['max'],
-        graphMetadata['tileSize']);
+        graphConfiguration['min'],
+        graphConfiguration['max'],
+        graphConfiguration['tileSize']);
     return pos;
 }
 

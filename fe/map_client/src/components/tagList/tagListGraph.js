@@ -112,7 +112,7 @@ class TagListGraph extends Component {
             fetchEdges: false,
             flyTo: false,
             persistOnNewClick: true,
-            graphMetadata: this.props.graphMetadata
+            graphConfiguration: this.props.graphConfiguration
         })
         this.setState({metadataObjects: metadataObjects, showAutocompletion: false})
     }

@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 import getopt, sys, os
-
+os.environ["FLASK_ENV"] = "development"
+# order is important: be.server needs the FLASK_ENV set as above
+sys.path.append(os.path.abspath('..'))
+from be.configuration import CONFIGURATIONS
 from be.server import SessionLocal
 from be.server.gallery_categories.service import GalleryCategoryService
+from be.tile_creator.main import main
 
-sys.path.append(os.path.abspath('../be'))
-from be.configuration import CONFIGURATIONS
-os.environ["FLASK_ENV"] = "development"
 if os.getcwd().split(os.sep)[-1] == "commands":
     # if it's run from the commands frolder then chdire to be in root
     os.chdir(os.path.abspath(".."))
-from be.tile_creator.main import main
 
 
 def extractArguments():
@@ -20,7 +20,7 @@ def extractArguments():
     print(argumentList)
     shortOptions = "n:z:"
     longOptions = ["csv=", "ts=", "min_t=", "max_t=", "std=", "med_thick=", "max_thick=", "med_size=",
-                    "max_size=", "curvature=", "mean_t=", "gc="]
+                   "max_size=", "curvature=", "mean_t=", "gc="]
     try:
         arguments, values = getopt.getopt(argumentList, shortOptions, longOptions)
         print(">>> ", arguments)
@@ -34,6 +34,7 @@ def extractArguments():
 def getCwd():
     thisFileDir = os.path.dirname(os.path.realpath(__file__))
     return thisFileDir
+
 
 # default value as second arg of 'get'
 # TODO find a way of ensuring that htis dict keys are the same as defined in configuration.json

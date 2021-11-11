@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {faClipboard} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import s from './singleGraph.module.scss'
+import {connect} from "react-redux";
 
 class CopyGtmCommand extends Component {
 
@@ -32,22 +33,29 @@ class CopyGtmCommand extends Component {
     }
 
     generateGtmCommand() {
+        let configs = this.props.graphConfiguration;
         let build = "./gtm.py" +
-            " -n " + this.props.graphMetadata.graphName +
-            " --csv " + this.props.graphMetadata.source +
-            " --ts " + this.props.graphMetadata.tileSize +
-            " -z " + this.props.graphMetadata.zoomLevels +
-            " --min_t " + this.props.graphMetadata.minTransparency +
-            " --max_t " + this.props.graphMetadata.maxTransparency +
-            " --std " + this.props.graphMetadata.stdTransparencyAsPercentage +
-            " --med_thick " + this.props.graphMetadata.medEdgeThickness +
-            " --max_thick " + this.props.graphMetadata.maxEdgeThickness +
-            " --med_size " + this.props.graphMetadata.medVertexSize +
-            " --max_size " + this.props.graphMetadata.maxVertexSize +
-            " --curvature " + this.props.graphMetadata.curvature +
-            " --mean_t  " + this.props.graphMetadata.tileBasedMeanTransparency
+            " -n " + configs.graphName +
+            " --csv " + configs.source +
+            " --ts " + configs.tileSize +
+            " -z " + configs.zoomLevels +
+            " --min_t " + configs.minTransparency +
+            " --max_t " + configs.maxTransparency +
+            " --std " + configs.stdTransparencyAsPercentage +
+            " --med_thick " + configs.medEdgeThickness +
+            " --max_thick " + configs.maxEdgeThickness +
+            " --med_size " + configs.medVertexSize +
+            " --max_size " + configs.maxVertexSize +
+            " --curvature " + configs.curvature +
+            " --mean_t  " + configs.tileBasedMeanTransparency
         return build;
     }
 }
 
-export default CopyGtmCommand;
+const mapStateToPropsCopyCommands = (state) => {
+    return {
+        graphConfiguration: state.graph.graphConfiguration
+    }
+}
+
+export default connect(mapStateToPropsCopyCommands, null)(CopyGtmCommand);

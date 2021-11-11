@@ -11,7 +11,7 @@ class GraphTitle extends Component {
         return (
             <div className={this.props.className }>
                 Graph name:
-                <h3 className={'text-2xl'}>{this.props.graphMetadata.graphName}</h3>
+                <h3 className={'text-2xl'}>{this.props.graphConfiguration.graphName}</h3>
             </div>
         );
     }

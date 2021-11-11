@@ -32,7 +32,6 @@
   },
   "graphsHome": "graph-tiles",
   "verticesMetadataFileName": "vertices_metadata.csv",
-  "graphMetadataFileName": "graph_metadata.csv",
   "corner_vertices": {
     "fake_vertex_1": "0x123456789abcdef01",
     "fake_vertex_2": "0x123456789abcdef02",

@@ -33,6 +33,7 @@ class SingleGraphView extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            graph: undefined,
             graphConfiguration: undefined,
             metadataObjects: [],
             renderingCommitted: false,
@@ -61,6 +62,7 @@ class SingleGraphView extends Component {
         this.setState({
             graphConfiguration: graphConfiguration,
             autocompletionTerms: autocompletionTerms,
+            graph: graph
         })
     }
 
@@ -77,19 +79,19 @@ class SingleGraphView extends Component {
                 <div className={s.singleGraphGrid}>
 
                     <GraphTitle
-                        graphMetadata={this.state.graphConfiguration}/>
+                        graphConfiguration={this.state.graph}/>
 
                     <TagListGraph
                         autocompletionTerms={this.state.autocompletionTerms}
                         sendSingleVertexSearch={this.receiveSingleVertexSearch} // TODO remove
                         receiveClearSignal={this.state.clearSignal}
                         graphId={this.props.match.params.graphId}
-                        graphMetadata={this.state.graphConfiguration}
+                        graphConfiguration={this.state.graphConfiguration}
                     />
 
 
                     <CopyGtmCommand
-                        graphMetadata={this.state.graphConfiguration}/>
+                        graphConfiguration={this.state.graphConfiguration}/>
 
                     <div>
                         <SidePanel
@@ -103,7 +105,7 @@ class SingleGraphView extends Component {
 
                     <GraphMap
                         autocompletionTerms={this.state.autocompletionTerms}
-                        graphMetadata={this.state.graphConfiguration}
+                        graphConfiguration={this.state.graphConfiguration}
                         graphId={this.props.match.params.graphId}
                         graphName={this.props.match.params.graphName}
                         commitRendering={() => {

@@ -31,8 +31,8 @@ class VertexMarker extends Component {
             let paths = []
             let edges = await fetchEdges(this.props.graphId, this.props.vertexObject['vertex'])
             for (const edge of edges) {
-                let srcPos = toMapCoordinate(edge['src']['pos'], this.props.graphMetadata)
-                let targetPos = toMapCoordinate(edge['trg']['pos'], this.props.graphMetadata)
+                let srcPos = toMapCoordinate(edge['src']['pos'], this.props.graphConfiguration)
+                let targetPos = toMapCoordinate(edge['trg']['pos'], this.props.graphConfiguration)
 
                 let deltaX = srcPos[0] - targetPos[0]
                 let deltaY = srcPos[1] - targetPos[1]
