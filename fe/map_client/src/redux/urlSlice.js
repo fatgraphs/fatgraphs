@@ -1,5 +1,5 @@
 import {createSlice} from '@reduxjs/toolkit'
-import {fetchClosestVertex} from "./markersSlice";
+import {fetchClosestVertex} from "./selectedVerticesSlice";
 
 export const urlSlice = createSlice({
     name: 'url',

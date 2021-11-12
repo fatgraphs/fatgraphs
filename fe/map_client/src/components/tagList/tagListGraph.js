@@ -9,7 +9,7 @@ import Autocompletion from "../autocompletion/Autocompletion";
 import {TagElement} from "./tagElement";
 import {TYPE_ICONS} from "../single-graph/TypeIcons";
 import {connect} from "react-redux";
-import {fetchVertices, removeVertices} from "../../redux/markersSlice";
+import {fetchVertices, removeVertices} from "../../redux/selectedVerticesSlice";
 
 class TagListGraph extends Component {
 
@@ -107,19 +107,19 @@ class TagListGraph extends Component {
     onAutocompletionElementClick(e) {
         let metadataObjects = [...this.state.metadataObjects, e];
         this.props.fetchVertices({
-            graphId: this.props.graphId,
             metadataObject: e,
             fetchEdges: false,
             flyTo: false,
             persistOnNewClick: true,
-            graphConfiguration: this.props.graphConfiguration
         })
         this.setState({metadataObjects: metadataObjects, showAutocompletion: false})
     }
 }
 
-let mapStateToProps = (reduxStore) => {
-    return {clearSignal: reduxStore.marker.clearSignal}
+let mapStateToProps = (state) => {
+    return {
+        clearSignal: state.marker.clearSignal,
+    }
 };
 
 export default connect(mapStateToProps, {fetchVertices, removeVertices})(TagListGraph);

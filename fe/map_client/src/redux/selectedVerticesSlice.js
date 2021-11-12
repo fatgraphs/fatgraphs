@@ -24,11 +24,10 @@ export const fetchVertices = createAsyncThunk(
             }
         }
 
-        console.log("argObj.graphId, argObj.metadataObject ", argObj.graphId, argObj.metadataObject)
+        let graphConfiguration = thunkAPI.getState().graph.graphConfiguration;
+        let graphId = thunkAPI.getState().graph.graph.id;
 
-        let verticesMatchingMetadata = await fetchMatchingVertices(argObj.graphId, argObj.metadataObject)
-
-        console.log("verticesMatchingMetadata ", verticesMatchingMetadata)
+        let verticesMatchingMetadata = await fetchMatchingVertices(graphId, argObj.metadataObject)
 
         // the same eth may have multiple types and labels
         let groupedByEth = _.groupBy(verticesMatchingMetadata, 'vertex');
@@ -37,12 +36,11 @@ export const fetchVertices = createAsyncThunk(
 
         let markers = []
         for (const vertex in groupedByEth) {
-            markers.push(convertToMarker(groupedByEth, vertex, argObj.graphConfiguration));
+            markers.push(convertToMarker(groupedByEth, vertex, graphConfiguration));
         }
         markers.forEach(v => v['fetchEdges'] = argObj.fetchEdges)
         markers.forEach(v => v['flyTo'] = argObj.flyTo)
         markers.forEach(v => v['persistOnNewClick'] = argObj.persistOnNewClick)
-        console.log("markers ", markers)
         return markers
     }
 )
@@ -61,7 +59,7 @@ export const fetchClosestVertex = createAsyncThunk(
     }
 )
 
-export const markersSlice = createSlice({
+export const selectedVerticesSlice = createSlice({
     name: 'markers',
     initialState: {
         isPersistClick: false,
@@ -110,6 +108,6 @@ export const markersSlice = createSlice({
     },
 })
 
-export const {togglePersistClick, clear, pop, removeVertices, updatePersistOnNewClick, updateFlyTo} = markersSlice.actions
+export const {togglePersistClick, clear, pop, removeVertices, updatePersistOnNewClick, updateFlyTo} = selectedVerticesSlice.actions
 
-export default markersSlice.reducer
+export default selectedVerticesSlice.reducer

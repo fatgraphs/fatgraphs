@@ -3,6 +3,7 @@ import s from "./singleGraph.module.scss";
 import Fillable from "../../reactBlueTemplate/src/pages/tables/static/Fillable";
 import UrlComposer from "../../utils/UrlComposer";
 import {withRouter} from "react-router-dom";
+import {connect} from  "react-redux";
 
 class EdgePlots extends Component {
 
@@ -34,4 +35,10 @@ class EdgePlots extends Component {
     }
 }
 
-export default withRouter(EdgePlots);
+let mapStateToPropsEdgePlots = state => {
+    return {
+        zoomLevels: state.graph.graphConfiguration.zoomLevels
+    }
+}
+
+export default withRouter(connect(mapStateToPropsEdgePlots, null)(EdgePlots));

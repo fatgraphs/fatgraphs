@@ -43,19 +43,14 @@ class SingleGraphView extends Component {
 
     async componentDidMount() {
 
-        console.log("graph single page mounted")
-
         let graphConfiguration = await fetchGraphConfiguration(this.props.match.params.graphId);
         let graph = await fetchGraph(this.props.match.params.graphId);
-
-        console.log("fetched graphConfiguration ", graphConfiguration)
 
         this.props.graphSelected({
             graphId: this.props.match.params.graphId,
             graph: graph,
             graphConfiguration: graphConfiguration
         })
-
 
         let autocompletionTerms = await fetchAutocompletionTerms(this.props.match.params.graphId);
 
@@ -78,20 +73,15 @@ class SingleGraphView extends Component {
             return (
                 <div className={s.singleGraphGrid}>
 
-                    <GraphTitle
-                        graphConfiguration={this.state.graph}/>
+                    <GraphTitle/>
 
                     <TagListGraph
                         autocompletionTerms={this.state.autocompletionTerms}
                         sendSingleVertexSearch={this.receiveSingleVertexSearch} // TODO remove
                         receiveClearSignal={this.state.clearSignal}
-                        graphId={this.props.match.params.graphId}
-                        graphConfiguration={this.state.graphConfiguration}
                     />
 
-
-                    <CopyGtmCommand
-                        graphConfiguration={this.state.graphConfiguration}/>
+                    <CopyGtmCommand/>
 
                     <div>
                         <SidePanel
@@ -105,9 +95,6 @@ class SingleGraphView extends Component {
 
                     <GraphMap
                         autocompletionTerms={this.state.autocompletionTerms}
-                        graphConfiguration={this.state.graphConfiguration}
-                        graphId={this.props.match.params.graphId}
-                        graphName={this.props.match.params.graphName}
                         commitRendering={() => {
                             this.setState({
                                 renderingCommitted: true
@@ -115,9 +102,7 @@ class SingleGraphView extends Component {
                         }}
                     />
 
-                    <EdgePlots
-                        zoomLevels={this.state.graphConfiguration['zoomLevels']}
-                    />
+                    <EdgePlots/>
                 </div>
             );
         }

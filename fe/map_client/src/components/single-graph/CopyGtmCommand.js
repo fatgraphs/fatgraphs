@@ -35,7 +35,7 @@ class CopyGtmCommand extends Component {
     generateGtmCommand() {
         let configs = this.props.graphConfiguration;
         let build = "./gtm.py" +
-            " -n " + configs.graphName +
+            " -n " + this.props.graphName +
             " --csv " + configs.source +
             " --ts " + configs.tileSize +
             " -z " + configs.zoomLevels +
@@ -52,10 +52,11 @@ class CopyGtmCommand extends Component {
     }
 }
 
-const mapStateToPropsCopyCommands = (state) => {
+let mapStateToProps = (state) => {
     return {
-        graphConfiguration: state.graph.graphConfiguration
+        graphConfiguration: state.graph.graphConfiguration,
+        graphName: state.graph.graph.graphName
     }
 }
 
-export default connect(mapStateToPropsCopyCommands, null)(CopyGtmCommand);
+export default connect(mapStateToProps, null)(CopyGtmCommand);

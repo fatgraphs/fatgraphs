@@ -4,7 +4,7 @@ import {changeUrl, urlChanged} from "../redux/urlSlice";
 import {getQueryParam, updateQueryParam} from "../utils/Utils";
 import {withRouter} from "react-router-dom";
 import _ from 'underscore';
-import {fetchVertices} from "../redux/markersSlice";
+import {fetchVertices} from "../redux/selectedVerticesSlice";
 
 class UrlManager extends Component {
     constructor() {

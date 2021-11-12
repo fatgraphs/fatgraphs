@@ -14,7 +14,7 @@ import makeCustomControl from "./customMapControl/customMapControl";
 import {func} from "prop-types";
 import {connect} from "react-redux";
 
-import {clear, fetchClosestVertex, pop, removeVertices, togglePersistClick, updateFlyTo} from "../../redux/markersSlice";
+import {clear, fetchClosestVertex, pop, removeVertices, togglePersistClick, updateFlyTo} from "../../redux/selectedVerticesSlice";
 import {changeUrl} from "../../redux/urlSlice";
 import {graphMounted} from "../../redux/selectedGraphSlice";
 import _ from 'underscore';
@@ -98,7 +98,6 @@ class GraphMap extends React.Component {
                         graphConfiguration={this.props.graphConfiguration}
                         vertexObject={e}
                         autocompletionTerms={this.props.autocompletionTerms}
-                        graphName={this.props.graphName}
                         graphId={this.props.graphId}
                         ticked={e.persistOnNewClick}>
                     </VertexMarker>
@@ -221,7 +220,9 @@ let mapStateToProps = (store) => {
     return {
         verticesFromStore: store.marker.vertices,
         persistAllClicks: store.marker.isPersistClick,
-        url: store.url
+        url: store.url,
+        graphConfiguration: store.graph.graphConfiguration,
+        graphId: store.graph.graph.id
     }
 };
 

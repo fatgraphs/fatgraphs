@@ -1,5 +1,5 @@
 import {configureStore} from '@reduxjs/toolkit'
-import markersSlice from "./markersSlice";
+import markersSlice from "./selectedVerticesSlice";
 import urlSlice from "./urlSlice";
 import selectedGraphSlice from "./selectedGraphSlice";
 import galleryCategoriesSlice from "./galleryCategoriesSlice";

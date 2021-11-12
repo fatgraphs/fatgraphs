@@ -53,7 +53,7 @@ class App extends React.PureComponent {
   }
 }
 
-const mapStateToProps = state => ({
+let mapStateToProps = state => ({
   isAuthenticated: state.auth.isAuthenticated,
 });
 

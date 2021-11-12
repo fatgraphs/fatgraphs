@@ -87,7 +87,6 @@ VertexPopup.propTypes = {
     vertexObject: object.isRequired,
     typesConcatenated: string.isRequired,
     labelsConcatenated: string.isRequired,
-    graphName: string.isRequired
 }
 
 VertexPopup.defaultProps = {

@@ -5,7 +5,7 @@ import {Marker} from "react-leaflet";
 import {fetchEdges} from "../../../APILayer";
 import {toMapCoordinate} from "../../../utils/CoordinatesUtil";
 import L from "leaflet";
-import {updatePersistOnNewClick} from "../../../redux/markersSlice";
+import {updatePersistOnNewClick} from "../../../redux/selectedVerticesSlice";
 import {connect} from "react-redux";
 
 const configs = require('../../../../../../configurations.json');
@@ -77,8 +77,6 @@ class VertexMarker extends Component {
                 >
                     <VertexPopup
                         vertexObject={this.props.vertexObject}
-                        graphName={this.props.graphName}
-                        graphId={this.props.graphId}
                         recentMetadataSearches={this.props.recentMetadataSearches}
                         autocompletionTerms={this.props.autocompletionTerms}
                         checkboxCallback={this.receiveNotification}
