@@ -27,20 +27,12 @@ class GraphMap extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            mapRef: undefined,
-            renderingCommitted: false
+            mapRef: undefined
         }
         this.mapCreationCallback = this.mapCreationCallback.bind(this)
         this.bindOnClickCallback = this.bindOnClickCallback.bind(this)
         this.bindOnPanCallback = this.bindOnPanCallback.bind(this)
         this.clearMapMarkersCallback = this.clearMapMarkersCallback.bind(this)
-    }
-
-    componentDidMount() {
-        this.props.commitRendering()
-        this.setState({
-            renderingCommitted: true
-        })
     }
 
     componentWillUnmount() {

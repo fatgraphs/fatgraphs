@@ -35,8 +35,7 @@ class SingleGraphView extends Component {
         this.state = {
             graph: undefined,
             graphConfiguration: undefined,
-            metadataObjects: [],
-            renderingCommitted: false,
+            metadataObjects: []
         }
         this.receiveSingleVertexSearch = this.receiveSingleVertexSearch.bind(this)
     }
@@ -61,10 +60,6 @@ class SingleGraphView extends Component {
         })
     }
 
-
-    shouldComponentUpdate(nextProps, nextState, nextContext) {
-        return !this.state.renderingCommitted
-    }
 
     render() {
         if (this.state.graphConfiguration === undefined) {
@@ -95,11 +90,6 @@ class SingleGraphView extends Component {
 
                     <GraphMap
                         autocompletionTerms={this.state.autocompletionTerms}
-                        commitRendering={() => {
-                            this.setState({
-                                renderingCommitted: true
-                            })
-                        }}
                     />
 
                     <EdgePlots/>
