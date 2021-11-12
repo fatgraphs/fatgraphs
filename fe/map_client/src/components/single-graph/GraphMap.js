@@ -32,7 +32,6 @@ class GraphMap extends React.Component {
         }
         this.mapCreationCallback = this.mapCreationCallback.bind(this)
         this.bindOnClickCallback = this.bindOnClickCallback.bind(this)
-        this.bindOnZoomCallback = this.bindOnZoomCallback.bind(this)
         this.bindOnPanCallback = this.bindOnPanCallback.bind(this)
         this.clearMapMarkersCallback = this.clearMapMarkersCallback.bind(this)
     }
@@ -110,7 +109,17 @@ class GraphMap extends React.Component {
 
 
     mapCreationCallback(map) {
-        this.bindOnZoomCallback(map);
+        map.on("zoomend", (e) => {
+
+            let currentLocation = this.state.mapRef.getCenter();
+
+            this.props.changeUrl({
+                y: String(Math.round(currentLocation.lng)),
+                x: String(Math.round(currentLocation.lat)),
+                z: String(this.state.mapRef.getZoom())
+
+            })
+        });
         this.bindOnClickCallback(map);
         this.bindOnPanCallback(map);
         this.addClearEdgesControl(map);
@@ -148,13 +157,6 @@ class GraphMap extends React.Component {
         ).addTo(map);
     }
 
-    bindOnZoomCallback(map) {
-        let zoomCallback = function () {
-            this.props.changeUrl({z: map.getZoom()})
-        }.bind(this);
-        map.on('zoom', zoomCallback)
-    }
-
     bindOnClickCallback(mapRef) {
 
         function getGraphPosFromMapClick(clickEvent, graphConfiguration) {
@@ -188,13 +190,14 @@ class GraphMap extends React.Component {
             let currentLocation = mapRef.getCenter();
 
             // URL update is delayed to allow the map to autopan when a popup is opened
+            // the autopan feature of popups generate many intermediate pan events
             clearTimeout(this.state.timeout)
             let timeout = setTimeout(() => {
                 this.props.changeUrl({
-                y: String(Math.round(currentLocation.lng)),
-                x: String(Math.round(currentLocation.lat)),
-                z: String(mapRef.getZoom())
-            })
+                    y: String(Math.round(currentLocation.lng)),
+                    x: String(Math.round(currentLocation.lat)),
+                    z: String(mapRef.getZoom())
+                })
             }, 300);
             this.setState({
                 timeout: timeout
