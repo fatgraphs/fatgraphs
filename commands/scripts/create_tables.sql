@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS tg_graphs
 (
     id                             SERIAL UNIQUE PRIMARY KEY,
     graph_name                     text,
+    description                    text,
     graph_category                 int,
     vertices                       bigint,
     edges                          bigint,

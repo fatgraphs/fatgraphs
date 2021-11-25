@@ -15,6 +15,7 @@ class Graph(Base):
     graph_category = Column(Integer(), ForeignKey(GalleryCategory.__table__.c.id))
     vertices = Column(Integer())
     edges = Column(Integer())
+    description = Column(String())
 
     def update(self, changes: GraphInterface):
         for key, val in changes.items():

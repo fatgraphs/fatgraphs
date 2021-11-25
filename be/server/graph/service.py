@@ -21,6 +21,7 @@ class GraphService:
             graph_category=int(graph_to_create['graph_category']),
             vertices=int(graph_to_create['vertices']),
             edges=int(graph_to_create['edges']),
+            description=str(graph_to_create['description'])
         )
         db.add(new_graph)
         db.commit()

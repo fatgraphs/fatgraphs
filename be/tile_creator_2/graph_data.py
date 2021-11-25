@@ -14,6 +14,7 @@ class GraphData:
         self.edge_count = None
         self.graph_name = None
         self.graph_category = None
+        self.description = ''
 
     def set_bounding_square(self, vertex_data):
         min_x_min_y = Point(
@@ -65,3 +66,6 @@ class GraphData:
     def get_pixel_bound(self):
         # the bounds in pixel, depends on the user-specified tile_size
         return self.pixel_space_bound
+
+    def set_description(self, description):
+        self.description = description

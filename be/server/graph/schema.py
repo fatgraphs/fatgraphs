@@ -10,3 +10,4 @@ class GraphSchema(CamelCaseSchema):
     graph_category = fields.Integer()
     vertices = fields.Integer()
     edges = fields.Integer()
+    description = fields.String()

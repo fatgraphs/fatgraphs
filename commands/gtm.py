@@ -4,7 +4,7 @@ os.environ["FLASK_ENV"] = "development"
 # order is important: be.server needs the FLASK_ENV set as above
 sys.path.append(os.path.abspath('..'))
 from be.tile_creator_2.main import main
-from be.configuration import CONFIGURATIONS
+from be.configuration import CONFIGURATIONS, data_folder
 from be.server import SessionLocal
 from be.server.gallery_categories.service import GalleryCategoryService
 
@@ -22,7 +22,7 @@ def extract_cmd_arguments():
     argument_list = full_cmd_arguments[1:]
     short_options = "n:z:"
     long_options = ["csv=", "ts=", "min_t=", "max_t=", "std=", "med_thick=", "max_thick=", "med_size=",
-                   "max_size=", "curvature=", "mean_t=", "gc=", "bg_color="]
+                    "max_size=", "curvature=", "mean_t=", "gc=", "bg_color=", "description="]
     try:
         arguments, values = getopt.getopt(argument_list, short_options, long_options)
         print("Extracted arguments: ", arguments)
@@ -31,7 +31,8 @@ def extract_cmd_arguments():
         sys.exit(2)
     return dict(arguments)
 
-def get_final_configurations(raw_args, graph_name, category_id):
+
+def get_final_configurations(raw_args, graph_name, category_id, description):
     defaults = CONFIGURATIONS['defaults']
     return {
         'graph_name': graph_name,
@@ -48,7 +49,8 @@ def get_final_configurations(raw_args, graph_name, category_id):
         "max_vertex_size": float(raw_args.get("--max_size", defaults["max_vertex_size"])),
         "med_vertex_size": float(raw_args.get("--med_size", defaults["med_vertex_size"])),
         "curvature": float(raw_args.get("--curvature", defaults['edge_curvature'])),
-        "bg_color": raw_args.get("--bg_color", defaults['bg_color'])
+        "bg_color": raw_args.get("--bg_color", defaults['bg_color']),
+        "description": description
     }
 
 
@@ -65,8 +67,14 @@ def format_graph_name(raw_args):
     return graph_name
 
 
-if __name__ == "__main__":
+def read_description_file(description_file):
+    if description_file == None:
+        return ''
+    with open(description_file, 'r') as f:
+        return f.readlines()
 
+
+if __name__ == "__main__":
     raw_args = extract_cmd_arguments()
 
     print("%-40s %s" % ("PROCESSING STEP", "TIME"))
@@ -74,7 +82,15 @@ if __name__ == "__main__":
     graph_category_id = resolve_graph_category(raw_args)
     graph_name = format_graph_name(raw_args)
 
-    configurations = get_final_configurations(raw_args, graph_name, graph_category_id)
+    description = read_description_file(
+        raw_args.get(
+            "--description",
+            os.path.join(data_folder, "default_description.html")
+        )
+    )
+    description = "".join(description)
+
+    configurations = get_final_configurations(raw_args, graph_name, graph_category_id, description)
 
     main(configurations)
 

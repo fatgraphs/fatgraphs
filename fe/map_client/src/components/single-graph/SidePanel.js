@@ -1,5 +1,7 @@
 import * as React from "react";
-import Fillable from "../../reactBlueTemplate/src/pages/tables/static/Fillable"; import {Table} from "reactstrap"; import {truncateEth} from "../../utils/Utils";
+import Fillable from "../../reactBlueTemplate/src/pages/tables/static/Fillable";
+import {Table} from "reactstrap";
+import {truncateEth} from "../../utils/Utils";
 
 class SidePanel extends React.Component {
 

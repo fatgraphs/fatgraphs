@@ -50,3 +50,6 @@ class GtmArgs():
     def get_source_file(self):
         return self.configurations["source"]
 
+    def get_description(self):
+        return self.configurations['description']
+

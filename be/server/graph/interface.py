@@ -9,11 +9,13 @@ class GraphInterface(TypedDict, total=False):
     graph_category: int
     vertices: int
     edges: int
+    description: str
 
     @staticmethod
     def from_graph_data(graph_data: GraphData):
         result = GraphInterface(graph_name=graph_data.graph_name,
                                 graph_category=graph_data.graph_category,
                                 vertices=graph_data.vertex_count,
-                                edges=graph_data.vertex_count)
+                                edges=graph_data.edge_count,
+                                description=graph_data.description)
         return result

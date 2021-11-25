@@ -68,6 +68,7 @@ def main(configurations):
     graph_data.set_graph_category(gtm_args)
     graph_data.set_edge_count(edge_data)
     graph_data.set_vertex_count(vertex_data)
+    graph_data.set_description(gtm_args.get_description())
 
     with SessionLocal() as db:
         persisted_graph = GraphService.create(GraphInterface.from_graph_data(graph_data), db)
