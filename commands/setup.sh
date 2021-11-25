@@ -29,15 +29,15 @@ psql -U postgres -h 127.0.0.1 -d tg_main -c "CREATE EXTENSION IF NOT EXISTS POST
 # create tables
 PGPASSWORD=$tokengallerist_password psql -U tokengallerist -h 127.0.0.1 -d tg_main -f scripts/create_tables.sql
 
-# load labels
-LABELS_HOME=$(python ./scripts/print_labels_home.py)
-stringPahts=($(python ./scripts/print_account_type_home.py))
-eval "ACCOUNT_TYPE_HOMES=($stringPahts)"
-
-echo "Loading labels located at: $LABELS_HOME ..."
-PGPASSWORD=$tokengallerist_password psql -U tokengallerist -h 127.0.0.1 -d tg_main -v v1="'$LABELS_HOME'" -f scripts/load_labels.sql
-
-echo "Loading account types located at ${ACCOUNT_TYPE_HOMES[1]} and ${ACCOUNT_TYPE_HOMES[2]}..."
-PGPASSWORD=$tokengallerist_password psql -U tokengallerist -h 127.0.0.1 -d tg_main -v v1=\'${ACCOUNT_TYPE_HOMES[1]}\' -v v2=\'"${ACCOUNT_TYPE_HOMES[2]}"\' -f scripts/load_account_types.sql
-
-echo 'Done'
+## load labels
+#LABELS_HOME=$(python ./scripts/print_labels_home.py)
+#stringPahts=($(python ./scripts/print_account_type_home.py))
+#eval "ACCOUNT_TYPE_HOMES=($stringPahts)"
+#
+#echo "Loading labels located at: $LABELS_HOME ..."
+#PGPASSWORD=$tokengallerist_password psql -U tokengallerist -h 127.0.0.1 -d tg_main -v v1="'$LABELS_HOME'" -f scripts/load_labels.sql
+#
+#echo "Loading account types located at ${ACCOUNT_TYPE_HOMES[1]} and ${ACCOUNT_TYPE_HOMES[2]}..."
+#PGPASSWORD=$tokengallerist_password psql -U tokengallerist -h 127.0.0.1 -d tg_main -v v1=\'${ACCOUNT_TYPE_HOMES[1]}\' -v v2=\'"${ACCOUNT_TYPE_HOMES[2]}"\' -f scripts/load_account_types.sql
+#
+#echo 'Done'
