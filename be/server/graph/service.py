@@ -14,13 +14,13 @@ class GraphService:
         return db.query(Graph).get(graph_id)
 
     @staticmethod
-    def create(graph_to_create: GraphInterface, db):
+    def create(graph_to_create: GraphInterface, db) -> Graph:
         assert 'gallery_categories' in db.bind.engine.table_names()
         new_graph = Graph(
             graph_name=graph_to_create['graph_name'],
             graph_category=int(graph_to_create['graph_category']),
-            vertices=graph_to_create['vertices'],
-            edges=graph_to_create['edges'],
+            vertices=int(graph_to_create['vertices']),
+            edges=int(graph_to_create['edges']),
         )
         db.add(new_graph)
         db.commit()

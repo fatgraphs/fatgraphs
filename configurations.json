@@ -51,5 +51,21 @@
   "edge_curvature": 0.1,
   "out_edge_color": "#ED8417",
   "in_edge_color": "#DDE93F",
-  "tile_size": 256
+  "tile_size": 256,
+  "defaults": {
+    "tile_size": 256,
+    "zoom_levels": 2,
+    "edge_curvature": 0.1,
+    "out_edge_color": "#ED8417",
+    "in_edge_color": "#DDE93F",
+    "min_transparency": 0,
+    "max_transparency":  0.1,
+    "tile_based_mean_transparency": 0.5,
+    "std_transparency_as_percentage": 0.25,
+    "max_edge_thickness": 2,
+    "med_edge_thickness": 0.25,
+    "max_vertex_size": 20,
+    "med_vertex_size": 1,
+    "bg_color": "black"
+  }
 }

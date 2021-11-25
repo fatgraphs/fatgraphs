@@ -27,10 +27,10 @@ class GraphConfigurationService:
             curvature=graph_to_create['curvature'],
             bg_color=graph_to_create['bg_color'],
             source=graph_to_create['source'],
-            median_pixel_distance=graph_to_create['median_pixel_distance'],
-            min=graph_to_create['min'],
-            max=graph_to_create['max'],
-            graph=graph_to_create['graph'],
+            median_pixel_distance=float(graph_to_create['median_pixel_distance']),
+            min=float(graph_to_create['min']),
+            max=float(graph_to_create['max']),
+            graph=int(graph_to_create['graph']),
         )
 
         db.add(new_graph_configuration)

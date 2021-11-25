@@ -1,4 +1,6 @@
 import math
+import time
+
 import pandas as pd
 import geopandas as gpd
 import cv2
@@ -12,7 +14,7 @@ from be.configuration import SRID
 ASCII_N = 110
 
 
-def shift_and_scale(originalValues, targetMedian, targetMax, MINIMUM = 0.000001):
+def shift_and_scale(originalValues, targetMedian, targetMax, MINIMUM=0.000001):
     """
     Scales a list of values to a new range.
     :param originalValues: list-like object of values that we intend to scale to a different range
@@ -56,7 +58,7 @@ def gauss(x, mean, std, minOut=0, maxOut=1):
     return (maxOut - minOut) * math.e ** ((-1 * ((x - mean) ** 2.)) / (2 * (std ** 2.))) + minOut
 
 
-def calculateDiagonalSquareOfSide(side):
+def calculate_diagonal_square_of_side(side):
     """
     :param side: a square with this side length
     :return: the length of the diagonal
@@ -238,3 +240,20 @@ def make_geoframe(parsed_obj):
     geo_frame = geo_frame.rename_geometry('pos')
     geo_frame['pos'] = geo_frame['pos'].apply(lambda x: WKTElement(x.wkt, srid=SRID))
     return geo_frame
+
+
+def timeit(name_of_step):
+    """
+    decorator to time execution of function
+    """
+    def timeit_inner(func):
+        def timed(*args, **kwargs):
+            ts = time.time()
+            result = func(*args, **kwargs)
+            te = time.time()
+            print('%-40s %s' % (name_of_step, str(round((te - ts), 3)) + ' s'))
+            return result
+
+        return timed
+
+    return timeit_inner
