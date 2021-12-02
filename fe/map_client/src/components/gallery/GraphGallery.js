@@ -2,8 +2,11 @@ import React, {Component} from 'react';
 import {fetchGraphs} from "../../APILayer";
 import {MyContext} from "../../Context";
 import GraphList from "./GraphList";
-import TagListGallery from "../tagList/tagListGallery"; import {withRouter} from "react-router-dom";
+import TagListGallery from "../tagList/tagListGallery";
+import {withRouter} from "react-router-dom";
 import LoadingComponent from "../LoadingComponent";
+import './graphGalleryContainer.scss';
+import Sliders from "./Sliders";
 
 class Gallery extends Component {
 
@@ -17,39 +20,67 @@ class Gallery extends Component {
         super(props);
         this.state = {
             availableGraphs: undefined,
-            searchTerms: []
+            graphFilteringObject: {
+                searchTerms: [],
+                edges: [],
+                vertices: []
+            }
         }
     }
 
     async componentDidMount() {
+
         let graphs = await fetchGraphs(this.props.match.params.galleryCategory)
-                this.setState({
-                    availableGraphs: graphs
-                })
+        this.setState({
+            availableGraphs: graphs
+        })
     }
 
     async componentDidUpdate(prevProps) {
-        if(prevProps.match.params.galleryCategory !== this.props.match.params.galleryCategory){
+
+        if (prevProps.match.params.galleryCategory !== this.props.match.params.galleryCategory) {
             let graphs = await fetchGraphs(this.props.match.params.galleryCategory)
-                this.setState({
-                    availableGraphs: graphs
-                })
-            }
+            this.setState({
+                availableGraphs: graphs
+            })
+        }
     }
 
 
     render() {
         return this.state.availableGraphs ?
-            <div className={`p-3`}>
+            <div className={'graph-gallery-container'}>
+
 
                 <TagListGallery
                     onChange={(vals) => {
-                        this.setState({searchTerms: vals})
+                        this.setState({
+                                graphFilteringObject: {
+                                    ...this.state.graphFilteringObject,
+                                    searchTerms: vals
+                                }
+                            }
+                        )
                     }}/>
+
+
+                <Sliders
+                    updateCallback={(rangeDict) => {
+                        console.log(rangeDict)
+                        this.setState({
+                                graphFilteringObject: {
+                                    ...this.state.graphFilteringObject,
+                                    ...rangeDict
+                                }
+                            }
+                        )
+                    }}/>
+
 
                 <GraphList
                     availableGraphs={this.state.availableGraphs}
-                    filterTerms={this.state.searchTerms}/>
+                    filter={this.state.graphFilteringObject}
+                />
             </div> :
             <LoadingComponent/>
     }

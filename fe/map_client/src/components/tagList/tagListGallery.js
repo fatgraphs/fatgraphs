@@ -22,7 +22,7 @@ class TagListGallery extends Component {
         return (
             <div className={'d-flex flex-row flex-wrap'}>
                 <SearchBar
-                    placeholder={"Search graphs"}
+                    placeholder={"Search graphs by name"}
                     searchCallback={this.add}/>
                     {this.state.tags.map((tag, i) =>
                         <TagElement

@@ -1,5 +1,5 @@
 import * as React from "react";
-import Fillable from "../../reactBlueTemplate/src/pages/tables/static/Fillable";
+import Fillable from "../../reactBlueTemplate/pages/tables/static/Fillable";
 import {Table} from "reactstrap";
 import {truncateEth} from "../../utils/Utils";
 

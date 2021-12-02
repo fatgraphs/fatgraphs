@@ -16,7 +16,7 @@ import CopyGtmCommand from "./CopyGtmCommand";
 import s from './singleGraph.module.scss';
 import TagListGraph from "../tagList/tagListGraph";
 import {toMapCoordinate} from "../../utils/CoordinatesUtil";
-import Fillable from "../../reactBlueTemplate/src/pages/tables/static/Fillable";
+import Fillable from "../../reactBlueTemplate/pages/tables/static/Fillable";
 import UrlComposer from "../../utils/UrlComposer";
 import {IconsLegend} from "./IconsLegend";
 import EdgePlots from "./EdgePlots";

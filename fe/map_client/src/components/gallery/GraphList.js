@@ -10,6 +10,7 @@ import * as PropTypes from "prop-types";
 class GraphList extends React.Component {
     constructor(props) {
         super(props);
+        this.applyFilter = this.applyFilter.bind(this);
     }
 
     parseDate(date) {
@@ -25,14 +26,7 @@ class GraphList extends React.Component {
     }
 
     render() {
-        let filteredGraphs = this.props.filterTerms.length > 0
-            ? this.props.availableGraphs.filter(
-                (grap) => this.props.filterTerms.some(
-                    (filterTerm) => {
-                        return grap.graphName.toLowerCase().includes(filterTerm)
-                    })
-            )
-            : this.props.availableGraphs
+        let filteredGraphs = this.applyFilter();
 
         return (
             <div className={s.root}>
@@ -63,10 +57,25 @@ class GraphList extends React.Component {
             </div>
         );
     }
+
+    applyFilter() {
+        let byname = this.props.filter.searchTerms.length > 0
+            ? this.props.availableGraphs.filter(
+            (graph) => this.props.filter.searchTerms.some(
+                (filterTerm) => {
+                    console.log(graph)
+                    return graph.graphName.toLowerCase().includes(filterTerm)
+                })
+            )
+            : this.props.availableGraphs
+        let byvertex = byname.filter(g => g.vertices >= this.props.filter.vertices[0] && g.vertices <= this.props.filter.vertices[1])
+        let byedge = byvertex.filter(g => g.edges >= this.props.filter.edges[0] && g.edges <= this.props.filter.edges[1])
+        return byedge;
+    }
 }
 
 GraphList.propType = {
-    filterTerms: PropTypes.array
+    filter: PropTypes.object
 }
 
 export default withRouter(GraphList);

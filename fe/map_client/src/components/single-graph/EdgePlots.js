@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import s from "./singleGraph.module.scss";
-import Fillable from "../../reactBlueTemplate/src/pages/tables/static/Fillable";
+import Fillable from "../../reactBlueTemplate/pages/tables/static/Fillable";
 import UrlComposer from "../../utils/UrlComposer";
 import {withRouter} from "react-router-dom";
 import {connect} from "react-redux";

@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {Form, FormGroup, Input, InputGroup, InputGroupAddon, InputGroupText} from "reactstrap";
-import SearchIcon from "../../reactBlueTemplate/src/components/Icons/HeaderIcons/SearchIcon";
+import SearchIcon from "../../reactBlueTemplate/components/Icons/HeaderIcons/SearchIcon";
 
 import s from "./SearchBar.module.scss";
 import PropTypes from "prop-types";

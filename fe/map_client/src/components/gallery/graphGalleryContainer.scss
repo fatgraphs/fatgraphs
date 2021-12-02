@@ -1,0 +1,9 @@
+.graph-gallery-container {
+
+  padding: 3rem 1rem 1rem;
+
+  // 865 is the width when the title "The token gallery"  warps
+  @media (max-width: 865px) {
+    padding: 6rem 1rem 1rem;
+  }
+}

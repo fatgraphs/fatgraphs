@@ -1,5 +1,5 @@
 {
-  "is_labelling_enabled": "true",
+  "is_labelling_enabled": "false",
   "endpoints": {
     "base": "http://127.0.0.1:5000/tokengallery/",
     "availableGraphs": "graph/{galleryCategory}",

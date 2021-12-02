@@ -1,0 +1,53 @@
+@import './src/reactBlueTemplate/styles/variables';
+
+.slider-container {
+  padding: 1rem;
+  //margin-top: 1rem;
+  margin-bottom: 2rem;
+}
+
+$bar_height: .75rem;
+$tooltipHeight: 2rem;
+
+.tg-slider {
+  width: 65%;
+  height: $bar_height;
+
+  .noUi-handle {
+    box-shadow: none;
+    height: $bar_height + $bar_height/5;
+    width: $bar_height + $bar_height/5;
+    top: - $bar_height/8;
+    right: - $bar_height/2; /* half the width */
+    border-radius: $bar_height;
+    background-color: $violet_deep;
+  }
+
+  .noUi-connect {
+    // Color portion in range
+    background-color: $gray-light;
+  }
+
+  .noUi-connects {
+    // Color of whole slider
+    //background-color: $violet_deep;
+  }
+
+  .noUi-handle::before, .noUi-handle::after {
+    display: none;
+  }
+
+  .noUi-tooltip {
+    //transform: translate(-50%, 0);
+    padding: 0px;
+    left: 50%;
+    bottom: - $tooltipHeight;
+    height: $tooltipHeight;
+    line-height: $tooltipHeight;
+  }
+}
+
+.tg-slider:not(:last-child) {
+  margin-bottom: 3rem;
+
+}

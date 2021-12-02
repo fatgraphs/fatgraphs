@@ -4,7 +4,7 @@ import {HashRouter, Route, Switch, Redirect} from "react-router-dom";
 import About from "./components/about/About";
 import SingleGraphView from "./components/single-graph/SingleGraphView";
 import NavBar from "./components/navbar/NavBar";
-import './reactBlueTemplate/src/styles/theme.scss';
+import './reactBlueTemplate/styles/theme.scss';
 import './main.css'
 import {fetchCategories} from "./redux/galleryCategoriesSlice";
 import {connect} from "react-redux";
