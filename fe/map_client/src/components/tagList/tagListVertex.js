@@ -43,7 +43,11 @@ class TagListVertex extends Component {
                     .map((metaObject, i) =>
                         <TagElement
                             key={i}
-                            closeCallback={this.removeWrapper(i, metaObject)}>
+                            closeCallback={this.props.isLabellingEnabled === 'true' ?
+                                this.removeWrapper(i, metaObject) :
+                                () => {
+                                    console.log('labelling is disabled, tags cannot be removed')
+                                }}>
                             <div className={'d-flex mr-1'}>{TYPE_ICONS[metaObject.type]}</div>
                             <div>{metaObject.value}</div>
                         </TagElement>)}
