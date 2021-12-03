@@ -1,11 +1,9 @@
 import React, {Component} from 'react';
-import {withRouter} from "react-router-dom";
 import {
     fetchAutocompletionTerms,
     fetchEdges,
     fetchGraph, fetchGraphConfiguration,
     fetchMatchingVertices,
-    getGalleryCategories
 } from "../../APILayer";
 import _ from 'underscore';
 import {MyContext} from "../../Context";
@@ -17,12 +15,10 @@ import s from './singleGraph.module.scss';
 import TagListGraph from "../tagList/tagListGraph";
 import {toMapCoordinate} from "../../utils/CoordinatesUtil";
 import Fillable from "../../reactBlueTemplate/pages/tables/static/Fillable";
-import UrlComposer from "../../utils/UrlComposer";
 import {IconsLegend} from "./IconsLegend";
 import EdgePlots from "./EdgePlots";
 import LoadingComponent from "../LoadingComponent";
-import {getQueryParam, updateQueryParam} from "../../utils/Utils";
-import UrlManager from "../urlManager";
+import {updateBrowserUrlQueryParam} from "../../utils/Utils";
 import {graphSelected} from "../../redux/selectedGraphSlice";
 import {connect} from "react-redux";
 
@@ -142,7 +138,7 @@ class SingleGraphView extends Component {
     }
 
     receiveSingleVertexSearch(vertex) {
-        updateQueryParam(this.props, {vertex: vertex})
+        updateBrowserUrlQueryParam(this.props, {vertex: vertex})
     }
 }
 

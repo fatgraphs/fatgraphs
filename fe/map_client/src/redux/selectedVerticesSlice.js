@@ -81,7 +81,7 @@ export const selectedVerticesSlice = createSlice({
             state.vertices = state.vertices.filter(e => !e.types.includes(action.payload.type) || action.payload.type === undefined)
             state.vertices = state.vertices.filter(e => !e.labels.includes(action.payload.label) || action.payload.label === undefined)
             state.vertices = state.vertices.filter(e => !e.vertex === action.payload.vertex || action.payload.vertex === undefined)
-            state.vertices = state.vertices.filter(e => e.persistOnNewClick || action.payload.persistOnNewClick === undefined)
+            state.vertices = state.vertices.filter(e => e.persistOnNewClick ) // || action.payload.persistOnNewClick === undefined
         },
         updatePersistOnNewClick: (state, action) => {
             state.vertices = state.vertices.map(v => {

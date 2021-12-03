@@ -44,12 +44,36 @@ export function hashVertexToInt(vertex){
     return byteArray.reduceRight((a, b)=>a+b)
 }
 
-export function updateQueryParam(props, newQueryParam){
+export function updateBrowserUrlQueryParam(props, newQueryParam, push = true) {
+
+    // when  navigating back we don't want to push  the same path, even without this check react-router won't allow us to
+    // push an existing path; I want to prevent warning messages on the console
+    let isPathAlreadyPushed = true;
+    for (const key of Object.keys(newQueryParam)) {
+        isPathAlreadyPushed &= newQueryParam[key] === getQueryParam(props, key)
+    }
+
+    if(isPathAlreadyPushed){
+        return;
+    }
+
+    console.log(`${push ? 'pushing' : 'replacing'} url xyz to history: `, newQueryParam)
     const queryParams = qs.parse(props.location.search);
-    const newQueries = { ...queryParams, ...newQueryParam};
-    props.history.push({ search: qs.stringify(newQueries) })
+    const newQueries = {...queryParams, ...newQueryParam};
+    if (push) {
+        props.history.push({search: qs.stringify(newQueries)})
+    } else {
+        // doesn't create a new state (back-arrow will ignore it)
+        props.history.replace({search: qs.stringify(newQueries)})
+    }
 }
 
-export function getQueryParam(props, queryParam){
+export function getQueryParam(props, queryParam) {
     return new URLSearchParams(props.location.search).get(queryParam);
+}
+
+export function areAlmostIdentical(urlNow, oldUrl) {
+    return Math.abs(urlNow['x'] - oldUrl['x']) <= 1
+        && Math.abs(urlNow['y'] - oldUrl['y']) <= 1
+        && urlNow['z'] === oldUrl['z'];
 }

@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import SearchBar from "../searchBar/SearchBar";
-import {func, bool} from "prop-types";
+import {func, string} from "prop-types";
 import './tagBox.scss'
 import './closeIcon.scss'
 import './closeBox.scss'
@@ -126,7 +126,7 @@ class TagListVertex extends Component {
 }
 
 TagListVertex.propTypes = {
-    isLabellingEnabled: bool.isRequired,
+    isLabellingEnabled: string.isRequired,
     addTag: func.isRequired,
     deleteTag: func.isRequired
 }

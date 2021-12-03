@@ -3,7 +3,7 @@ import L from 'leaflet';
 import UrlComposer from "../../utils/UrlComposer";
 import {toGraphCoordinate} from "../../utils/CoordinatesUtil";
 import {MapContainer, TileLayer} from 'react-leaflet'
-import {generateLargeRandom, hashVertexToInt} from "../../utils/Utils";
+import {areAlmostIdentical, generateLargeRandom, getQueryParam, hashVertexToInt} from "../../utils/Utils";
 import s from './singleGraph.module.scss'
 import "./circleMarker.scss";
 import VertexMarker from "./vertexMarker/VertexMarker";
@@ -14,11 +14,19 @@ import makeCustomControl from "./customMapControl/customMapControl";
 import {func} from "prop-types";
 import {connect} from "react-redux";
 
-import {clear, fetchClosestVertex, pop, removeVertices, togglePersistClick, updateFlyTo} from "../../redux/selectedVerticesSlice";
-import {changeUrl} from "../../redux/urlSlice";
+import {
+    clear,
+    fetchClosestVertex,
+    pop,
+    removeVertices,
+    togglePersistClick,
+    updateFlyTo
+} from "../../redux/selectedVerticesSlice";
+import {changeUrl, resetUrl} from "../../redux/urlSlice";
 import {graphMounted} from "../../redux/selectedGraphSlice";
 import _ from 'underscore';
 import UrlManager from "../urlManager";
+import {withRouter} from "react-router-dom";
 
 let configs = require('../../../../../configurations.json');
 
@@ -27,16 +35,19 @@ class GraphMap extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            mapRef: undefined
+            mapRef: undefined,
         }
         this.mapCreationCallback = this.mapCreationCallback.bind(this)
         this.bindOnClickCallback = this.bindOnClickCallback.bind(this)
         this.bindOnPanCallback = this.bindOnPanCallback.bind(this)
         this.clearMapMarkersCallback = this.clearMapMarkersCallback.bind(this)
+        this.panMapBasedOnUrl = this.panMapBasedOnUrl.bind(this);
+        this.getLocationAndZoom = this.getLocationAndZoom.bind(this);
     }
 
     componentWillUnmount() {
         this.props.clear()
+        this.props.resetUrl()
     }
 
     async componentDidUpdate(prevProps, prevState, snapshot) {
@@ -50,9 +61,17 @@ class GraphMap extends React.Component {
             this.props.updateFlyTo(lastVertexMarker)
         }
 
-        if (this.state.mapRef && ! _.isEqual(prevProps.url, this.props.url)) {
-            this.state.mapRef.setView([this.props.url.x, this.props.url.y], this.props.url.z);
+        if (this.state.mapRef &&
+            !_.isEqual(this.getLocationAndZoom(), (({x, y, z}) => ({x, y, z}))(this.props.url))
+        && !_.isEqual(this.props.url, prevProps.url)) {
+                this.panMapBasedOnUrl()
+
         }
+
+    }
+
+    panMapBasedOnUrl() {
+        this.state.mapRef.setView([this.props.url.x, this.props.url.y], this.props.url.z);
     }
 
     render() {
@@ -122,7 +141,7 @@ class GraphMap extends React.Component {
             mapRef: map
         })
 
-        map.toJSON = () => ({hidden: 'to help redux devtools :)'})
+        map.toJSON = () => ({hidden: 'Serialisation of map object is prevented otherwise redux-devtool would crash'})
         this.props.graphMounted({
             graphMapRef: map
         })
@@ -179,24 +198,26 @@ class GraphMap extends React.Component {
 
     bindOnPanCallback(mapRef) {
         let panCallback = function () {
-            let currentLocation = mapRef.getCenter();
+            let currentLocationAndZoom = this.getLocationAndZoom();
+            if (areAlmostIdentical(currentLocationAndZoom, this.props.url)) {
+                // avoid pushing a url history state for a new url which is very similar to the previous one
+                return;
+            }
+            this.props.changeUrl(currentLocationAndZoom)
 
-            // URL update is delayed to allow the map to autopan when a popup is opened
-            // the autopan feature of popups generate many intermediate pan events
-            clearTimeout(this.state.timeout)
-            let timeout = setTimeout(() => {
-                this.props.changeUrl({
-                    y: String(Math.round(currentLocation.lng)),
-                    x: String(Math.round(currentLocation.lat)),
-                    z: String(mapRef.getZoom())
-                })
-            }, 300);
-            this.setState({
-                timeout: timeout
-            })
         }.bind(this);
 
         mapRef.on('moveend', panCallback);
+    }
+
+    getLocationAndZoom() {
+        const center = this.state.mapRef.getCenter();
+        let currentLocationAndZoom = {
+            y: String(Math.round(center.lng)),
+            x: String(Math.round(center.lat)),
+            z: String(this.state.mapRef.getZoom())
+        };
+        return currentLocationAndZoom;
     }
 
     clearMapMarkersCallback() {
@@ -206,7 +227,6 @@ class GraphMap extends React.Component {
 
 GraphMap
     .propTypes = {
-    clearSearches: func.isRequired
 };
 GraphMap
     .defaultProps = {};
@@ -221,13 +241,14 @@ let mapStateToProps = (store) => {
     }
 };
 
-export default connect(mapStateToProps, {
+export default withRouter(connect(mapStateToProps, {
     togglePersistClick,
     clear,
+    resetUrl,
     pop,
     removeVertices,
     updateFlyTo,
     fetchClosestVertex,
     changeUrl,
     graphMounted
-})(GraphMap);
+})(GraphMap));
