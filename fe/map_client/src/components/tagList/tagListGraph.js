@@ -51,7 +51,7 @@ class TagListGraph extends Component {
                     searchCallback={(v) => {
                         this.setState({currentInput: v});
                         if (v.slice(0, 2) === '0x') {
-                            this.onAutocompletionElementClick({type: 'eth', value: v, fetchEdges: true, flyTo: true})
+                            this.onAutocompletionElementClick({type: 'vertex', value: v, fetchEdges: true, flyTo: true})
                             this.setState({currentInput: ""});
                             this.props.sendSingleVertexSearch(v);
                         }
@@ -106,10 +106,11 @@ class TagListGraph extends Component {
 
     onAutocompletionElementClick(e) {
         let metadataObjects = [...this.state.metadataObjects, e];
+        console.log("metadataObjects ", metadataObjects)
         this.props.fetchVertices({
             metadataObject: e,
-            fetchEdges: false,
-            flyTo: false,
+            fetchEdges: e['fetchEdges'] || false,
+            flyTo: e['flyTo'] || false,
             persistOnNewClick: true,
         })
         this.setState({metadataObjects: metadataObjects, showAutocompletion: false})
