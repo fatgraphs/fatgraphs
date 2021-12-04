@@ -24,12 +24,6 @@ class TransparencyCalculator:
         """
         self.side_graph_space = graph_data.graph_space_bound.get_side()
         self.gtm_args = gtm_args
-        # self.tileSize = configurations['tile_size']
-        # self.zoomLevels = configurations['zoom_levels']
-        # self.std = configurations['std_transparency_as_percentage']
-        # self.tileBasedMean = configurations["tile_based_mean_transparency"]
-        # self.minT = configurations['min_transparency']
-        # self.maxT = configurations['max_transparency']
 
     @timeit("Calculating edge transparencies")
     def calculateEdgeTransparencies(self, edgeLengths):

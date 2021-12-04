@@ -31,7 +31,6 @@ class ShapeGenerator:
         vertex_frame = ShapeGenerator.reduce(vertex_data)
         vertex_frame = ShapeGenerator.merge(vertex_frame)
         vertex_frame = ShapeGenerator.map(vertex_frame)
-        # vertex_frame = cudf.DataFrame.from_pandas(vertex_frame)
 
         og_vertex_data.cudf_frame = og_vertex_data.cudf_frame.merge(vertex_frame[['vertex', 'code']], how='left')
 
@@ -76,10 +75,7 @@ class ShapeGenerator:
             .agg({'code': 'max',
                   'icon': ShapeGenerator.longestFilename}) \
             .reset_index()
-        # vertex_frame = vertex_frame.groupby(['vertex'], sort=False) \
-        #     .agg(code=pd.NamedAgg(column='code', aggfunc='max'),
-        #          icon=pd.NamedAgg(column='icon', aggfunc=ShapeGenerator.longestFilename), ) \
-        #     .reset_index()
+
         return vertex_frame
 
     def augment_vertex_data_w_labels(self, vertex_data):

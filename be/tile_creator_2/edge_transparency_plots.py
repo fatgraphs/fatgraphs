@@ -40,7 +40,6 @@ class EdgeTransparencyPlots:
                            " | Square diagonal: " + str(round(longestTheoreticalEdgeGraph, 2)))
             hist = ax1.hist(self.edgeLengths.get(), bins=25, color=color, range=(0, longestTheoreticalEdgeGraph))
             ax1.set_xlim(0, longestTheoreticalEdgeGraph)
-            # ax1.xaxis.set_minor_locator(MultipleLocator(5))
             return max(list(map(lambda a : a.get_height(), hist[2])))
 
         def doLeftY():
@@ -50,7 +49,6 @@ class EdgeTransparencyPlots:
         def doUpperX(height_highest_bar):
             xPixelDistance = ax1.twiny()
             xPixelDistance.set_xlabel("Edge Len Pixel")
-            # x_pixel_distance.set_xlim(ax1.get_xlim())
             pixelLengthOfGraphSide = (self.tileSize * (2 ** zoomLevel))
             newTicks = list(map(lambda tick: int(tick * pixelLengthOfGraphSide / self.sideGraphSpace),
                                  ax1.get_xticks()))
@@ -62,15 +60,12 @@ class EdgeTransparencyPlots:
 
             xPixelDistance.set_xlim([0, longestTheoreticalEdgePx * (2 ** zoomLevel)])
             xPixelDistance.tick_params(axis='x', labelcolor=color)
-            # x_pixel_distance.xaxis.set_minor_locator(MultipleLocator(10))
 
         def doRightY():
             yyy = ax1.twinx()  # instantiate a second axes that shares the same x-axis
             color = 'tab:blue'
             yyy.set_ylabel('Transparency', color=color)  # we already handled the x-label with ax1
             yyy.scatter(self.edgeLengths.get(), self.edgeTransparencies[zoomLevel].values, color=color)
-            # where = int(np.where(y == max(y))[0][0])
-            # yyy.axvline(x=x[where], ymin=0, ymax=max(edge_lengths))
             mean = np.mean(self.edgeTransparencies[zoomLevel])
             yyy.axvline(x=mean, ymin=0, ymax=max(self.edgeLengths.get()), color=color)
             yyy.tick_params(axis='y', labelcolor=color)

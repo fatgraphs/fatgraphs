@@ -16,8 +16,6 @@ class EdgeData():
         self.transparencies = None
 
     def set_cudf_frame(self, datasource: DataSource, vertex_data: VertexData):
-        # add index as a new column
-        # vertex_id_mapping[CONFIGURATIONS['vertex_internal_id']] = vertex_id_mapping.index
 
         # TODO refactor
         vertex_to_id_source = vertex_data.cudf_frame \
@@ -36,9 +34,6 @@ class EdgeData():
                                                                  internal_id("target")])
         source_target_amount = source_target_amount.reset_index(drop=True)
         self.cudf_frame = source_target_amount
-
-    # def populate_source_target_amount_cudf(self):
-    #     self.source_target_amount_cudf = cudf.DataFrame.from_pandas(self.source_target_amount)
 
     def set_ids_to_position(self, vertex_data):
         src = self._join_positions('source', vertex_data.cudf_frame, {'x': 'source_x',

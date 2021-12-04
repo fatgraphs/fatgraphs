@@ -26,17 +26,11 @@ class TilesRenderer:
 
     @timeit("Rendering the tiles")
     def render_graph(self):
-        # rgba = [[1.0] * len(self.edgeTransparencies[0])] * 4
-
         self.tiles_to_render = functools.reduce(lambda a, b: a + b, map(lambda zoom_level : 4 ** zoom_level, range(0, self.zoom_levels())))
 
         for zoom_level in range(0, self.zoom_levels()):
             vertex_sizes = deepcopy(self.gt_graph.get_vertex_sizes())
             edge_sizes = deepcopy(self.gt_graph.get_edge_thicknesses())
-
-            # rgba[3] = list(self.edgeTransparencies[zoomLevel].to_numpy())
-            # edgeColors = self.gtGraph.edgeTransparencies[zoomLevel]
-            # edgeColors.set_2d_array(np.array(rgba))
 
             tile_count_this_zoom = 4 ** zoom_level # 1 tile --> 4 tiles --> 16 tiles ...
             divide_by = int(math.sqrt(tile_count_this_zoom))
