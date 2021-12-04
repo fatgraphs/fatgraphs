@@ -20,7 +20,7 @@ class UrlManager extends Component {
             lastQueryParams: {}
         }
         this.browserUrlChangeCallback = this.browserUrlChangeCallback.bind(this);
-        this.setDefaultQueryParamsIfEmpty = this.setDefaultQueryParamsIfEmpty.bind(this);
+        this.considerInitialUrlParams = this.considerInitialUrlParams.bind(this);
         this.fetchUrlEncodedVertexAtStartup = this.fetchUrlEncodedVertexAtStartup.bind(this);
         this.fetchUrlEncodedVertexAtRunTime = this.fetchUrlEncodedVertexAtRunTime.bind(this);
     }
@@ -32,7 +32,7 @@ class UrlManager extends Component {
     componentDidMount() {
         window.onhashchange = this.browserUrlChangeCallback
         this.fetchUrlEncodedVertexAtStartup();
-        this.setDefaultQueryParamsIfEmpty();
+        this.considerInitialUrlParams();
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
@@ -92,9 +92,10 @@ class UrlManager extends Component {
         }
     }
 
-    setDefaultQueryParamsIfEmpty() {
+    considerInitialUrlParams() {
         let isEmptyQueryParams = Object.values(this.getCurrentQueryParams()).every(e => !e);
-        if (isEmptyQueryParams) {
+
+        function setDefaultQueryParams() {
             let half_tile = this.props.graphConfiguration.tileSize / 2;
             updateBrowserUrlQueryParam(this.props, {
                 x: String(-1 * half_tile),
@@ -102,6 +103,13 @@ class UrlManager extends Component {
                 z: '0',
             }, false)
         }
+
+        if (isEmptyQueryParams) {
+            setDefaultQueryParams.call(this);
+        } else {
+            this.props.changeUrl(this.getCurrentQueryParams())
+        }
+
     }
 
     fetchUrlEncodedVertexAtRunTime() {
