@@ -95,9 +95,10 @@ class UrlManager extends Component {
     setDefaultQueryParamsIfEmpty() {
         let isEmptyQueryParams = Object.values(this.getCurrentQueryParams()).every(e => !e);
         if (isEmptyQueryParams) {
+            let half_tile = this.props.graphConfiguration.tileSize / 2;
             updateBrowserUrlQueryParam(this.props, {
-                x: '-128',
-                y: '128',
+                x: String(-1 * half_tile),
+                y: String(half_tile),
                 z: '0',
             }, false)
         }

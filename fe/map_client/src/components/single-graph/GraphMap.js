@@ -11,7 +11,6 @@ import '@elfalem/leaflet-curve'
 import Fullscreen from 'react-leaflet-fullscreen-plugin';
 
 import makeCustomControl from "./customMapControl/customMapControl";
-import {func} from "prop-types";
 import {connect} from "react-redux";
 
 import {
@@ -22,7 +21,7 @@ import {
     togglePersistClick,
     updateFlyTo
 } from "../../redux/selectedVerticesSlice";
-import {changeUrl, resetUrl} from "../../redux/urlSlice";
+import {changeUrl} from "../../redux/urlSlice";
 import {graphMounted} from "../../redux/selectedGraphSlice";
 import _ from 'underscore';
 import UrlManager from "../urlManager";
@@ -47,7 +46,9 @@ class GraphMap extends React.Component {
 
     componentWillUnmount() {
         this.props.clear()
-        this.props.resetUrl()
+        this.props.changeUrl(
+            {x: '', y: '', z: 0, vertex: ''}
+        )
     }
 
     async componentDidUpdate(prevProps, prevState, snapshot) {
@@ -63,8 +64,8 @@ class GraphMap extends React.Component {
 
         if (this.state.mapRef &&
             !_.isEqual(this.getLocationAndZoom(), (({x, y, z}) => ({x, y, z}))(this.props.url))
-        && !_.isEqual(this.props.url, prevProps.url)) {
-                this.panMapBasedOnUrl()
+            && !_.isEqual(this.props.url, prevProps.url)) {
+            this.panMapBasedOnUrl()
 
         }
 
@@ -113,7 +114,7 @@ class GraphMap extends React.Component {
                     </VertexMarker>
                 })
             }
-             <UrlManager/>
+            <UrlManager/>
         </MapContainer>
 
     }
@@ -226,8 +227,7 @@ class GraphMap extends React.Component {
 }
 
 GraphMap
-    .propTypes = {
-};
+    .propTypes = {};
 GraphMap
     .defaultProps = {};
 
@@ -244,7 +244,6 @@ let mapStateToProps = (store) => {
 export default withRouter(connect(mapStateToProps, {
     togglePersistClick,
     clear,
-    resetUrl,
     pop,
     removeVertices,
     updateFlyTo,

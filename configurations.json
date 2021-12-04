@@ -51,7 +51,6 @@
   "edge_curvature": 0.1,
   "out_edge_color": "#ED8417",
   "in_edge_color": "#DDE93F",
-  "tile_size": 256,
   "defaults": {
     "tile_size": 256,
     "zoom_levels": 2,

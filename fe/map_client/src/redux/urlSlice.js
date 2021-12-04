@@ -5,8 +5,8 @@ const configs = require('configurations')
 export const urlSlice = createSlice({
     name: 'url',
     initialState: {
-        x: String(configs['tile_size'] / -2),
-        y: String(configs['tile_size'] / 2),
+        x: '',
+        y: '',
         z: '0',
         vertex: ''
     },
@@ -16,13 +16,7 @@ export const urlSlice = createSlice({
             state.y = action.payload.y + '' || state.y + ''
             state.z = action.payload.z + '' || state.z + ''
             state.vertex = action.payload.vertex || state.vertex
-        },
-        resetUrl: (state, action) => {
-            state.x = String(configs['tile_size'] / -2)
-            state.y = String(configs['tile_size'] / 2)
-            state.z = '0'
-            state.vertex = ''
-        },
+        }
     },
     extraReducers: (builder) => {
         builder
