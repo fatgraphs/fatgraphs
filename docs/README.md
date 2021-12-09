@@ -2,7 +2,7 @@
 
 ## Conventions
 
-Case: camelCase everywhere possible. Since snake_case is the ocnvention in python we won't use cameCase in python code.
+Case: camelCase everywhere possible. Since snake_case is the convention in python we won't use cameCase in python code.
 
 ## Set Up
 You need to have `npm` installed.

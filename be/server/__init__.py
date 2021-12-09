@@ -41,9 +41,10 @@ def create_app(env=None):
     app.url_map.converters['signed_int'] = SignedIntConverter
     api = Api(app, title="Token Gallery 2.0 API", version="0.1.0")
 
+    register_category_admin_page()
+
     register_routes(api, app)
 
-    register_category_admin_page()
 
     # db.init_app(server)
 
@@ -55,33 +56,7 @@ def create_app(env=None):
 
 
 def register_category_admin_page():
-    from be.server.graph import Graph
-    from be.server.gallery_categories import GalleryCategory
+    from be.server.admin_setup import do_setup
+    do_setup()
 
 
-    class GraphCategoryView(ModelView):
-
-        def delete_model(self, model):
-
-            try:
-                if len(self.session.query(Graph).filter_by(graph_category=model.id).all()) > 0:
-                    flash(gettext('Failed to delete. \n'
-                                  f'To delete this category ensure there are no graphs of category {model.id}'))
-                    return False
-                self.on_model_delete(model)
-                self.session.flush()
-                self.session.delete(model)
-                self.session.commit()
-            except Exception as ex:
-                if not self.handle_view_exception(ex):
-                    flash(gettext('Failed to delete record. %(error)s', error=str(ex)), 'error')
-
-                self.session.rollback()
-
-                return False
-            else:
-                self.after_model_delete(model)
-
-            return True
-
-    admin.add_view(GraphCategoryView(GalleryCategory, SessionLocal()))

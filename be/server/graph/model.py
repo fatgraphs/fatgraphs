@@ -12,7 +12,8 @@ class Graph(Base):
 
     id = Column(Integer(), primary_key=True)
     graph_name = Column(String())
-    graph_category = Column(Integer(), ForeignKey(GalleryCategory.__table__.c.id))
+    graph_category = Column(Integer(), ForeignKey(GalleryCategory.__table__.c.id,
+                                                  onupdate="CASCADE"))
     vertices = Column(Integer())
     edges = Column(Integer())
     description = Column(String())
