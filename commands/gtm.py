@@ -62,7 +62,7 @@ def resolve_graph_category(raw_args):
 
 
 def format_graph_name(raw_args):
-    graph_name = raw_args["-n"].lower().strip()
+    graph_name = raw_args["-n"].strip()
     return graph_name
 
 
