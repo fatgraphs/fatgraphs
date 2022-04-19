@@ -7,6 +7,8 @@ import {connect} from "react-redux";
 import {Table} from "reactstrap";
 import {truncateEth} from "../../utils/Utils";
 
+const configs = require('configurations')
+
 class EdgePlots extends Component {
 
     constructor(props) {
@@ -51,7 +53,8 @@ class EdgePlots extends Component {
                         dangerouslySetInnerHTML={{__html: this.props.description}}>
                     </div>
                 </div>
-
+                {configs['debug_mode'] === 'true' ?
+                <>
                 <div style={{marginTop: '1rem'}}>
                     <h3>Edge Plots</h3>
 
@@ -61,6 +64,8 @@ class EdgePlots extends Component {
                         src={url}/>
                     )}
                 </div>
+                </> :
+                <div></div>}
             </Fillable>
         );
     }

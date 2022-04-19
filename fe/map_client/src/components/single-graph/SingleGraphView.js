@@ -22,6 +22,8 @@ import {updateBrowserUrlQueryParam} from "../../utils/Utils";
 import {graphSelected} from "../../redux/selectedGraphSlice";
 import {connect} from "react-redux";
 
+const configs = require('configurations')
+
 class SingleGraphView extends Component {
 
     static contextType = MyContext
@@ -72,7 +74,11 @@ class SingleGraphView extends Component {
                         receiveClearSignal={this.state.clearSignal}
                     />
 
+                    {configs['debug_mode'] === 'true' ?
+                    <>
                     <CopyGtmCommand/>
+                    </> : <div></div>
+                    }
 
                     <div>
                         <SidePanel
