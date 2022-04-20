@@ -10,13 +10,10 @@ import {MyContext} from "../../Context";
 import GraphMap from "./GraphMap";
 import SidePanel from "./SidePanel";
 import GraphTitle from "./GraphTitle";
-import CopyGtmCommand from "./CopyGtmCommand";
 import s from './singleGraph.module.scss';
 import TagListGraph from "../tagList/tagListGraph";
 import {toMapCoordinate} from "../../utils/CoordinatesUtil";
-import Fillable from "../../reactBlueTemplate/pages/tables/static/Fillable";
-import {IconsLegend} from "./IconsLegend";
-import EdgePlots from "./EdgePlots";
+import LeftPanel from "./LeftPanel";
 import LoadingComponent from "../LoadingComponent";
 import {updateBrowserUrlQueryParam} from "../../utils/Utils";
 import {graphSelected} from "../../redux/selectedGraphSlice";
@@ -74,19 +71,11 @@ class SingleGraphView extends Component {
                         receiveClearSignal={this.state.clearSignal}
                     />
 
-                    {configs['debug_mode'] === 'true' ?
-                    <>
-                    <CopyGtmCommand/>
-                    </> : <div></div>
-                    }
+
 
                     <div>
-                        <SidePanel
-                        />
-                        <div className={'mt-2'}>
-                            <Fillable>
-                                <IconsLegend></IconsLegend>
-                            </Fillable>
+                        <div className={s.leftPanel}>
+                            <LeftPanel/>
                         </div>
                     </div>
 
@@ -94,7 +83,7 @@ class SingleGraphView extends Component {
                         autocompletionTerms={this.state.autocompletionTerms}
                     />
 
-                    <EdgePlots/>
+                   
                 </div>
             );
         }

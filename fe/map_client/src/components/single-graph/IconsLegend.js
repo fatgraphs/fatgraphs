@@ -15,12 +15,6 @@ export class IconsLegend extends Component {
     render() {
         return <div>
         <Table className="my-table-hover">
-            <thead>
-                <tr>
-                    <th>Img</th>
-                    <th>Meaning</th>
-                </tr>
-            </thead>
             <tbody>
                 <tr>
                     <td>

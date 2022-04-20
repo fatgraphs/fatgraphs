@@ -11,6 +11,10 @@ html, body {
     flex-direction: column;
 }
 
+.widget {
+  margin-bottom: 1em;
+}
+
 h1 {
     @apply text-6xl
 }
