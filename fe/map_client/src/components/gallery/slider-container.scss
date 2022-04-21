@@ -10,7 +10,7 @@ $bar_height: .75rem;
 $tooltipHeight: 2rem;
 
 .tg-slider {
-  width: 65%;
+  width: 95%;
   height: $bar_height;
 
   .noUi-handle {
@@ -44,6 +44,9 @@ $tooltipHeight: 2rem;
     bottom: - $tooltipHeight;
     height: $tooltipHeight;
     line-height: $tooltipHeight;
+    background-color: $main-background;
+    border: none;
+    color: white;
   }
 }
 

@@ -3,6 +3,7 @@ import noUiSlider from 'nouislider';
 import 'nouislider/dist/nouislider.css';
 import './slider-container.scss';
 import * as PropTypes from "prop-types";
+import wNumb from "wnumb";
 
 class Sliders extends Component {
 
@@ -34,18 +35,23 @@ class Sliders extends Component {
         let edgeSlider = document.getElementById('edge-count');
         noUiSlider.create(edgeSlider, {
             start: [1, 10 ** 6],
-            tooltips: true,
+            tooltips: false,
             connect: true,
             step: 10,
             range: {
-                'min': 0,
-                'max': 10 ** 6,
-                '50%': 10 ** 6 / 2
+                'min': [0, 100], 
+                '25%': [1000, 100],
+                '50%': [10000, 1000],
+                '75%': [100000, 10000],
+                'max': [1000000]
             },
-            // pips: {
-            //     mode: 'range',
-            //     density: 5
-            // }
+            format: wNumb({
+                decimals: 0
+            }),
+            pips: {
+                mode: 'range',
+                density: 5
+            }
         });
 
         return edgeSlider;
@@ -56,18 +62,23 @@ class Sliders extends Component {
 
         noUiSlider.create(vertexSlider, {
             start: [1, 10 ** 6],
-            tooltips: true,
+            tooltips: false,
             connect: true,
             step: 10,
             range: {
-                'min': 0,
-                'max': 10 ** 6,
-                '50%': 10 ** 6 / 2
+                'min': [0, 100], 
+                '25%': [1000, 100],
+                '50%': [10000, 1000],
+                '75%': [100000, 10000],
+                'max': [1000000]
             },
-            // pips: {
-            //     mode: 'range',
-            //     density: 5
-            // }
+            format: wNumb({
+                decimals: 0
+            }),
+            pips: {
+                mode: 'range',
+                density: 5
+            }
         });
 
 

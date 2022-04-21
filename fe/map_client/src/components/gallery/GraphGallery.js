@@ -49,9 +49,9 @@ class Gallery extends Component {
 
     render() {
         return this.state.availableGraphs ?
-            <div className={'graph-gallery-container'}>
+            <div className={'galleryGrid'}>
 
-
+                <div>
                 <TagListGallery
                     onChange={(vals) => {
                         this.setState({
@@ -75,7 +75,7 @@ class Gallery extends Component {
                             }
                         )
                     }}/>
-
+                </div>
 
                 <GraphList
                     availableGraphs={this.state.availableGraphs}
