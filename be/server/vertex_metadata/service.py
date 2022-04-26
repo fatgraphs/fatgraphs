@@ -66,5 +66,10 @@ class VertexMetadataService:
                     ON (tg_vertex_metadata.vertex = %(table_name)s.vertex);"""
         execute = db.bind.engine.execute(query, {'table_name': AsIs(table_name)})
         result = to_pd_frame(execute)
+        if(len(list(result)) == 0): # if the result contains no columns (and no rows), manually add them
+            result["vertex"] = None
+            result["type"] = None
+            result["label"] = None
+            result["icon"] = None
         result = result.loc[:, ~result.columns.duplicated()]
         return result
