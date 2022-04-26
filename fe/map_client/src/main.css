@@ -19,6 +19,15 @@ h1 {
     @apply text-6xl
 }
 
+.about {
+  margin: 30px;
+  width: 800px;
+}
+
+.about p {
+  font-size: 14pt;
+}
+
 .dont-lose-focus{
 /*placeholder class to mark elements that shouldn't make thier parent lose the focus*/
 }
