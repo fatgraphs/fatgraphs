@@ -8,6 +8,7 @@ import cudf
 import numpy as np
 from graph_tool import Graph
 from be.configuration import CONFIGURATIONS, PROJECT_ROOT
+from pathlib import Path
 
 
 def ensure_list_like(func):
@@ -77,6 +78,10 @@ class GraphToolTokenGraph:
 
     @ensure_list_like
     def set_shapes(self, string_shapes):
+        """
+        string_shapes is a sequence of strigns denoting what kind of shape (ie png image) should be used to render
+        the  vertex.
+        """
 
         def get_token_icon_mapper():
             custom_icons_file_name = fnmatch.filter(
@@ -117,10 +122,22 @@ class GraphToolTokenGraph:
             }
             return result
 
+        def string_to_cairosurface(map_object):
+            # TODO: it can happen that a string_shape (defining the vertex image to use to render a vertex)
+            # has no correspondance in the icons folder. In  this case it'd be better to have a fallback icon.
+
+            def inner(key):
+                if key in map_object:
+                    return map_object[key]
+                return map_object['ca_labelled']
+
+            return inner
+
+
         generic_icons_mapper = get_icons_mappper()
         token_icon_mapper = get_token_icon_mapper()
         icon_mapper = {**generic_icons_mapper, **token_icon_mapper}
-        vertex_cairo_surfaces = list(map(lambda e: icon_mapper[e], string_shapes))
+        vertex_cairo_surfaces = list(map(string_to_cairosurface(icon_mapper), string_shapes))
         self.vertex_shapes = self.g.new_vertex_property('object', vals=vertex_cairo_surfaces)
 
     @ensure_list_like
