@@ -1,5 +1,3 @@
-import pandas as pd
-
 from be.configuration import CONFIGURATIONS
 
 

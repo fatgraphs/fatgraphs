@@ -7,8 +7,8 @@ import cairo
 import cudf
 import numpy as np
 from graph_tool import Graph
+
 from be.configuration import CONFIGURATIONS, PROJECT_ROOT
-from pathlib import Path
 
 
 def ensure_list_like(func):

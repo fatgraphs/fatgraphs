@@ -1,6 +1,7 @@
 import math
-import matplotlib.pyplot as plt
 import os
+
+import matplotlib.pyplot as plt
 import numpy as np
 
 from be.tile_creator_2.edge_data import EdgeData

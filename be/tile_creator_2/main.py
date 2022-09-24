@@ -1,5 +1,6 @@
 import os
 
+import geopandas as gpd
 from geoalchemy2 import WKTElement, Geometry
 
 from be.configuration import TILE_FOLDER_NAME, VERTEX_TABLE_NAME, internal_id, SRID, EDGE_TABLE_NAME, \
@@ -11,19 +12,17 @@ from be.server.graph.service import GraphService
 from be.server.graph_configuration.interface import GraphConfigurationInterface
 from be.server.graph_configuration.service import GraphConfigurationService
 from be.server.vertex.service import VertexService
-from be.tile_creator_2.edge_transparency_plots import EdgeTransparencyPlots
-from be.tile_creator_2.graph_tool_token_graph import GraphToolTokenGraph
 from be.tile_creator_2.cudf_graph import CudfGraph
 from be.tile_creator_2.datasource import DataSource
 from be.tile_creator_2.edge_data import EdgeData
+from be.tile_creator_2.edge_transparency_plots import EdgeTransparencyPlots
 from be.tile_creator_2.graph_data import GraphData
+from be.tile_creator_2.graph_tool_token_graph import GraphToolTokenGraph
 from be.tile_creator_2.gtm_args import GtmArgs
 from be.tile_creator_2.shape_calculator import ShapeGenerator
 from be.tile_creator_2.tiles_renderer import TilesRenderer
 from be.tile_creator_2.transparency_calculator import TransparencyCalculator
 from be.tile_creator_2.vertex_data import VertexData
-import geopandas as gpd
-
 from be.utils import timeit
 
 

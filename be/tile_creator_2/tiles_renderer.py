@@ -1,9 +1,10 @@
+import functools
 import math
 import os
 import time
 from copy import deepcopy
 from multiprocessing.context import Process
-import functools
+
 from graph_tool.draw import graph_draw
 
 from be.configuration import MAX_CORES

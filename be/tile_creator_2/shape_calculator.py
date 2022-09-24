@@ -1,9 +1,8 @@
+import cudf
 import numpy as np
 
 from be.server.vertex_metadata.service import VertexMetadataService
 from be.tile_creator_2.vertex_data import VertexData
-import cudf
-
 from be.utils import timeit
 
 
