@@ -1,9 +1,10 @@
 from typing import List
+
 from . import VertexMetadata
 from .interface import VertexMetadataInterface
 from .service import VertexMetadataService
-from .vertex_fixtures import vertex_metedata_2, vertex_metedata_1, vertex_metadata_1_param, vertex_metadata_2_param, vertex_metedata_1_different_id
-from ..test.fixtures import app, db, assert_lists_equal
+from ..test.fixtures import assert_lists_equal
+
 
 def test_get_by_eth(db: object, vertex_metedata_1: VertexMetadata, vertex_metedata_2: VertexMetadata):
 

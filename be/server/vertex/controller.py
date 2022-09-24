@@ -1,5 +1,5 @@
 from flask import request
-from flask_accepts import responds, accepts
+from flask_accepts import responds
 from flask_restx import Namespace, Resource
 
 from .model import Vertex

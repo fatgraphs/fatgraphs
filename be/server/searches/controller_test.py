@@ -1,12 +1,12 @@
 from unittest.mock import patch
+
 from flask.testing import FlaskClient
 
-from ..test.fixtures import client, app  # noqa
-
+from . import BASE_ROUTE
+from .model import SearchTerm
 from .schema import SearchTermSchema
 from .service import SearchTermService
-from .model import SearchTerm
-from . import BASE_ROUTE
+from ..test.fixtures import client, app  # noqa
 
 
 def make_search(

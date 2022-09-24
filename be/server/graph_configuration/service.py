@@ -1,5 +1,3 @@
-from typing import List
-
 from .interface import GraphConfigurationInterface
 from .model import Graph, GraphConfiguration
 

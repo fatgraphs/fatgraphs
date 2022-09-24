@@ -1,11 +1,9 @@
-from typing import List
-from psycopg2._psycopg import AsIs
-from sqlalchemy import Column, String, Integer
-
-from be.server import Base, engine
-from be.server.searches import AUTOCOMPLETE_TERMS_PER_PAGE
-from be.server.utils import to_pd_frame
 import pandas as pd
+from psycopg2._psycopg import AsIs
+
+from be.server import engine
+from be.server.utils import to_pd_frame
+
 
 class VertexMetadata:
     """

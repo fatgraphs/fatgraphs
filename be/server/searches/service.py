@@ -1,7 +1,6 @@
 from typing import List
 
 from . import SearchTerm
-from .interface import SearchTermInterface
 from ..vertex_metadata.service import VertexMetadataService
 
 

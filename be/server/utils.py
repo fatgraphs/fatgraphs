@@ -1,5 +1,4 @@
 import pandas as pd
-from flask_restx import abort
 from marshmallow import Schema
 from sqlalchemy import inspect
 

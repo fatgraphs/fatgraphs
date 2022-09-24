@@ -1,15 +1,11 @@
 from typing import List
 
-from geoalchemy2 import Geometry
 from graph_tool import Edge
 from psycopg2._psycopg import AsIs
-from sqlalchemy import Column
-from sqlalchemy import Integer, String, Float, ForeignKey
 
-from .. import Base, engine
+from .. import engine
 from ..utils import to_pd_frame, wkt_to_x_y_list
 from ..vertex import Vertex
-from ...configuration import VERTEX_GLOBAL_TABLE
 
 
 class Edge:

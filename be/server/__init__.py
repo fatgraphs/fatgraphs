@@ -1,13 +1,11 @@
 import os
 
-from flask import Flask, jsonify, flash
-from flask_admin import Admin, BaseView, expose
-from flask_admin.babel import gettext
-from flask_admin.contrib.sqla import ModelView
+from flask import Flask, jsonify
+from flask_admin import Admin
 from flask_cors import CORS
 # from vertexObjectlalchemy import SQLAlchemy
 from flask_restx import Api
-from sqlalchemy import create_engine, MetaData
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 from werkzeug.routing import IntegerConverter
 

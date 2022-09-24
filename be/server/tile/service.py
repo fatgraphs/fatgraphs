@@ -1,5 +1,3 @@
-from flask import safe_join, send_from_directory
-
 from be.server.tile.model import Tile
 
 

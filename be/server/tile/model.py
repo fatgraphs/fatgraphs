@@ -1,4 +1,3 @@
-from flask import safe_join
 from be.configuration import CONFIGURATIONS
 
 class Tile:

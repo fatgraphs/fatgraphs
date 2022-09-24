@@ -1,5 +1,7 @@
 from typing import List
+
 from be.server.gallery_categories import GalleryCategory
+
 
 class GalleryCategoryService:
 

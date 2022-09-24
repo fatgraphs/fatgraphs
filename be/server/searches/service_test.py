@@ -1,12 +1,10 @@
-from typing import List
 from unittest.mock import patch
 
-from be.server.searches import SearchTerm
-from be.server.searches.service import SearchTermService
-from .interface import SearchTermInterface
-from ..test.fixtures import app, db
-from ..vertex_metadata.service import VertexMetadataService
 import pandas as pd
+
+from be.server.searches.service import SearchTermService
+from ..vertex_metadata.service import VertexMetadataService
+
 
 def make_dataframe():
     return pd.DataFrame(

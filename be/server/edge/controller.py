@@ -1,15 +1,12 @@
 from typing import List
-from flask import request
-from flask_accepts import responds, accepts
+
+from flask_accepts import responds
 from flask_restx import Namespace, Resource
+
 from .model import Edge
 from .schema import EdgeSchema
 from .service import EdgeService
 from .. import SessionLocal
-
-import random
-from ..graph.service import GraphService
-from ...configuration import CONFIGURATIONS
 
 api = Namespace("Edge", description="Single namespace, single entity")  # noqa
 

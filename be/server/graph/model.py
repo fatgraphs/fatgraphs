@@ -1,5 +1,4 @@
-from sqlalchemy import Integer, Column, String, Float, ForeignKey
-from sqlalchemy.orm import relationship
+from sqlalchemy import Integer, Column, String, ForeignKey
 
 from be.server import Base
 from be.server.gallery_categories import GalleryCategory

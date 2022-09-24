@@ -1,13 +1,12 @@
 import random
+import warnings
 from typing import List
+
 from psycopg2._psycopg import AsIs
+
 from be.configuration import EDGE_GLOBAL_TABLE, CONFIGURATIONS, VERTEX_TABLE_NAME, EDGE_TABLE_NAME
 from . import Edge
 from .. import engine
-
-import warnings
-from ..graph.service import GraphService
-from ..utils import to_pd_frame
 from ..vertex.service import VertexService
 
 warnings.simplefilter(action='ignore', category=UserWarning)

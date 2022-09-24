@@ -1,8 +1,5 @@
-from flask_admin.contrib.sqla import ModelView
-
 from .model import GraphConfiguration  # noqa
 from .schema import GraphConfigurationSchema  # noqa
-from .. import admin, SessionLocal
 
 BASE_ROUTE = "graph_configuration"
 

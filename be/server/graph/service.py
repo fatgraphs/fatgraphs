@@ -1,6 +1,8 @@
 from typing import List
+
 from .interface import GraphInterface
 from .model import Graph
+
 
 class GraphService:
 

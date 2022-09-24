@@ -1,12 +1,11 @@
 from typing import List
+
+import numpy as np
 from psycopg2._psycopg import AsIs
 
 from .interface import VertexMetadataInterface
 from .model import VertexMetadata
-from ..graph.service import GraphService
 from ..utils import to_pd_frame
-import numpy as np
-
 from ...configuration import VERTEX_TABLE_NAME
 
 

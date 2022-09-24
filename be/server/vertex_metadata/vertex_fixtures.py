@@ -1,5 +1,7 @@
 from copy import deepcopy
+
 import pytest
+
 from be.server.vertex_metadata import VertexMetadata
 from be.server.vertex_metadata.interface import VertexMetadataInterface
 

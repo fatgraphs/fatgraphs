@@ -1,11 +1,10 @@
 from unittest.mock import patch
+
 from flask.testing import FlaskClient
 
+from . import BASE_ROUTE, Graph, GraphSchema
 from .service import GraphService
 from ..test.fixtures import client, app  # noqa
-
-
-from . import BASE_ROUTE, Graph, GraphSchema
 
 
 def make_graph(

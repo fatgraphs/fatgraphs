@@ -1,10 +1,9 @@
 from typing import List
 
-from flask import request
-from flask_accepts import accepts, responds
+from flask_accepts import responds
 from flask_restx import Namespace, Resource
 
-from . import SearchTerm, AUTOCOMPLETE_TERMS_PER_PAGE
+from . import SearchTerm
 from .schema import SearchTermSchema
 from .service import SearchTermService
 from .. import SessionLocal

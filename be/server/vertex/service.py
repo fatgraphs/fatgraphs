@@ -1,16 +1,12 @@
+import warnings
 from typing import List
-import pandas as pd
-from geoalchemy2 import Geometry, WKTElement
-import geopandas as gpd
+
 from psycopg2._psycopg import AsIs
 
-from be.configuration import SRID, VERTEX_TABLE_NAME, VERTEX_GLOBAL_TABLE
+from be.configuration import VERTEX_GLOBAL_TABLE
 from .model import Vertex
 from .. import engine
-from ..graph.service import GraphService
 from ..vertex_metadata.service import VertexMetadataService
-
-import warnings
 
 warnings.simplefilter(action='ignore', category=UserWarning)
 

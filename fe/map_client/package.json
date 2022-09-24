@@ -12,6 +12,7 @@
   "author": "carlo segat",
   "license": "ISC",
   "devDependencies": {
+    "image-webpack-loader": "^7.0.1",
     "@babel/core": "^7.13.10",
     "@babel/plugin-proposal-class-properties": "^7.13.0",
     "@babel/preset-env": "^7.13.10",

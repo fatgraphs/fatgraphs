@@ -1,4 +1,4 @@
-from marshmallow import fields, Schema
+from marshmallow import fields
 
 from be.server.utils import CamelCaseSchema
 

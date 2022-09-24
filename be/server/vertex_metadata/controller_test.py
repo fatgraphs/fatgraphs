@@ -1,13 +1,11 @@
-from random import random
 from unittest.mock import patch
+
 from flask.testing import FlaskClient
 
-from .service import  VertexMetadataService
-from .vertex_fixtures import vertex_metedata_1, vertex_metedata_2, vertex_metadata_1_param
-from ..test.fixtures import client, app  # noqa
-
-
 from . import BASE_ROUTE, VertexMetadata, VertexMetadataSchema
+from .service import VertexMetadataService
+from .vertex_fixtures import vertex_metedata_1
+from ..test.fixtures import client, app  # noqa
 
 
 class TestGraphResource:

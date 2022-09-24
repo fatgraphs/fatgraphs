@@ -1,7 +1,8 @@
-from marshmallow import fields, Schema, pre_load, pre_dump
+from marshmallow import fields
 
 from be.server.utils import CamelCaseSchema
 from be.server.vertex.schema import VertexSchema
+
 
 class EdgeSchema(CamelCaseSchema):
     id = fields.Integer(default=None)
