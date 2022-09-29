@@ -54,6 +54,7 @@ gradle-app.setting
 *.csv
 graph-tiles/*
 !graph-tiles/.gitkeep
+*.sqlite
 
 # eclude jupyter notebook cache files
 *-checkpoint.ipynb
