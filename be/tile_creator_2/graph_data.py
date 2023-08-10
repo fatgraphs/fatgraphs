@@ -43,6 +43,7 @@ class GraphData:
         return self.graph_space_bound
 
     def set_median_pixel_distance(self, vertex_data):
+        # todo document
         model = NearestNeighbors(n_neighbors=3)
         model.fit(vertex_data.cudf_frame[['x_pixel', 'y_pixel']])
         distances, indices = model.kneighbors(vertex_data.cudf_frame[['x_pixel', 'y_pixel']])

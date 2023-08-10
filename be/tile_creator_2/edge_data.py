@@ -115,6 +115,8 @@ class EdgeData():
             target_max = graph_data.get_median_pixel_distance() * maxEdgeThickness
             return shift_and_scale(amounts, target_median, target_max, 1.0)
 
+        # todo flexible mechanism of defining edge tickness
+
         logAmounts = np.log10(
             self.cudf_frame['amount'].values + 10)  # amounts can be huge numbers, reduce the range
 

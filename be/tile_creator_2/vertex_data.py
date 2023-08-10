@@ -20,7 +20,7 @@ class VertexData():
         # get unique vertices (in case of eth network those are eth addresses)
         uniqueValues = datasource.data["source"].append(datasource.data['target']).unique()
 
-        # indices to vertices
+        # indices of frame to vertex id
         mapping = cudf.DataFrame(uniqueValues) \
             .reset_index() \
             .rename(columns={0: "vertex"})
@@ -60,6 +60,9 @@ class VertexData():
             """
             This function is specifically written to work with Rapids apply method: the apply method applies an operation
             on a GPU frame row by row.
+
+            The graph "virtual" space is mapped to the pixel space based on the size of the
+            tile
             """
             graphSide = max_coordinate - min_coordinate
             for i, (sx, sy) in enumerate(zip(x, y)):

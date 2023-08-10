@@ -27,4 +27,5 @@ class DataSource:
         self.data = preprocessor.preprocess(raw_data)
 
     def get_data(self):
+        ''' return cudf frame '''
         return self.data

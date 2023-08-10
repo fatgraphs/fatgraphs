@@ -49,6 +49,7 @@ def main(configurations):
     args = GtmArgs(configurations)
     gtm_args = args
 
+    # just reeads the csv
     source = DataSource(os.path.join(data_folder, gtm_args.get_source_file()))
 
     vertex_data = VertexData()

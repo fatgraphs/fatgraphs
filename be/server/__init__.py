@@ -16,8 +16,13 @@ env = os.getenv("FLASK_ENV") or "test"
 configs = config_by_name[env]
 
 uri = configs.SQLALCHEMY_DATABASE_URI
+
+# engine is the interface-object to interact with DB
 engine = create_engine(uri, echo=False)
+
+# session is the holding place of ORM objects
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine, expire_on_commit=False)
+
 Base = declarative_base()
 admin = Admin(name='Token Gallery admin panel')
 
