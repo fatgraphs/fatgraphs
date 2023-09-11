@@ -6,7 +6,7 @@ from psycopg2._psycopg import AsIs
 from .. import engine
 from ..utils import to_pd_frame, wkt_to_x_y_list
 from ..vertex import Vertex
-
+from sqlalchemy.sql import text
 
 class Edge:
     # = Column(Integer(), ForeignKey('tg_graphs.id'))
@@ -22,102 +22,142 @@ class Edge:
         self.amount = amount
 
     def add(self, db):
-       query = """INSERT INTO %(edge_table_name)s
-       (graph_id, src_vertex, trg_vertex, block_number, amount) 
-       VALUES (
-           %(graph_id)s,
-           %(src_vertex)s,
-           %(trg_vertex)s,
-           %(block_number)s,
-           %(amount)s);"""
-
-       result = db.bind.engine.execute(query, {
-           'edge_table_name': AsIs(Edge.table_name),
-           'graph_id': self.graph_id,
-           'src_vertex': self.src.vertex,
-           'trg_vertex': self.trg.vertex,
-           'block_number': self.block_number,
-           'amount': self.amount
-       })
+       query = text(
+            """
+            INSERT INTO :edge_table_name
+            (graph_id, src_vertex, trg_vertex, block_number, amount) 
+            VALUES (
+                :graph_id,
+                :src_vertex,
+                :trg_vertex,
+                :block_number,
+                :amount);
+            """
+       )
+       with engine.connect() as conn:
+        result = conn.execute(
+            query, 
+            {
+                'edge_table_name': AsIs(Edge.table_name),
+                'graph_id': self.graph_id,
+                'src_vertex': self.src.vertex,
+                'trg_vertex': self.trg.vertex,
+                'block_number': self.block_number,
+                'amount': self.amount
+                }
+            )
 
 
 
     @staticmethod
     def get_edges(graph_id, vertex, prob) -> List[Edge]:
-        query = """SELECT * FROM tg_edge WHERE ((src = %(query_src)s OR trg = %(query_src)s) 
-            AND (graph_id = %(graph_id)s)) AND random() < %(prob)s;
-        """
-        query_result = engine.execute(query, {
-            'graph_id': graph_id,
-            'query_src': vertex,
-            'prob': AsIs(prob)
-            }
+        query = text(
+            """
+            SELECT * FROM tg_edge 
+            WHERE ((src = :query_src OR trg = :query_src) 
+            AND (graph_id = :graph_id)) AND random() < :prob;
+            """
         )
-        frame = to_pd_frame(query_result)
-        return Edge._map_to_model(frame)
+        with engine.connect() as conn:
+            query_result = conn.execute(query, {
+                'graph_id': graph_id,
+                'query_src': vertex,
+                'prob': AsIs(prob)
+                }
+            )
 
+            frame = to_pd_frame(query_result)
+
+            return Edge._map_to_model(frame)
 
 
     @staticmethod
     def get_out_edges_with_probability(edge_table, vertex_table, vertex: Vertex, prob, graph_id) -> List[Edge]:
-        query = """SELECT %(edge_table)s.src, %(edge_table)s.trg, %(edge_table)s.amount, %(edge_table)s.block_number, 
+        query = text(
+            """
+            SELECT :edge_table.src, :edge_table.trg, :edge_table.amount, :edge_table.block_number, 
             vertextarget.size as trg_size, 
             ST_AsText(ST_PointFromWKB(vertextarget.pos)) as pos_trg
-        FROM %(edge_table)s
-        LEFT JOIN %(vertex_table)s vertextarget ON  %(edge_table)s.trg = vertextarget.vertex 
-        WHERE %(edge_table)s.src = %(vertex)s
-        AND random() < %(prob)s;
-        """
+            FROM :edge_table
+            LEFT JOIN :vertex_table vertextarget ON :edge_table.trg = vertextarget.vertex 
+            WHERE :edge_table.src = :vertex
+            AND random() < :prob;
+            """
+        )
 
-        query_result = engine.execute(query, {
-            'edge_table': AsIs(edge_table),
-            'vertex_table': AsIs(vertex_table),
-            'vertex': vertex.vertex,
-            'prob': AsIs(prob)
-        }
-                                      )
-        frame = to_pd_frame(query_result)
+        with engine.connect() as conn:
 
-        return Edge._map_to_model_trg_only(frame, vertex, graph_id)
+            query_result = conn.execute(query, {
+                'edge_table': AsIs(edge_table),
+                'vertex_table': AsIs(vertex_table),
+                'vertex': vertex.vertex,
+                'prob': AsIs(prob)
+            }
+                                        )
+            frame = to_pd_frame(query_result)
+
+            return Edge._map_to_model_trg_only(frame, vertex, graph_id)
 
     @staticmethod
     def get_in_edges_with_probability(edge_table, vertex_table, vertex: Vertex, prob, graph_id) -> List[Edge]:
-        query = """SELECT %(edge_table)s.src, %(edge_table)s.trg, %(edge_table)s.amount, %(edge_table)s.block_number, 
+        query = text(
+            """
+            SELECT :edge_table.src, :edge_table.trg, :edge_table.amount, :edge_table.block_number, 
                 vertexsource.size as src_size,
                 ST_AsText(ST_PointFromWKB(vertexsource.pos)) as pos_src
-            FROM %(edge_table)s
-            LEFT JOIN %(vertex_table)s vertexsource ON %(edge_table)s.src = vertexsource.vertex
-            WHERE %(edge_table)s.trg = %(vertex)s 
-            AND random() < %(prob)s;
-        """
+            FROM :edge_table
+            LEFT JOIN :vertex_table vertexsource ON :edge_table.src = vertexsource.vertex
+            WHERE :edge_table.trg = :vertex 
+            AND random() < :prob;
+            """
+        )
 
-        query_result = engine.execute(query, {
-            'edge_table': AsIs(edge_table),
-            'vertex_table': AsIs(vertex_table),
-            'vertex': vertex.vertex,
-            'prob': AsIs(prob)
-        }
-                                      )
-        frame = to_pd_frame(query_result)
+        with engine.connect() as conn:
 
-        return Edge._map_to_model_src_only(frame, vertex, graph_id)
+            query_result = conn.execute(
+                query, 
+                {
+                    'edge_table': AsIs(edge_table),
+                    'vertex_table': AsIs(vertex_table),
+                    'vertex': vertex.vertex,
+                    'prob': AsIs(prob)
+                }
+            )
+            frame = to_pd_frame(query_result)
+
+            return Edge._map_to_model_src_only(frame, vertex, graph_id)
 
     @staticmethod
     def get_count(edge_table, vertex, inout='both'):
-        query = """SELECT count(*) FROM %(edge_table)s 
-            WHERE src = %(vertex)s OR trg = %(vertex)s;
-        """
+        query = text(
+            """
+            SELECT count(*) FROM :edge_table 
+            WHERE src = :vertex OR trg = :vertex;
+            """
+        )
         if inout == 'in':
-            query = """SELECT count(*) FROM %(edge_table)s 
-                        WHERE trg = %(vertex)s;"""
+            query = text(
+                """
+                SELECT count(*) FROM :edge_table 
+                WHERE trg = :vertex;
+                """
+            )
         if inout == 'out':
-            query = """SELECT count(*) FROM %(edge_table)s 
-                        WHERE src = %(vertex)s;"""
-        query_result = engine.execute(query, {
-            'vertex': vertex,
-            'edge_table': AsIs(edge_table)
-        })
-        return query_result.fetchall()[0][0]
+            query = text(
+                """
+                SELECT count(*) FROM :edge_table 
+                WHERE src = :vertex;
+                """
+            )
+        with engine.connect() as conn:
+            query_result = conn.execute(
+                query, 
+                {
+                    'vertex': vertex,
+                    'edge_table': AsIs(edge_table)
+                }
+            )
+            return query_result.fetchall()[0][0]
 
     @staticmethod
     def _map_to_model_trg_only(frame, src_vertex, graph_id):

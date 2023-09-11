@@ -8,6 +8,7 @@ from be.configuration import EDGE_GLOBAL_TABLE, CONFIGURATIONS, VERTEX_TABLE_NAM
 from . import Edge
 from .. import engine
 from ..vertex.service import VertexService
+from sqlalchemy.sql import text
 
 warnings.simplefilter(action='ignore', category=UserWarning)
 
@@ -17,17 +18,39 @@ class EdgeService:
     @staticmethod
     def ensure_edge_table_exists(table_name: str, graph_id: int):
 
-        query = """CREATE TABLE IF NOT EXISTS %(table_name)s 
-        PARTITION OF %(edge_table)s 
-        FOR VALUES IN %(graph_id)s;"""
-        engine.execute(query, {'table_name': AsIs(table_name),
-                               'edge_table': AsIs(EDGE_GLOBAL_TABLE),
-                               'graph_id': tuple([str(graph_id)])})
-        index_creation = """
-            CREATE INDEX IF NOT EXISTS %(index_name)s ON %(table_name)s (src, trg);"""
-        engine.execute(index_creation, {
-            'index_name': AsIs(table_name + '_src_index'),
-            'table_name': AsIs(table_name)})
+
+        query = text(
+            """
+            CREATE TABLE IF NOT EXISTS :table_name
+            PARTITION OF :edge_table 
+            FOR VALUES IN :graph_id;
+            """
+        )
+
+        index_creation = text(
+            """
+            CREATE INDEX IF NOT EXISTS :index_name ON :table_name (src, trg);
+            """
+        )
+        
+        with engine.connect() as conn:
+
+            conn.execute(
+                query, 
+                {
+                    'table_name': AsIs(table_name),
+                    'edge_table': AsIs(EDGE_GLOBAL_TABLE),
+                    'graph_id': tuple([str(graph_id)]),
+                }
+            )
+            
+            conn.execute(
+                index_creation, 
+                {
+                    'index_name': AsIs(table_name + '_src_index'),
+                    'table_name': AsIs(table_name),
+                }
+            )
 
 
     @staticmethod
@@ -38,7 +61,6 @@ class EdgeService:
     def get_edge_count(edge_table, vertex, inout='both'):
         result = Edge.get_count(edge_table, vertex, inout)
         return result
-
 
     @staticmethod
     def get_edges(vertex, graph_id, db) -> List[Edge]:

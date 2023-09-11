@@ -7,6 +7,7 @@ from be.configuration import VERTEX_GLOBAL_TABLE
 from .model import Vertex
 from .. import engine
 from ..vertex_metadata.service import VertexMetadataService
+from sqlalchemy.sql import text
 
 warnings.simplefilter(action='ignore', category=UserWarning)
 
@@ -14,12 +15,14 @@ warnings.simplefilter(action='ignore', category=UserWarning)
 class VertexService:
 
     @staticmethod
-    def get_closest(graph_id: int, x: float, y: float, db) -> Vertex:
-        closest = Vertex.get_closest(graph_id, x, y, db)
+    def get_closest(graph_id: int, x: float, y: float) -> Vertex:
+        closest = Vertex.get_closest(graph_id, x, y)
         return closest
 
     @staticmethod
     def get_by_eths(graph_id: int, eths: List[str], db) -> List[Vertex]:
+        print("eths", eths)
+        print("graph_id", graph_id)
         if len(eths) == 0:
             return []
         vertices = Vertex.get(eths, graph_id, db)
@@ -28,12 +31,24 @@ class VertexService:
     @staticmethod
     def ensure_vertex_table_exists(table_name: str, graph_id: int):
 
-        query = """CREATE TABLE IF NOT EXISTS %(table_name)s 
-        PARTITION OF %(vertex_table)s 
-        FOR VALUES IN %(graph_id)s;"""
-        engine.execute(query, {'table_name': AsIs(table_name),
-                               'vertex_table': AsIs(VERTEX_GLOBAL_TABLE),
-                               'graph_id': tuple([str(graph_id)])})
+        query = text(
+            """
+            CREATE TABLE IF NOT EXISTS :table_name 
+            PARTITION OF :vertex_table
+            FOR VALUES IN :graph_id;
+            """
+        )
+
+        with engine.connect() as conn:
+            print("conn", conn)
+            conn.execute(
+                query, 
+                {
+                    'table_name': AsIs(table_name),
+                    'vertex_table': AsIs(VERTEX_GLOBAL_TABLE),
+                    'graph_id': tuple([str(graph_id)])
+                }
+            )
 
     @staticmethod
     def attach_metadata(vertices, db):
