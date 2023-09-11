@@ -18,7 +18,7 @@ def ensure_list_like(func):
         except Exception:
             if isinstance(list_like, cudf.Series):
                 # .values not implemented in cudf for series of strings
-                list_like = list_like.to_array()
+                list_like = list_like.to_numpy()
         func(self, list_like)
 
     return inner

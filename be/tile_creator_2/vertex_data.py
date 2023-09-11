@@ -112,7 +112,7 @@ class VertexData():
     def set_sizes(self, graph_data: GraphData, gtm_args: GtmArgs):
         targetMedian = graph_data.median_pixel_distance * gtm_args.get_med_vertex_size()
         targetMax = graph_data.median_pixel_distance * gtm_args.get_max_vertex_size()
-        v = shift_and_scale((self.cudf_frame['in_degree'] + self.cudf_frame['out_degree']).to_array(), targetMedian, targetMax)
+        v = shift_and_scale((self.cudf_frame['in_degree'] + self.cudf_frame['out_degree']).to_numpy(), targetMedian, targetMax)
         self.cudf_frame['size'] = v
 
     def get_sizes(self):

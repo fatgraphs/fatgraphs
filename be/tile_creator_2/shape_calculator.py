@@ -55,7 +55,7 @@ class ShapeGenerator:
             None: "None"
         })
         nice_frame['code'] = nice_frame['code'].astype({'code': 'string'})
-        nice_frame['code'] = np.where(nice_frame['icon'].to_array() == "None", nice_frame['code'].to_array(), nice_frame['icon'].to_array())
+        nice_frame['code'] = np.where(nice_frame['icon'].to_numpy() == "None", nice_frame['code'].to_numpy(), nice_frame['icon'].to_numpy())
         return nice_frame
 
     @staticmethod
@@ -88,7 +88,7 @@ class ShapeGenerator:
         # after the merge some rows will have type = Nan
         # rows where the condition if FALSE are substituted with 0
         # result['type'] = result['type'].where(result['type'].notna(), 0)
-        result['type'] = np.where(result['type'].to_array() == None, '0', result['type'].to_array())
+        result['type'] = np.where(result['type'].to_numpy() == None, '0', result['type'].to_numpy())
         return result
 
     @staticmethod
@@ -125,7 +125,10 @@ class ShapeGenerator:
     def mark_labelled(vertex_data):
         # increment by 1 where type is not 0 (i.e. type == 'exchange')
         # this works becaue the ic
-        vertex_data['code'] = vertex_data['code'] + np.where(vertex_data['type'].to_array() == '0', 0, 1)
+        zero_where_no_type = np.where(vertex_data['type'].to_numpy() == '0', 0, 1)
+        print(zero_where_no_type.shape)
+        print(vertex_data['code'].shape)
+        vertex_data['code'] = vertex_data['code'].to_numpy() + zero_where_no_type
 
     @staticmethod
     def longestFilename(s):

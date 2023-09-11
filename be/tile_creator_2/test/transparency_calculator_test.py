@@ -18,7 +18,7 @@ class TestEdgeData:
 
     def test_calculate(self, graph_data_median: GraphData, edge_data_lengths: EdgeData, gtm_args: GtmArgs):
         tc = TransparencyCalculator(graph_data_median, gtm_args)
-        transparencies = tc.calculateEdgeTransparencies(edge_data_lengths.get_lengths().to_array())
+        transparencies = tc.calculateEdgeTransparencies(edge_data_lengths.get_lengths().to_numpy())
         assert(len(transparencies) == gtm_args.get_zoom_levels()), \
             "There should be as many transparencies arrays as zoom levels"
         len_zoom_0 = len(transparencies[0])

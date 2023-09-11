@@ -1,4 +1,5 @@
 from be.configuration import CONFIGURATIONS
+import numpy as np
 
 
 class DataPreprocessor:
@@ -14,10 +15,10 @@ class DataPreprocessor:
         return result
 
     def _check_fake_vertices_are_unused(self, data):
-        if CONFIGURATIONS['corner_vertices']['fake_vertex_1'] in data['target'].to_array() or \
-                CONFIGURATIONS['corner_vertices']['fake_vertex_1'] in data['source'].to_array() or \
-                CONFIGURATIONS['corner_vertices']['fake_vertex_2'] in data['target'].to_array() or \
-                CONFIGURATIONS['corner_vertices']['fake_vertex_2'] in data['source'].to_array():
+        if CONFIGURATIONS['corner_vertices']['fake_vertex_1'] in data['target'].to_numpy() or \
+                CONFIGURATIONS['corner_vertices']['fake_vertex_1'] in data['source'].to_numpy() or \
+                CONFIGURATIONS['corner_vertices']['fake_vertex_2'] in data['target'].to_numpy() or \
+                CONFIGURATIONS['corner_vertices']['fake_vertex_2'] in data['source'].to_numpy():
             raise Exception(
                 "Fake addresses are in use, either chanhe the fake addresses in configuration or rename them in the data")
 

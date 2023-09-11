@@ -92,7 +92,7 @@ def main(configurations):
 
         # TODO maybe move in
         tc = TransparencyCalculator(graph_data, gtm_args)
-        transparencies = tc.calculateEdgeTransparencies(edge_data.get_lengths().to_array())
+        transparencies = tc.calculateEdgeTransparencies(edge_data.get_lengths().to_numpy())
         edge_data.transparencies = transparencies
 
         # save the configuration to db
@@ -108,6 +108,7 @@ def main(configurations):
         f = vertex_data.cudf_frame.to_pandas()
         f['graph_id'] = persisted_graph.id
         geo_frame = make_geoframe(f)
+        print("geo_frame", geo_frame[['graph_id', 'vertex', 'size', 'pos']])
         geo_frame[['graph_id', 'vertex', 'size', 'pos']].to_sql(
             vertex_table,
             db.bind.engine,

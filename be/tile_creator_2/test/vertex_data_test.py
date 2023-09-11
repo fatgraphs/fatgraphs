@@ -20,7 +20,7 @@ class TestVertexData:
 
     def test_all_vertices_are_present(self, vertex_data_id: VertexData):
         vertices_from_file = get_vertices_from_file()
-        vertices_vertex_data = vertex_data_id.cudf_frame['vertex'].to_array()
+        vertices_vertex_data = vertex_data_id.cudf_frame['vertex'].to_numpy()
 
         def assert_all_vertices_in_vertex_data_are_in_file_except_fake_vertices(vertices_from_file,
                                                                                 vertices_vertex_data):
