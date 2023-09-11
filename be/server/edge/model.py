@@ -14,23 +14,21 @@ class Edge:
     table_name = "tg_edge"
 
 
-    def __init__(self, graph_id: int, src: Vertex, trg: Vertex, amount: float, block_number: int):
+    def __init__(self, graph_id: int, src: Vertex, trg: Vertex, amount: float):
         self.graph_id = graph_id
         self.src = src
         self.trg = trg
-        self.block_number = block_number
         self.amount = amount
 
     def add(self, db):
        query = text(
             """
             INSERT INTO :edge_table_name
-            (graph_id, src_vertex, trg_vertex, block_number, amount) 
+            (graph_id, src_vertex, trg_vertex, amount) 
             VALUES (
                 :graph_id,
                 :src_vertex,
                 :trg_vertex,
-                :block_number,
                 :amount);
             """
        )
@@ -42,7 +40,6 @@ class Edge:
                 'graph_id': self.graph_id,
                 'src_vertex': self.src.vertex,
                 'trg_vertex': self.trg.vertex,
-                'block_number': self.block_number,
                 'amount': self.amount
                 }
             )
@@ -75,7 +72,7 @@ class Edge:
     def get_out_edges_with_probability(edge_table, vertex_table, vertex: Vertex, prob, graph_id) -> List[Edge]:
         query = text(
             """
-            SELECT :edge_table.src, :edge_table.trg, :edge_table.amount, :edge_table.block_number, 
+            SELECT :edge_table.src, :edge_table.trg, :edge_table.amount,
             vertextarget.size as trg_size, 
             ST_AsText(ST_PointFromWKB(vertextarget.pos)) as pos_trg
             FROM :edge_table
@@ -102,7 +99,7 @@ class Edge:
     def get_in_edges_with_probability(edge_table, vertex_table, vertex: Vertex, prob, graph_id) -> List[Edge]:
         query = text(
             """
-            SELECT :edge_table.src, :edge_table.trg, :edge_table.amount, :edge_table.block_number, 
+            SELECT :edge_table.src, :edge_table.trg, :edge_table.amount,
                 vertexsource.size as src_size,
                 ST_AsText(ST_PointFromWKB(vertexsource.pos)) as pos_src
             FROM :edge_table
@@ -170,7 +167,6 @@ class Edge:
                 src=src_vertex,
                 trg=trg_vertex,
                 amount=e['amount'],
-                block_number=e['block_number']
             )
             collect.append(edge)
         return collect
@@ -186,7 +182,6 @@ class Edge:
                 src=src_vertex,
                 trg=trg_vertex,
                 amount=e['amount'],
-                block_number=e['block_number']
             )
             collect.append(edge)
         return collect

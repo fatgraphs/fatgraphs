@@ -33,12 +33,14 @@ class DataPreprocessor:
         """
         We add two fake nodes that will be later positioned such that the resulting layout is a square
         """
-        block_number = {'blockNumber': CONFIGURATIONS['corner_vertices']['fake_vertex_block_number']} \
-            if 'block_number' in data.columns or 'blockNumber' in data.columns \
-            else {}
+        # block_number = {'blockNumber': CONFIGURATIONS['corner_vertices']['fake_vertex_block_number']} \
+        #     if 'block_number' in data.columns or 'blockNumber' in data.columns \
+        #     else {}
 
-        shared = {'amount': CONFIGURATIONS['corner_vertices']['fake_vertex_amount'],
-                  **block_number}
+        shared = {
+            'amount': CONFIGURATIONS['corner_vertices']['fake_vertex_amount'],
+            # **block_number
+        }
 
         data = data.append([{'source': CONFIGURATIONS['corner_vertices']['fake_vertex_1'],
                              'target': CONFIGURATIONS['corner_vertices']['fake_vertex_1'],
