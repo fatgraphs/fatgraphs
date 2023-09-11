@@ -3,7 +3,7 @@ import time
 
 import pandas as pd
 import geopandas as gpd
-import cv2
+# import cv2
 import numpy as np
 from PIL import Image
 from geoalchemy2 import WKTElement
@@ -77,35 +77,35 @@ def findIndexOfNearest(array, value):
     return int(idx)
 
 
-def compareImages(img1Path, img2Path):
-    """
-    Compares two images and returns a similarity score: 1 means they are the same,
-    0 means they are completely different.
-    Note that the images should be of the same size for this to work as intended.
-    :param img1Path:
-    :param img2Path:
-    :return: score between 0 and 1
-    """
-    img1 = cv2.imread(img1Path) if isinstance(img1Path, type("string")) else img1Path
-    img2 = cv2.imread(img2Path) if isinstance(img2Path, type("string")) else img2Path
-    img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
-    img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
-    orb = cv2.ORB_create()
+# def compareImages(img1Path, img2Path):
+#     """
+#     Compares two images and returns a similarity score: 1 means they are the same,
+#     0 means they are completely different.
+#     Note that the images should be of the same size for this to work as intended.
+#     :param img1Path:
+#     :param img2Path:
+#     :return: score between 0 and 1
+#     """
+#     img1 = cv2.imread(img1Path) if isinstance(img1Path, type("string")) else img1Path
+#     img2 = cv2.imread(img2Path) if isinstance(img2Path, type("string")) else img2Path
+#     img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
+#     img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
+#     orb = cv2.ORB_create()
 
-    # detect keypoints and descriptors
-    kpA, descA = orb.detectAndCompute(img1, None)
-    kpB, descB = orb.detectAndCompute(img2, None)
+#     # detect keypoints and descriptors
+#     kpA, descA = orb.detectAndCompute(img1, None)
+#     kpB, descB = orb.detectAndCompute(img2, None)
 
-    # define the bruteforce matcher object
-    bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
+#     # define the bruteforce matcher object
+#     bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
 
-    # perform matches.
-    matches = bf.match(descA, descB)
-    # Look for similar regions with distance < 50. Goes from 0 to 100 so pick a number between.
-    similarRegions = [i for i in matches if i.distance < 45]
-    if len(matches) == 0:
-        return 0
-    return len(similarRegions) / len(matches)
+#     # perform matches.
+#     matches = bf.match(descA, descB)
+#     # Look for similar regions with distance < 50. Goes from 0 to 100 so pick a number between.
+#     similarRegions = [i for i in matches if i.distance < 45]
+#     if len(matches) == 0:
+#         return 0
+#     return len(similarRegions) / len(matches)
 
 
 def isImage(filename):
