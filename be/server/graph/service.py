@@ -1,4 +1,5 @@
 from typing import List
+from sqlalchemy import inspect
 
 from .interface import GraphInterface
 from .model import Graph
@@ -17,7 +18,11 @@ class GraphService:
 
     @staticmethod
     def create(graph_to_create: GraphInterface, db) -> Graph:
-        assert 'gallery_categories' in db.bind.engine.table_names()
+        inspection = inspect(db.bind.engine)
+        assert 'gallery_categories' in inspection.get_table_names()
+        # assert 'gallery_categories' in db.bind.engine.table_names()
+
+
         new_graph = Graph(
             graph_name=graph_to_create['graph_name'],
             graph_category=int(graph_to_create['graph_category']),

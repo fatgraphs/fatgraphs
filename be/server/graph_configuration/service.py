@@ -1,5 +1,6 @@
 from .interface import GraphConfigurationInterface
 from .model import Graph, GraphConfiguration
+from sqlalchemy import inspect
 
 
 class GraphConfigurationService:
@@ -10,7 +11,8 @@ class GraphConfigurationService:
 
     @staticmethod
     def create(graph_to_create: GraphConfigurationInterface, db):
-        assert 'tg_graph_configs' in db.bind.engine.table_names()
+        inspection = inspect(db.bind.engine)
+        assert 'tg_graph_configs' in inspection.get_table_names()
         new_graph_configuration = GraphConfiguration(
             tile_size=graph_to_create['tile_size'],
             zoom_levels=graph_to_create['zoom_levels'],
