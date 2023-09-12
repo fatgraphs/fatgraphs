@@ -14,6 +14,12 @@ trap "cleanup" SIGINT SIGTERM SIGQUIT
 
 cd ../fe/map_client
 # npm i
+#export NODE_OPTIONS=--openssl-legacy-provider
+
+# or nvm command not available
+source /home/carlo/.nvm/nvm.sh
+
+nvm use 14
 npm run webpack
 npm run start &
 pids+=("$!")
