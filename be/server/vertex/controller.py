@@ -19,7 +19,7 @@ class GetClosestVertexWithMetadata(Resource):
     @responds(schema=VertexSchema)
     def get(self, graph_id: int, x: float, y: float) -> Vertex:
         with SessionLocal() as db:
-            closest_vertex = VertexService.get_closest(graph_id, x, y, db)
+            closest_vertex = VertexService.get_closest(graph_id, x, y)
             metadata = VertexService.attach_metadata(closest_vertex, db)
             return metadata[0]
 

@@ -54,6 +54,8 @@ class GraphIdResource(Resource):
 @api.param("eth", "Eth address searched across graphs")
 class GraphByEthResource(Resource):
 
+    # TODO this is unused and not supported yet
+
     @responds(schema=GraphSchema(many=True))
     def get(self, eth: str) -> List[Graph]:
         with SessionLocal() as db:
