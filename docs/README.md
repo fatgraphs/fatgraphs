@@ -26,6 +26,8 @@ geopandas graph-tool marshmallow matplotlib numpy pandas
 pillow psycopg2 pytest scikit-image sqlalchemy geoalchemy2 mypy_extensions
 </code>
 
+mamba install --channel conda-forge --channel anaconda flask flask-restx flask-cors flask_accepts geopandas graph-tool marshmallow matplotlib numpy panda pillow psycopg2 pytest scikit-image sqlalchemy geoalchemy2 mypy_extensions
+
 We will now assume that an Anaconda virtual environment called `rapids-21.08`
 exists in your system (you can call it something else).
 
@@ -115,11 +117,11 @@ You should be ready to go.
 ## Running
 
 ### Activate the venv
-Activate the virtual environment (either with the command `conda activate rapids-0.18` or from the anaconda-navvigator UI). 
+Activate the virtual environment (either with the command `conda activate rapids-0.18` or from the anaconda-navvigator UI).
 Alternatively if you are usng a Jetbrain IDE you can set the python interpreter of the project to the be the anconda environment: settings>project:<your_project_name>> drop down menu on python interpreter box > show all > plus icon (+) > conda environment. In this way you can work without leaving the IDE.
 
 ### Launching server and client
-`bash launch_client.sh` and `bash launch_server.sh`should be the only command you need to run to launch the server 
+`bash launch_client.sh` and `bash launch_server.sh`should be the only command you need to run to launch the server
 and the frontend.
 
 ### GTM script- generate token map
@@ -154,12 +156,12 @@ fe: frontend
 The tile creator takes a csv of a graph of transactions and generates square tiles at different levels of zoom.
 You can change the zoom level as ann argument to the render function.
 
-The tile_server is a flask server responding to requests for tiles. 
+The tile_server is a flask server responding to requests for tiles.
 
 ### FE
 The fronted is a simple react JS application that has a leaflet map.
 The map has a tile layer that is instructed to fetch tiles from our tile_server running on localhost.
-You can specify how many zooms levels are available on the map by modifying the appropriate 
+You can specify how many zooms levels are available on the map by modifying the appropriate
 variable in `fe/map_client/src/components/mymap/configurations.js`.
 If you do that remember to update the tile_creator to generate tiles for all the zoom levels.
 

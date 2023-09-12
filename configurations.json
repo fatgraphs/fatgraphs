@@ -28,8 +28,8 @@
   },
   "labelsHome": "data/labels.csv",
   "account_type_home": {
-    "eoa": "/media/nvme/EOA.csv",
-    "ca": "/media/nvme/contracts.csv"
+    "eoa": "data/account_types/EOA.csv",
+    "ca": "data/account_types/contracts.csv"
   },
   "graphsHome": "graph-tiles",
   "verticesMetadataFileName": "vertices_metadata.csv",
