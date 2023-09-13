@@ -53,3 +53,28 @@ class GtmArgs():
     def get_description(self):
         return self.configurations['description']
 
+    def to_json_camel_case(self, graph_data, graph_id):
+        return dict(
+            tileSize=self.get_tile_size(),
+            zoomLevels=self.get_zoom_levels(),
+            minTransparency=float(self.get_min_transparency()),
+            maxTransparency=float(self.get_max_transparency()),
+            tileBasedMeanTransparency=float(self.get_tile_based_mean_transparency()),
+            stdTransparencyAsPercentage=float(self.get_std_percentage()),
+            maxEdgeThickness=float(self.get_max_edge_thickness()),
+            medEdgeThickness=float(self.get_median_edge_thickness()),
+            maxVertexSize=float(self.get_max_vertex_size()),
+            medVertexSize=float(self.get_med_vertex_size()),
+            curvature=float(self.get_curvature()),
+            bgColor=self.get_bg_color(),
+            source=self.get_source_file(),
+
+            #TODO remove and put in graph data
+            medianPixelDistance=float(graph_data.median_pixel_distance),
+            min=float(graph_data.graph_space_bound.get_min_coord()),
+            max=float(graph_data.graph_space_bound.get_max_coord()),
+
+            graph=graph_id,
+        )
+
+

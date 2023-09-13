@@ -113,9 +113,10 @@ def main(configurations):
 
         # save the configuration to db
         # TODO save bound in graph_data: need to change FE code!
-        config_db = GraphConfigurationService.create(
-            GraphConfigurationInterface.from_gtm_args(gtm_args, persisted_graph.id, graph_data),
-            db)
+
+        config_obj = gtm_args.to_json_camel_case(graph_data, persisted_graph['id'])
+        
+        config_db = ApiLayer.configs.post(config_obj)
 
         # save vertices to db
         vertex_table = VERTEX_TABLE_NAME(persisted_graph['id'])
