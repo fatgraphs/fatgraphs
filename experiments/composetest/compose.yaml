@@ -1,0 +1,13 @@
+services:
+  gtm:
+    build:
+      context: .
+      dockerfile: ./gtm/Dockerfile
+  web:
+    build:
+      context: .
+      dockerfile: ./app/Dockerfile
+    ports:
+      - "8000:5000"
+  redis:
+    image: "redis:alpine"
