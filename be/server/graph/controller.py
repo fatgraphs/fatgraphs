@@ -1,8 +1,8 @@
 from typing import List
 
-from flask_accepts import responds
+from flask_accepts import responds, accepts
 from flask_restx import Namespace, Resource
-
+from flask import request
 from .model import Graph
 from .schema import GraphSchema
 from .service import GraphService
@@ -19,6 +19,14 @@ class GraphResource(Resource):
     def get(self) -> List[Graph]:
         with SessionLocal() as db:
             return GraphService.get_all(db)
+
+    @responds(schema=GraphSchema(many=False))
+    @accepts(schema=GraphSchema, api=api)
+    def post(self) -> List[Graph]:    
+        new_graph = request.parsed_obj
+        with SessionLocal() as db:
+            created = GraphService.create(new_graph, db) 
+            return created
 
 @api.route("/<string:gallery_category>")
 @api.param("gallery_category", "Gallery category")
@@ -63,3 +71,4 @@ class GraphByEthResource(Resource):
             graph_ids = set(map(lambda vertex: vertex.graph_id, vertices))
             graphs = list(map(lambda id: GraphService.get_by_id(id, db), graph_ids))
             return graphs
+        

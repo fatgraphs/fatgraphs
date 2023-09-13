@@ -16,6 +16,16 @@ class GraphData:
         self.graph_category = None
         self.description = ''
 
+    def to_json_camelcase(self):
+        return dict(
+            graphName=self.graph_name,
+            graphCategory=self.graph_category,
+            vertices=self.vertex_count,
+            edges=self.edge_count,
+            description=self.description,
+        )
+
+
     def set_bounding_square(self, vertex_data):
         min_x_min_y = Point(
             vertex_data.cudf_frame['x'].min(),

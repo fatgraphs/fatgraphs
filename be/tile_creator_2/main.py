@@ -1,10 +1,22 @@
 import os
 
 import geopandas as gpd
-from geoalchemy2 import WKTElement, Geometry
+import requests
+from geoalchemy2 import (
+    Geometry,
+    WKTElement,
+)
 
-from be.configuration import TILE_FOLDER_NAME, VERTEX_TABLE_NAME, internal_id, SRID, EDGE_TABLE_NAME, \
-    external_id, data_folder, graphs_home
+from be.configuration import (
+    EDGE_TABLE_NAME,
+    SRID,
+    TILE_FOLDER_NAME,
+    VERTEX_TABLE_NAME,
+    data_folder,
+    external_id,
+    graphs_home,
+    internal_id,
+)
 from be.server import SessionLocal
 from be.server.edge.service import EdgeService
 from be.server.graph.interface import GraphInterface
@@ -12,6 +24,7 @@ from be.server.graph.service import GraphService
 from be.server.graph_configuration.interface import GraphConfigurationInterface
 from be.server.graph_configuration.service import GraphConfigurationService
 from be.server.vertex.service import VertexService
+from be.tile_creator_2.api.api import ApiLayer
 from be.tile_creator_2.cudf_graph import CudfGraph
 from be.tile_creator_2.datasource import DataSource
 from be.tile_creator_2.edge_data import EdgeData
@@ -71,7 +84,10 @@ def main(configurations):
     graph_data.set_description(gtm_args.get_description())
 
     with SessionLocal() as db:
-        persisted_graph = GraphService.create(GraphInterface.from_graph_data(graph_data), db)
+        
+        
+        persisted_graph = ApiLayer.graph.post(graph_data.to_json_camelcase())
+        # persisted_graph = GraphService.create(GraphInterface.from_graph_data(graph_data), db)
 
         graph_data.set_bounding_square(vertex_data)
         graph_data.set_bounding_square_pixel(gtm_args)
@@ -102,11 +118,11 @@ def main(configurations):
             db)
 
         # save vertices to db
-        vertex_table = VERTEX_TABLE_NAME(persisted_graph.id)
-        VertexService.ensure_vertex_table_exists(vertex_table, persisted_graph.id)
+        vertex_table = VERTEX_TABLE_NAME(persisted_graph['id'])
+        VertexService.ensure_vertex_table_exists(vertex_table, persisted_graph['id'])
 
         f = vertex_data.cudf_frame.to_pandas()
-        f['graph_id'] = persisted_graph.id
+        f['graph_id'] = persisted_graph['id']
         geo_frame = make_geoframe(f)
         print("geo_frame", geo_frame[['graph_id', 'vertex', 'size', 'pos']])
         geo_frame[['graph_id', 'vertex', 'size', 'pos']].to_sql(
@@ -116,15 +132,15 @@ def main(configurations):
             index=False,
             dtype={'pos': Geometry('POINT', srid=SRID)})
 
-        shg = ShapeGenerator(db, persisted_graph.id)
+        shg = ShapeGenerator(db, persisted_graph['id'])
         vertex_data = shg.augment_vertex_data(vertex_data)
 
         # save edges to db
-        edge_table = EDGE_TABLE_NAME(persisted_graph.id)
-        EdgeService.ensure_edge_table_exists(edge_table, persisted_graph.id)
+        edge_table = EDGE_TABLE_NAME(persisted_graph['id'])
+        EdgeService.ensure_edge_table_exists(edge_table, persisted_graph['id'])
 
         f = edge_data.cudf_frame.to_pandas()
-        f['graph_id'] = persisted_graph.id
+        f['graph_id'] = persisted_graph['id']
         f = f.rename(columns={external_id('source'): 'src',
                               external_id('target'): 'trg'})
         f[['src', 'trg', 'amount', 'graph_id']].to_sql(edge_table,
@@ -134,7 +150,7 @@ def main(configurations):
         gt_graph = make_gt_graph(edge_data, gtm_args, vertex_data)
 
         # as soon as we have the id we can make the graph folder
-        output_folder = mkdir_for_graph(persisted_graph.id)
+        output_folder = mkdir_for_graph(persisted_graph['id'])
 
         plotter = EdgeTransparencyPlots(graph_data, gtm_args, edge_data)
         plotter.render(output_folder)
