@@ -88,8 +88,10 @@ class GraphToolTokenGraph:
                 listdir(os.path.join(PROJECT_ROOT, CONFIGURATIONS['icons']['token_icons_home'])), "*.png")
 
             custom_icons_full_path = [
-                os.path.abspath(join(PROJECT_ROOT, CONFIGURATIONS['icons']['token_icons_home'], f)) for f in
-                custom_icons_file_name]
+                os.path.abspath(join(PROJECT_ROOT, CONFIGURATIONS['icons']['token_icons_home'], f)) 
+                for f 
+                in custom_icons_file_name
+            ]
 
             token_icon_paths = [cairo.ImageSurface.create_from_png(f) for f in custom_icons_full_path]
 
