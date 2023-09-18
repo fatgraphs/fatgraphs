@@ -1,6 +1,7 @@
+import json
 from typing import List
 
-from flask import request
+from flask import Response, request
 from flask_accepts import responds, accepts
 from flask_restx import Namespace, Resource
 
@@ -11,6 +12,25 @@ from .. import SessionLocal
 from ...configuration import CONFIGURATIONS
 
 api = Namespace("VertexMetadata", description="Global metadata related to eth addresses")
+
+@api.route("/<int:graph_id>")
+@api.param("graph_id")
+class MetadataVerticesGraphResource(Resource):
+
+    @responds(schema=VertexMetadataSchema(many=True))
+    def get(self, graph_id: int) -> List[VertexMetadata]:
+
+        def stream(t: List):
+            for row in t:
+                yield json.dumps(row) + "\n"
+
+        with SessionLocal() as db:
+            df_vertex_metadata = VertexMetadataService.get_all_by_graph(graph_id, db)
+            df_vertex_metadata = df_vertex_metadata.rename(columns={"type_x": "type"})
+            json_string = df_vertex_metadata.to_json(orient="records")
+            json_obj = json.loads(json_string)
+
+            return Response(stream(json_obj))
 
 @api.route("/vertex/<string:eth>")
 @api.param("eth", "Ethereum address")

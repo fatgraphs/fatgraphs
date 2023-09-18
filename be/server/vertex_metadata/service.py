@@ -2,16 +2,25 @@ from typing import List
 
 import numpy as np
 from psycopg2._psycopg import AsIs
+from sqlalchemy.sql import text
 
+from be.server import configs
+
+from .. import engine
+from ..utils import to_pd_frame
 from .interface import VertexMetadataInterface
 from .model import VertexMetadata
-from ..utils import to_pd_frame
-from ...configuration import VERTEX_TABLE_NAME
-from .. import engine
-from sqlalchemy.sql import text
+import pandas as pd
 
 
 class VertexMetadataService:
+
+    @staticmethod
+    def get_all_by_graph(graph_id: int, db) -> List[VertexMetadata]:
+        # TODO merge the account type and metadata table for vertices
+        account_types = VertexMetadataService.merge_graph_vertices_with_account_type(graph_id, db)
+        vertex_metadatas = VertexMetadataService.merge_graph_vertices_with_metadata(graph_id, db)
+        return account_types.merge(vertex_metadatas, on='vertex', how='outer')[['vertex', 'type_x', 'label', 'icon']]
 
     @staticmethod
     def get_by_eth(vertex: str, db) -> List[VertexMetadata]:
@@ -48,8 +57,8 @@ class VertexMetadataService:
         return VertexMetadata.delete(vertex, typee, value, db)
 
     @staticmethod
-    def merge_graph_vertices_with_account_type(db, graph_id: int):
-        table_name = VERTEX_TABLE_NAME(graph_id)
+    def merge_graph_vertices_with_account_type(graph_id: int, db):
+        table_name = configs.VERTEX_TABLE_NAME(graph_id)
         query = text(
             """
             SELECT tg_account_type.vertex, tg_account_type.type FROM :table_name
@@ -67,7 +76,7 @@ class VertexMetadataService:
 
     @staticmethod
     def merge_graph_vertices_with_metadata(graph_id, db):
-        table_name = VERTEX_TABLE_NAME(graph_id)
+        table_name = configs.VERTEX_TABLE_NAME(graph_id)
         query = text(
             """
             SELECT * FROM :table_name
@@ -77,7 +86,10 @@ class VertexMetadataService:
         )
         
         with engine.connect() as conn:
-            execute = conn.execute(query, {'table_name': AsIs(table_name)})
+            execute = conn.execute(
+                query, 
+                {'table_name': AsIs(table_name)}
+            )
             result = to_pd_frame(execute)
             if(len(list(result)) == 0): # if the result contains no columns (and no rows), manually add them
                 result["vertex"] = None

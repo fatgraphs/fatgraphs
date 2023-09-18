@@ -78,7 +78,11 @@ class VertexMetadata:
                 return []
             account_types = pd.DataFrame()
             for vertex_ in list(set(from_type_label_table['vertex'].values)):
-                query = """SELECT * FROM :account_table WHERE :account_table.vertex = :vertex"""
+                query = text(
+                    """
+                    SELECT * FROM :account_table WHERE :account_table.vertex = :vertex
+                    """
+                )
 
                 result = conn.execute(query, {
                     'account_table': AsIs(VertexMetadata.__account_type__),
