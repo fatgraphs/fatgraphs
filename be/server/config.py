@@ -1,7 +1,15 @@
 import os
-from typing import List, Type
+from typing import (
+    List,
+    Type,
+)
 
-from be.configuration import DB_USER_NAME, DB_PASSWORD, DB_URL, DB_NAME
+from be.configuration import (
+    DB_NAME,
+    DB_PASSWORD,
+    DB_URL,
+    DB_USER_NAME,
+)
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -11,11 +19,13 @@ class BaseConfig:
     USE_MOCK_EQUIVALENCY = False
     DEBUG = False
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    API_ROOT = "tokengallery"
+    VERTEX_TABLE_NAME = lambda graph_id: f"graph_{graph_id}_vertex"
+    EDGE_TABLE_NAME = lambda graph_id: f"graph_{graph_id}_edge"
 
 
 class DevelopmentConfig(BaseConfig):
     CONFIG_NAME = "development"
-    API_ROOT = "tokengallery"
     SECRET_KEY = os.getenv(
         "DEV_SECRET_KEY", "You can't see California without Marlon Widgeto's eyes"
     )
@@ -26,7 +36,6 @@ class DevelopmentConfig(BaseConfig):
 
 class TestingConfig(BaseConfig):
     CONFIG_NAME = "test"
-    API_ROOT = "tokengallery"
     SECRET_KEY = os.getenv("TEST_SECRET_KEY", "Thanos did nothing wrong")
     DEBUG = True
     SQLALCHEMY_TRACK_MODIFICATIONS = False

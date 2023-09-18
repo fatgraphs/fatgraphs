@@ -2,13 +2,26 @@ from typing import List
 
 from geoalchemy2 import Geometry
 from psycopg2._psycopg import AsIs
-from sqlalchemy import Column
-from sqlalchemy import Integer, String, Float, ForeignKey
-
-from .. import Base, engine
-from ..utils import to_pd_frame, wkt_to_x_y_list
-from ...configuration import VERTEX_GLOBAL_TABLE, VERTEX_TABLE_NAME
+from sqlalchemy import (
+    Column,
+    Float,
+    ForeignKey,
+    Integer,
+    String,
+)
 from sqlalchemy.sql import text
+
+from be.server import configs
+
+from .. import (
+    Base,
+    engine,
+)
+from ..utils import (
+    to_pd_frame,
+    wkt_to_x_y_list,
+)
+
 
 class Vertex(Base):
 
@@ -34,23 +47,13 @@ class Vertex(Base):
             result = conn.execute(
                 query, 
                 {
-                    'table_name': AsIs(VERTEX_TABLE_NAME(graph_id)),
+                    'table_name': AsIs(configs.VERTEX_TABLE_NAME(graph_id)),
                     'graph_id': graph_id,
                     'x': x,
                     'y': y
                 }
             )
-            print({
-                    'table_name': AsIs(VERTEX_TABLE_NAME(graph_id)),
-                    'graph_id': graph_id,
-                    'x': x,
-                    'y': y
-                })
             closest = to_pd_frame(result)
-            print(result)
-
-            for row in result:
-                print(row)
 
             v = Vertex(graph_id=closest['graph_id'][0],
                     pos=wkt_to_x_y_list(closest['st_astext'][0]),
@@ -70,14 +73,13 @@ class Vertex(Base):
         )
 
         substitution = {
-            'table_name': AsIs(VERTEX_TABLE_NAME(graph_id)),
+            'table_name': AsIs(configs.VERTEX_TABLE_NAME(graph_id)),
             'vertices': tuple(vertices)
         }
 
         with engine.connect() as conn:
 
             raw_result = conn.execute(query, substitution)
-            print("raw_result", raw_result)
 
             fetchall = to_pd_frame(raw_result)
 

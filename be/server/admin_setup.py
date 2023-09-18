@@ -1,15 +1,25 @@
 import os
 import shutil
 
-from flask import flash, Markup
+from flask import (
+    Markup,
+    flash,
+)
+from flask_admin.babel import gettext
 from flask_admin.contrib.sqla import ModelView
 from psycopg2._psycopg import AsIs
-from flask_admin.babel import gettext
-from be.configuration import VERTEX_TABLE_NAME, EDGE_TABLE_NAME, CONFIGURATIONS, TILE_FOLDER_NAME
-from be.server import SessionLocal
+
+from be.configuration import (
+    CONFIGURATIONS,
+    TILE_FOLDER_NAME,
+)
+from be.server import (
+    SessionLocal,
+)
 from be.server.gallery_categories import GalleryCategory
 from be.server.gallery_categories.service import GalleryCategoryService
 from be.server.graph import Graph
+from be.server import configs
 
 
 class GraphAdminView(ModelView):
@@ -31,8 +41,8 @@ class GraphAdminView(ModelView):
             """
             self.session.bind.engine.execute(delete_vertex_edge_configs, {
                 'graph_id': AsIs(graph.id),
-                'vertex_table': AsIs(VERTEX_TABLE_NAME(graph.id)),
-                'edge_table': AsIs(EDGE_TABLE_NAME(graph.id))
+                'vertex_table': AsIs(configs.VERTEX_TABLE_NAME(graph.id)),
+                'edge_table': AsIs(configs.EDGE_TABLE_NAME(graph.id))
             })
 
         except Exception as e:
@@ -122,6 +132,9 @@ class GraphCategoryView(ModelView):
 
 
 def do_setup():
-    from be.server import admin, SessionLocal
+    from be.server import (
+        SessionLocal,
+        admin,
+    )
     admin.add_view(GraphCategoryView(GalleryCategory, SessionLocal()))
     admin.add_view(GraphAdminView(Graph, SessionLocal()))

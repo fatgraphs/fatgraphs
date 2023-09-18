@@ -21,15 +21,14 @@ class VertexService:
 
     @staticmethod
     def get_by_eths(graph_id: int, eths: List[str], db) -> List[Vertex]:
-        print("eths", eths)
-        print("graph_id", graph_id)
+
         if len(eths) == 0:
             return []
         vertices = Vertex.get(eths, graph_id, db)
         return vertices
 
     @staticmethod
-    def ensure_vertex_table_exists(table_name: str, graph_id: int):
+    def ensure_vertex_table_exists(table_name: str, graph_id: int, db):
 
         query = text(
             """
@@ -39,8 +38,9 @@ class VertexService:
             """
         )
 
-        with engine.connect() as conn:
-            print("conn", conn)
+        with db.get_bind().connect() as conn:
+            trans = conn.begin()
+
             conn.execute(
                 query, 
                 {
@@ -49,6 +49,8 @@ class VertexService:
                     'graph_id': tuple([str(graph_id)])
                 }
             )
+
+            trans.commit()
 
     @staticmethod
     def attach_metadata(vertices, db):

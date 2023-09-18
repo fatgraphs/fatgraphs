@@ -3,12 +3,17 @@ import warnings
 from typing import List
 
 from psycopg2._psycopg import AsIs
+from sqlalchemy.sql import text
 
-from be.configuration import EDGE_GLOBAL_TABLE, CONFIGURATIONS, VERTEX_TABLE_NAME, EDGE_TABLE_NAME
-from . import Edge
+from be.configuration import (
+    CONFIGURATIONS,
+    EDGE_GLOBAL_TABLE,
+)
+from be.server import configs
+
 from .. import engine
 from ..vertex.service import VertexService
-from sqlalchemy.sql import text
+from . import Edge
 
 warnings.simplefilter(action='ignore', category=UserWarning)
 
@@ -16,8 +21,7 @@ warnings.simplefilter(action='ignore', category=UserWarning)
 class EdgeService:
 
     @staticmethod
-    def ensure_edge_table_exists(table_name: str, graph_id: int):
-
+    def ensure_edge_table_exists(table_name: str, graph_id: int, db):
 
         query = text(
             """
@@ -33,7 +37,8 @@ class EdgeService:
             """
         )
         
-        with engine.connect() as conn:
+        with db.get_bind().connect() as conn:
+            trans = conn.begin()
 
             conn.execute(
                 query, 
@@ -52,6 +57,8 @@ class EdgeService:
                 }
             )
 
+            trans.commit()
+
 
     @staticmethod
     def ensure_index_edge_table(edge_table, graph_id):
@@ -64,8 +71,8 @@ class EdgeService:
 
     @staticmethod
     def get_edges(vertex, graph_id, db) -> List[Edge]:
-        edge_table = EDGE_TABLE_NAME(graph_id)
-        vertex_table = VERTEX_TABLE_NAME(graph_id)
+        edge_table = configs.EDGE_TABLE_NAME(graph_id)
+        vertex_table = configs.VERTEX_TABLE_NAME(graph_id)
         prob_in, prob_out = EdgeService._probabilities_choosing_edge(edge_table, vertex)
         vertex_object = VertexService.get_by_eths(graph_id, [vertex], db)[0]
 
@@ -80,8 +87,9 @@ class EdgeService:
             )
         )
         result.extend(
-            random.sample(result_out,
-                          min(half_edge_count*2 - len(result), len(result_out))
+            random.sample(
+                result_out,
+                min(half_edge_count*2 - len(result), len(result_out))
             )
         )
 

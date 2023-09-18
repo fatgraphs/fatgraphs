@@ -1,14 +1,24 @@
 from typing import List
 
-from flask_accepts import responds, accepts
-from flask_restx import Namespace, Resource
 from flask import request
-from .model import Graph
-from .schema import GraphSchema
-from .service import GraphService
+from flask_accepts import (
+    accepts,
+    responds,
+)
+from flask_restx import (
+    Namespace,
+    Resource,
+)
+
+from be.server import configs
+from be.server.edge.service import EdgeService
+
 from .. import SessionLocal
 from ..gallery_categories.service import GalleryCategoryService
 from ..vertex.service import VertexService
+from .model import Graph
+from .schema import GraphSchema
+from .service import GraphService
 
 api = Namespace("Graph", description="Graphs are saved with their metadata, but the actual vertices and edges are in the vertex and edge endpoints")
 
@@ -26,6 +36,9 @@ class GraphResource(Resource):
         new_graph = request.parsed_obj
         with SessionLocal() as db:
             created = GraphService.create(new_graph, db) 
+            graph_id = created.id
+            VertexService.ensure_vertex_table_exists(configs.VERTEX_TABLE_NAME(graph_id), graph_id, db)
+            EdgeService.ensure_edge_table_exists(configs.EDGE_TABLE_NAME(graph_id), graph_id, db)
             return created
 
 @api.route("/<string:gallery_category>")
