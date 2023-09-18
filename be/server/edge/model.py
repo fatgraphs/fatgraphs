@@ -1,18 +1,30 @@
 from typing import List
+from geoalchemy2 import Geometry
 
 from graph_tool import Edge
 from psycopg2._psycopg import AsIs
+from sqlalchemy.sql import text
 
 from .. import engine
-from ..utils import to_pd_frame, wkt_to_x_y_list
+from ..utils import (
+    to_pd_frame,
+    wkt_to_x_y_list,
+)
 from ..vertex import Vertex
-from sqlalchemy.sql import text
+
+from sqlalchemy import (
+    Column,
+    Float,
+    ForeignKey,
+    Integer,
+    String,
+)
+
 
 class Edge:
     # = Column(Integer(), ForeignKey('tg_graphs.id'))
 
     table_name = "tg_edge"
-
 
     def __init__(self, graph_id: int, src: Vertex, trg: Vertex, amount: float):
         self.graph_id = graph_id
@@ -21,26 +33,26 @@ class Edge:
         self.amount = amount
 
     def add(self, db):
-       query = text(
+        query = text(
             """
             INSERT INTO :edge_table_name
-            (graph_id, src_vertex, trg_vertex, amount) 
+            (graph_id, src, trg, amount) 
             VALUES (
                 :graph_id,
                 :src_vertex,
                 :trg_vertex,
                 :amount);
             """
-       )
-       with engine.connect() as conn:
-        result = conn.execute(
-            query, 
-            {
-                'edge_table_name': AsIs(Edge.table_name),
-                'graph_id': self.graph_id,
-                'src_vertex': self.src.vertex,
-                'trg_vertex': self.trg.vertex,
-                'amount': self.amount
+        )
+        with engine.connect() as conn:
+            result = conn.execute(
+                query, 
+                {
+                    'edge_table_name': AsIs(Edge.table_name),
+                    'graph_id': self.graph_id,
+                    'src_vertex': self.src.vertex,
+                    'trg_vertex': self.trg.vertex,
+                    'amount': self.amount
                 }
             )
 

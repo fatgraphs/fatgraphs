@@ -1,7 +1,9 @@
-import json
+import io
+
 import requests
 
 from be.tile_creator_2.configs import settings
+from be.utils import timeit
 
 
 class ResourceApi():
@@ -11,8 +13,31 @@ class ResourceApi():
 
     def post(self, body: object):
         response = requests.post(self.url, json=body)
-        print(response.text)
+        self.check_status_code(response)
         return response.json()
+
+    @timeit("Uploading took")
+    def post_stream(self, df):
+        csv_data = io.StringIO()
+
+        df.to_csv(csv_data, index=False)
+
+        response = requests.post(
+            self.url, 
+            data=csv_data.getvalue(), 
+            stream=True
+        )
+    
+        self.check_status_code(response)
+
+        return response
+    
+    def check_status_code(self, response):
+        if response.status_code >= 400:
+            raise Exception(
+                "Invalid status code in HTTP response", 
+                f"Culprit URL is {self.url}"
+            )
 
 
 class GraphApi(ResourceApi):
@@ -27,7 +52,42 @@ class ConfigsApi(ResourceApi):
         super().__init__("/graph_configuration/" + url)
 
 
+class VertexApi(ResourceApi):
+
+    def __init__(self, url="") -> None:
+        super().__init__("/vertex" + url)
+
+
+class VerticesApi(VertexApi):
+
+    def __init__(self, url="") -> None:
+        super().__init__("/upload" + url)
+
+class VertexMetadataApi(ResourceApi):
+
+    def __init__(self) -> None:
+        super().__init__("/vertex-metadata")
+
+    def get_all_for_graph(self, graph_id):
+        '''Givenn graph_id returns all the metadata associated with the
+        vertices in this graph'''
+        response = requests.get(
+            self.url + f"/{graph_id}", 
+            stream=True
+        )
+        self.check_status_code(response)
+        return response
+    
+class EdgesApi(ResourceApi):
+    def __init__(self) -> None:
+        super().__init__("/edge/upload")
+
+
 class ApiLayer():
 
     graph = GraphApi()
     configs = ConfigsApi()
+    vertex = VertexApi()
+    vertices = VerticesApi()
+    vertex_metadata = VertexMetadataApi()
+    edges = EdgesApi()

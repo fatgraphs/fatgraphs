@@ -15,7 +15,6 @@ def to_pd_frame(raw_result):
     return df
 
 
-
 def wkt_to_x_y_list(wkt):
     """
 
@@ -29,7 +28,7 @@ def wkt_to_x_y_list(wkt):
 
 class CamelCaseSchema(Schema):
     """Schema that uses camel-case for its external representation
-    and snake-case for its internal representation.
+    and snake_case for its internal representation.
 
     Needed because Python is traditionally snake_case but JS is camelCase
     """
@@ -50,6 +49,7 @@ def is_table_present(tableName, engine):
     '''
     return inspect(engine).has_table(tableName)
 
+
 def is_column_present(tableName, columnName, engine):
     """
     :param tableName:
@@ -66,3 +66,13 @@ def is_column_present(tableName, columnName, engine):
 
         result = con.execute(query, {'tableName': tableName, 'columnName': columnName})
         return result.rowcount != 0
+    
+
+def iterate_stream(request):
+    try:
+        uploaded_file = request.stream
+        next(uploaded_file) # ignore csv header
+        for chunk in uploaded_file:
+            yield chunk
+    except Exception as e:
+        return str(e)

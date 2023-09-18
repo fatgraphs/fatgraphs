@@ -1,6 +1,10 @@
-from flask import request
+from flask import Response, request
 from flask_accepts import responds
 from flask_restx import Namespace, Resource
+from geoalchemy2 import Geometry
+
+from be.configuration import SRID
+from be.server.utils import iterate_stream
 
 from .model import Vertex
 from .schema import VertexSchema
@@ -67,3 +71,31 @@ class GetVerticesByEth(Resource):
             # if graph_id is not None:
             #     vertices = VertexService.attach_position(vertices, graph_id, db)
             return vertices
+
+@api.route('/upload')
+class UploadVertices(Resource):
+
+    def post(self):
+     
+        count = 0
+
+        with SessionLocal() as db:
+            for vertex in iterate_stream(request):
+                vertex = vertex.decode()
+                vertex = vertex.split(",")
+            
+                v = Vertex(
+                    graph_id=vertex[0],
+                    vertex=vertex[1],
+                    size=vertex[2],
+                    pos=vertex[3].strip(),
+                )
+                db.add(v)
+                count += 1
+                
+            db.commit()
+            db.flush()
+
+        print("Added ", count, " vertices")
+
+        return Response(status=200)
