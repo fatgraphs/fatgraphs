@@ -11,6 +11,14 @@ class ResourceApi():
     def __init__(self, url: str) -> None:
         self.url = settings.BASE_URL + url
 
+    def get(self):
+        
+        response = requests.get(
+            self.url, 
+        )
+        self.check_status_code(response)
+        return response.json()
+
     def post(self, body: object):
         response = requests.post(self.url, json=body)
         self.check_status_code(response)
@@ -82,10 +90,15 @@ class EdgesApi(ResourceApi):
     def __init__(self) -> None:
         super().__init__("/edge/upload")
 
+class GraphCategory(ResourceApi):
+    def __init__(self):
+        super().__init__("/gallery_categories")
+
 
 class ApiLayer():
 
     graph = GraphApi()
+    gallery_category = GraphCategory()
     configs = ConfigsApi()
     vertex = VertexApi()
     vertices = VerticesApi()

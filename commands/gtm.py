@@ -7,6 +7,7 @@ from be.tile_creator_2.main import main
 from be.configuration import CONFIGURATIONS, data_folder
 from be.server import SessionLocal
 from be.server.gallery_categories.service import GalleryCategoryService
+from be.tile_creator_2.api.api import ApiLayer
 
 # def getCwd():
 #     thisFileDir = os.path.dirname(os.path.realpath(__file__))
@@ -55,16 +56,17 @@ def get_final_configurations(raw_args, graph_name, category_id, description):
 
 
 def resolve_graph_category(raw_args):
-    with SessionLocal() as db:
-        categories = GalleryCategoryService.get_all(db)
-        category_id = next(filter(lambda cat: cat.title == raw_args.get("--gc", 'default'), categories)).id
-        return category_id
+    categories = ApiLayer.gallery_category.get()
+    return [
+        c['id'] 
+        for c in categories 
+        if c['title'] == raw_args.get("--gc", 'default')
+    ][0]
 
 
 def format_graph_name(raw_args):
     graph_name = raw_args["-n"].strip()
     return graph_name
-
 
 def read_description_file(description_file):
     if description_file == None:
