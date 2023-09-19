@@ -44,17 +44,17 @@ class Edge:
                 :amount);
             """
         )
-        with engine.connect() as conn:
-            result = conn.execute(
-                query, 
-                {
-                    'edge_table_name': AsIs(Edge.table_name),
-                    'graph_id': self.graph_id,
-                    'src_vertex': self.src.vertex,
-                    'trg_vertex': self.trg.vertex,
-                    'amount': self.amount
-                }
-            )
+        
+        result = db.execute(
+            query, 
+            {
+                'edge_table_name': AsIs(Edge.table_name),
+                'graph_id': self.graph_id,
+                'src_vertex': self.src.vertex,
+                'trg_vertex': self.trg.vertex,
+                'amount': self.amount
+            }
+        )
 
 
 
