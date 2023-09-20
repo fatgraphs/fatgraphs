@@ -61,6 +61,15 @@ CREATE TABLE IF NOT EXISTS tg_vertex_metadata
 );
 CREATE INDEX IF NOT EXISTS eth_index ON tg_vertex_metadata (vertex);
 
+insert into tg_vertex_metadata (vertex, type, label) VALUES ('0x6e71c6d41aed31b18dc37c27dc3309bcdb11e893', 'testing  icons', 'iconic smart contract');
+
+insert into tg_vertex_metadata (vertex, type, label, icon) VALUES ('0x6e71c6d41aed31b18dc37c27dc3309bcdb11e893', 'testing  icons', 'iconic smart contract', 'testicon-ca.png');
+
+insert into tg_vertex_metadata (vertex, type, label, icon) VALUES ('0x9947ea09a045ed3fc427df736463d1b588c06476', 'testing  icons', 'iconic', 'testicon-eoa.png');
+
+insert into tg_vertex_metadata (vertex, type, label) VALUES ('0xe9c1a41b0ba27e80b138c0e17e7cc681b26099cf', 'a guy I know', 'okok');
+insert into tg_vertex_metadata (vertex, type, label) VALUES ('0x5719e1bc888efa00dc5b2d992ca364889129a869', 'a guy I know', 'okok');
+
 
 CREATE TABLE IF NOT EXISTS tg_vertex
 (
@@ -70,7 +79,10 @@ CREATE TABLE IF NOT EXISTS tg_vertex
     pos         Geometry('Point', 3857),
     CONSTRAINT fk_graph_id
         FOREIGN KEY (graph_id)
-            REFERENCES tg_graphs (id)
+            REFERENCES tg_graphs (id),
+
+    PRIMARY KEY(graph_id, vertex)
+
 ) PARTITION BY LIST (graph_id);
 
 CREATE TABLE IF NOT EXISTS tg_edge
@@ -82,6 +94,16 @@ CREATE TABLE IF NOT EXISTS tg_edge
     amount          real,
     CONSTRAINT fk_graph_id
         FOREIGN KEY (graph_id)
-            REFERENCES tg_graphs (id)
+            REFERENCES tg_graphs (id),
+
+    PRIMARY KEY(src, trg, graph_id),
+
+    CONSTRAINT fk_src
+        FOREIGN KEY (graph_id, src)
+            REFERENCES tg_vertex (graph_id, vertex),
+
+    CONSTRAINT fk_trg
+        FOREIGN KEY (graph_id, trg)
+            REFERENCES tg_vertex (graph_id, vertex)
 ) PARTITION BY LIST (graph_id);
 

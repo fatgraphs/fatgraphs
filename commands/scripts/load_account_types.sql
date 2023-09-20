@@ -11,3 +11,6 @@ BEGIN;
     ALTER TABLE tg_account_type ADD CONSTRAINT vertex_pk PRIMARY KEY (vertex);
 
 COMMIT;
+
+insert into tg_account_type (vertex, type) VALUES ('0xe9c1a41b0ba27e80b138c0e17e7cc681b26099cf', 1);
+insert into tg_account_type (vertex, type) VALUES ('0xef51c9377feb29856e61625caf9390bd0b67ea18', 1);

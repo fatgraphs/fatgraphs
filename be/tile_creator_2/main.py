@@ -1,4 +1,5 @@
 import json
+import math
 import os
 import cudf
 import pandas as pd
@@ -128,9 +129,12 @@ def main(configurations):
     for row in res.iter_lines(chunk_size=1):
         row = json.loads(row.decode())
 
-        code = (row['type'] * 2) + 1
-        code += 1 if row['label'] else 0
-        code = row['icon'] if row['icon'] is not None else int_to_icon[code]
+        code = math.nan
+        
+        if row['type'] is not None:
+            code = (row['type'] * 2) + 1
+            code += 1 if row['label'] else 0
+            code = row['icon'] if row['icon'] is not None else int_to_icon[code]
 
         vertex_metadata_subset.append(
             dict(vertex=row['vertex'], code=code)
