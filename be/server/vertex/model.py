@@ -27,8 +27,15 @@ class Vertex(Base):
 
     __tablename__ = "tg_vertex"
 
-    graph_id = Column(Integer(), ForeignKey('tg_graphs.id'))
-    vertex = Column(String(), primary_key=True)
+    graph_id = Column(
+        Integer(), 
+        ForeignKey('tg_graphs.id'), 
+        primary_key=True,
+    )
+    vertex = Column(
+        String(), 
+        primary_key=True,
+    )
     size = Column(Float(precision=8))
     pos = Column(Geometry('Point', 3857))
 

@@ -90,7 +90,14 @@ class VertexMetadata:
                 frame = to_pd_frame(result)
                 account_types = account_types.append(frame)
 
-            from_type_label_table = from_type_label_table.merge(account_types.rename(columns={'type': 'account_type'}), left_on='vertex', right_on='vertex')
+            accounts = account_types.rename(
+                columns={'type': 'account_type'}
+            )
+
+            from_type_label_table = from_type_label_table.merge(
+                accounts, 
+                left_on='vertex', right_on='vertex'
+            )
 
             result = list(map(VertexMetadata.from_row, from_type_label_table.iterrows()))
 
