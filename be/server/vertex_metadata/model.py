@@ -76,7 +76,8 @@ class VertexMetadata:
             from_type_label_table = to_pd_frame(result)
             if from_type_label_table.empty:
                 return []
-            account_types = pd.DataFrame()
+            # so it doesn't break if account_types is empty
+            account_types = pd.DataFrame(columns=["vertex"])
             for vertex_ in list(set(from_type_label_table['vertex'].values)):
                 query = text(
                     """

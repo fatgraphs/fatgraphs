@@ -40,35 +40,6 @@ class Vertex(Base):
     pos = Column(Geometry('Point', 3857))
 
     @staticmethod
-    def get_closest(graph_id: int, x: float, y: float):
-        query = text(
-            """
-            SELECT graph_id, vertex, size, ST_AsText(ST_PointFromWKB(pos)), pos <-> ST_SetSRID(ST_MakePoint(:x, :y), 3857) AS dist 
-            FROM :table_name 
-            WHERE graph_id = :graph_id
-            ORDER BY dist LIMIT 1;
-            """
-        )
-
-        with engine.connect() as conn:
-            result = conn.execute(
-                query, 
-                {
-                    'table_name': AsIs(configs.VERTEX_TABLE_NAME(graph_id)),
-                    'graph_id': graph_id,
-                    'x': x,
-                    'y': y
-                }
-            )
-            closest = to_pd_frame(result)
-
-            v = Vertex(graph_id=closest['graph_id'][0],
-                    pos=wkt_to_x_y_list(closest['st_astext'][0]),
-                    vertex=closest['vertex'][0],
-                    size=closest['size'][0])
-            return v
-
-    @staticmethod
     def get(vertices: List[str], graph_id: int, db: object):
 
         query = text(

@@ -7,7 +7,7 @@ from be.configuration import SRID
 from be.server.utils import iterate_stream
 
 from .model import Vertex
-from .schema import VertexSchema
+from .schema import VertexSchema, VertexSchemaPointConversion
 from .service import VertexService
 from .. import SessionLocal
 
@@ -20,10 +20,10 @@ api = Namespace("Vertex", description="Single namespace, single entity")  # noqa
 @api.param("x", "X coordinate")
 class GetClosestVertexWithMetadata(Resource):
 
-    @responds(schema=VertexSchema)
+    @responds(schema=VertexSchemaPointConversion)
     def get(self, graph_id: int, x: float, y: float) -> Vertex:
         with SessionLocal() as db:
-            closest_vertex = VertexService.get_closest(graph_id, x, y)
+            closest_vertex = VertexService.get_closest(graph_id, x, y, db)
             metadata = VertexService.attach_metadata(closest_vertex, db)
             return metadata[0]
 

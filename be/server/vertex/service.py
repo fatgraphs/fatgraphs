@@ -2,12 +2,15 @@ import warnings
 from typing import List
 
 from psycopg2._psycopg import AsIs
+from sqlalchemy import func
 
 from be.configuration import VERTEX_GLOBAL_TABLE
+from be.server.utils import wkt_to_x_y_list
 from .model import Vertex
 from .. import engine
 from ..vertex_metadata.service import VertexMetadataService
 from sqlalchemy.sql import text
+from sqlalchemy.orm import aliased
 
 warnings.simplefilter(action='ignore', category=UserWarning)
 
@@ -15,9 +18,31 @@ warnings.simplefilter(action='ignore', category=UserWarning)
 class VertexService:
 
     @staticmethod
-    def get_closest(graph_id: int, x: float, y: float) -> Vertex:
-        closest = Vertex.get_closest(graph_id, x, y)
-        return closest
+    def get_closest(graph_id: int, x: float, y: float, session) -> Vertex:
+
+        query_point = func.ST_SetSRID(
+            func.ST_MakePoint(x, y),
+            3857
+        )
+    
+        closest_vertex = (
+            session.query(
+                Vertex.graph_id,
+                Vertex.vertex,
+                Vertex.size,
+                func.ST_PointFromWKB(Vertex.pos).label('pos'),
+                func.ST_Distance(
+                    query_point,
+                    func.ST_Transform(Vertex.pos, 3857)
+                ).label('distance')
+            )
+            .filter(Vertex.graph_id == graph_id)
+            .order_by('distance')
+            .first()
+        )
+
+        return closest_vertex
+           
 
     @staticmethod
     def get_by_eths(graph_id: int, eths: List[str], db) -> List[Vertex]:
