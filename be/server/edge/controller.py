@@ -1,16 +1,23 @@
 from typing import List
-from flask import Response, request
 
+from flask import (
+    Response,
+    request,
+)
 from flask_accepts import responds
-from flask_restx import Namespace, Resource
+from flask_restx import (
+    Namespace,
+    Resource,
+)
 
 from be.server.utils import iterate_stream
-from be.server.vertex.model import Vertex
 
-from .model import Edge
-from .schema import EdgeSchema
-from .service import EdgeService
 from .. import SessionLocal
+from .model import Edge
+from .schema import (
+    EdgeSchemaConvertingPos,
+)
+from .service import EdgeService
 
 api = Namespace("Edge", description="Single namespace, single entity")  # noqa
 
@@ -20,7 +27,7 @@ api = Namespace("Edge", description="Single namespace, single entity")  # noqa
 @api.param("vertex", "The vertex to query")
 class GetEdges(Resource):
 
-    @responds(schema=EdgeSchema(many=True))
+    @responds(schema=EdgeSchemaConvertingPos(many=True))
     def get(self, graph_id: int, vertex: str) -> List[Edge]:
         with SessionLocal() as db:
             edges = EdgeService.get_edges(vertex, graph_id, db)
@@ -37,22 +44,20 @@ class UploadEdges(Resource):
             for edge in iterate_stream(request):
                 edge = edge.decode()
                 edge = edge.split(",")
-
-                print(">> edge", edge)
                 
                 v = Edge(
                     graph_id=edge[3].strip(),
-                    src=Vertex(vertex = edge[0].strip(), graph_id = edge[3].strip()),
-                    trg=Vertex(vertex = edge[1].strip(), graph_id = edge[3].strip()),
+                    src_id=edge[0].strip(),
+                    trg_id=edge[1].strip(),
                     amount=edge[2].strip(),
                 )
-                v.add(db)
+                db.add(v)
                 count += 1
                 
             db.commit()
             db.flush()
 
-        print("Added ", count, " vertices")
+        print("Added", count, "edges")
 
         return Response(status=200)
 

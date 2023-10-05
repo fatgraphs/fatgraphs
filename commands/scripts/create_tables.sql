@@ -88,22 +88,22 @@ CREATE TABLE IF NOT EXISTS tg_vertex
 CREATE TABLE IF NOT EXISTS tg_edge
 (
     graph_id        int not null,
-    src             text,
-    trg             text,
+    src_id          text,
+    trg_id          text,
     block_number    int,
     amount          real,
     CONSTRAINT fk_graph_id
         FOREIGN KEY (graph_id)
             REFERENCES tg_graphs (id),
 
-    PRIMARY KEY(src, trg, graph_id),
+    PRIMARY KEY(src_id, trg_id, graph_id),
 
     CONSTRAINT fk_src
-        FOREIGN KEY (graph_id, src)
+        FOREIGN KEY (graph_id, src_id)
             REFERENCES tg_vertex (graph_id, vertex),
 
     CONSTRAINT fk_trg
-        FOREIGN KEY (graph_id, trg)
+        FOREIGN KEY (graph_id, trg_id)
             REFERENCES tg_vertex (graph_id, vertex)
 ) PARTITION BY LIST (graph_id);
 

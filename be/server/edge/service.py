@@ -3,6 +3,7 @@ import warnings
 from typing import List
 
 from psycopg2._psycopg import AsIs
+from sqlalchemy import select
 from sqlalchemy.sql import text
 
 from be.configuration import (
@@ -10,15 +11,24 @@ from be.configuration import (
     EDGE_GLOBAL_TABLE,
 )
 from be.server import configs
+from be.server.vertex.model import Vertex
 
-from .. import engine
 from ..vertex.service import VertexService
 from . import Edge
+
+from sqlalchemy.orm import (
+    joinedload,
+)
 
 warnings.simplefilter(action='ignore', category=UserWarning)
 
 
 class EdgeService:
+
+    in_out_map = {
+            'in':Edge.trg_id, 
+            'out':Edge.src_id
+        }
 
     @staticmethod
     def ensure_edge_table_exists(table_name: str, graph_id: int, db):
@@ -33,7 +43,7 @@ class EdgeService:
 
         index_creation = text(
             """
-            CREATE INDEX IF NOT EXISTS :index_name ON :table_name (src, trg);
+            CREATE INDEX IF NOT EXISTS :index_name ON :table_name (src_id, trg_id);
             """
         )
         
@@ -61,31 +71,22 @@ class EdgeService:
 
 
     @staticmethod
-    def ensure_index_edge_table(edge_table, graph_id):
-        pass
-
-    @staticmethod
-    def get_edge_count(edge_table, vertex, inout='both'):
-        result = Edge.get_count(edge_table, vertex, inout)
-        return result
-
-    @staticmethod
     def get_edges(vertex, graph_id, db) -> List[Edge]:
-        edge_table = configs.EDGE_TABLE_NAME(graph_id)
-        vertex_table = configs.VERTEX_TABLE_NAME(graph_id)
-        prob_in, prob_out = EdgeService._probabilities_choosing_edge(edge_table, vertex)
+
         vertex_object = VertexService.get_by_eths(graph_id, [vertex], db)[0]
 
         result = []
-        result_in = Edge.get_in_edges_with_probability(edge_table, vertex_table, vertex_object, prob_in, graph_id)
-        result_out = Edge.get_out_edges_with_probability(edge_table, vertex_table, vertex_object, prob_out, graph_id)
+        result_in = EdgeService.get_edges_with_probability('in', vertex_object, graph_id, db)
+        result_out = EdgeService.get_edges_with_probability('out', vertex_object, graph_id, db)
 
         half_edge_count = CONFIGURATIONS['endpoints']['parameters']['edges_fetched_limit'] // 2
+
         result.extend(
             random.sample(result_in,
                       min(half_edge_count, len(result_in))
             )
         )
+
         result.extend(
             random.sample(
                 result_out,
@@ -94,14 +95,32 @@ class EdgeService:
         )
 
         return result
-
+    
     @staticmethod
-    def _probabilities_choosing_edge(edge_table, vertex):
-        count_in = EdgeService.get_edge_count(edge_table, vertex, 'in')
-        count_out = EdgeService.get_edge_count(edge_table, vertex, 'out')
-        prob_in = 1.0 if count_in < CONFIGURATIONS['endpoints']['parameters']['edges_fetched_limit'] \
-            else CONFIGURATIONS['endpoints']['parameters']['edges_fetched_limit'] / count_in
-        prob_out = 1.0 if count_out < CONFIGURATIONS['endpoints']['parameters']['edges_fetched_limit'] \
-            else CONFIGURATIONS['endpoints']['parameters']['edges_fetched_limit'] / count_out
-        return prob_in, prob_out
+    def get_edges_with_probability(in_out, vertex: Vertex, graph_id, ses) -> List[Edge]:
+        limit = CONFIGURATIONS['endpoints']['parameters']['edges_fetched_limit']
 
+        edge_count = (
+            ses.query(Edge)
+            .filter(EdgeService.in_out_map[in_out] == vertex.vertex)
+            .count()
+        )
+
+        fetch_edges_query = (
+            select(Edge)
+            .options(joinedload(Edge.src))
+            .options(joinedload(Edge.trg))
+            .where(EdgeService.in_out_map[in_out] == vertex.vertex)
+            .where(Edge.graph_id == graph_id)
+        )
+
+        if edge_count > limit:
+            fetch_edges_query = (
+                fetch_edges_query
+                .limit(limit)
+                .offset(random.randint(0, edge_count-limit))
+            )
+
+        res = ses.execute(fetch_edges_query)
+        res = res.fetchall()
+        return [e[0] for e in res]
