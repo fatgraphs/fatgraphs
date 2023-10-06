@@ -40,28 +40,13 @@ class Vertex(Base):
     pos = Column(Geometry('Point', 3857))
 
     @staticmethod
-    def get(vertices: List[str], graph_id: int, db: object):
-
-        query = text(
-            """
-            SELECT graph_id, vertex, size, ST_AsText(ST_PointFromWKB(pos)) AS pos 
-            FROM :table_name 
-            WHERE vertex IN :vertices
-            """ 
+    def from_dict(obj):
+        return Vertex(
+            graph_id=obj.graph_id,
+            vertex=obj.vertex,
+            size=obj.size,
+            pos=obj.pos
         )
-
-        substitution = {
-            'table_name': AsIs(configs.VERTEX_TABLE_NAME(graph_id)),
-            'vertices': tuple(vertices)
-        }
-
-        with engine.connect() as conn:
-
-            raw_result = conn.execute(query, substitution)
-
-            fetchall = to_pd_frame(raw_result)
-
-            return Vertex._map_to_model(fetchall)
 
     @staticmethod
     def _map_to_model(fetchall):

@@ -1,5 +1,4 @@
 from .model import Edge # noqa
-from .schema import EdgeSchema  # noqa
 
 BASE_ROUTE = "edge"
 

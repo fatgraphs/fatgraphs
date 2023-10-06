@@ -41,16 +41,31 @@ class VertexService:
             .first()
         )
 
-        return closest_vertex
+        return Vertex.from_dict(closest_vertex)
            
 
     @staticmethod
-    def get_by_eths(graph_id: int, eths: List[str], db) -> List[Vertex]:
+    def get_by_eths(graph_id: int, eths: List[str], session) -> List[Vertex]:
 
-        if len(eths) == 0:
-            return []
-        vertices = Vertex.get(eths, graph_id, db)
-        return vertices
+        query = (
+            session.query(
+                Vertex.graph_id,
+                Vertex.vertex,
+                Vertex.size,
+                func.ST_PointFromWKB(Vertex.pos).label('pos'),
+            )
+            .filter(Vertex.vertex.in_(eths))
+        )
+
+        if graph_id is not None:
+            print("filtering by graph ID")
+            query.filter(Vertex.graph_id == graph_id)
+
+        return [
+            Vertex.from_dict(o) 
+            for o 
+            in query.all()
+        ]
 
     @staticmethod
     def ensure_vertex_table_exists(table_name: str, graph_id: int, db):
@@ -82,6 +97,7 @@ class VertexService:
         if not isinstance(vertices, list):
             vertices = [vertices]
         for v in vertices:
+            print("verteex metdataaa", v)
             metadata = VertexMetadataService.get_by_eth(v.vertex, db)
             for m in metadata:
                 for attr in ['types', 'labels']:
@@ -110,5 +126,6 @@ class VertexService:
 
     @staticmethod
     def get_by_eth_across_graphs(eth, db):
-        return Vertex.get([eth], None, db)
+        # TODO
+        pass
 

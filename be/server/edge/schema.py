@@ -6,14 +6,6 @@ from be.server.vertex.schema import (
     VertexSchemaPointConversion,
 )
 
-
-class EdgeSchema(CamelCaseSchema):
-    id = fields.Integer(default=None)
-    graph_id = fields.Integer()
-    src = fields.Nested(VertexSchema())
-    trg = fields.Nested(VertexSchema())
-    amount = fields.Float()
-
 class EdgeSchemaConvertingPos(CamelCaseSchema):
     id = fields.Integer(default=None)
     graph_id = fields.Integer()
