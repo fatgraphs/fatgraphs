@@ -2,7 +2,6 @@ from marshmallow import fields
 
 from be.server.utils import CamelCaseSchema
 from be.server.vertex.schema import (
-    VertexSchema,
     VertexSchemaPointConversion,
 )
 

@@ -6,7 +6,7 @@ from be.configuration import SRID
 from be.server.utils import iterate_stream
 
 from .model import Vertex
-from .schema import VertexSchema, VertexSchemaPointConversion
+from .schema import VertexSchemaPointConversion
 from .service import VertexService
 from .. import SessionLocal
 
@@ -32,7 +32,7 @@ class GetClosestVertexWithMetadata(Resource):
 class GetVerticesByType(Resource):
     @api.doc(params={'graphId': {'description': 'If you provide a graph id your query will be scoped to that graph only',
                                  'type': 'int'}})
-    @responds(schema=VertexSchema(many=True))
+    @responds(schema=VertexSchemaPointConversion(many=True))
     def get(self, type: str) -> Vertex:
         with SessionLocal() as db:
             graph_id = request.args.get('graphId')
@@ -46,7 +46,7 @@ class GetVerticesByType(Resource):
 class GetVerticesByLabel(Resource):
     @api.doc(params={'graphId': {'description':  'If you provide a graph id your query will be scoped to that graph only',
                                  'type': 'int'}})
-    @responds(schema=VertexSchema(many=True))
+    @responds(schema=VertexSchemaPointConversion(many=True))
     def get(self, label: str) -> Vertex:
         with SessionLocal() as db:
             graph_id = request.args.get('graphId')
@@ -61,7 +61,7 @@ class GetVerticesByLabel(Resource):
 class GetVerticesByEth(Resource):
     @api.doc(params={'graphId': {'description':  'If you provide a graph id your query will be scoped to that graph only',
                                  'type': 'int'}})
-    @responds(schema=VertexSchema(many=True))
+    @responds(schema=VertexSchemaPointConversion(many=True))
     def get(self, vertex: str) -> Vertex:
         with SessionLocal() as db:
             graph_id = request.args.get('graphId')
