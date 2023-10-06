@@ -1,7 +1,6 @@
 from flask import Response, request
 from flask_accepts import responds
 from flask_restx import Namespace, Resource
-from geoalchemy2 import Geometry
 
 from be.configuration import SRID
 from be.server.utils import iterate_stream
@@ -68,8 +67,6 @@ class GetVerticesByEth(Resource):
             graph_id = request.args.get('graphId')
             vertices = VertexService.get_by_eths(graph_id, [vertex], db)
             vertices = VertexService.attach_metadata(vertices, db)
-            # if graph_id is not None:
-            #     vertices = VertexService.attach_position(vertices, graph_id, db)
             return vertices
 
 @api.route('/upload')

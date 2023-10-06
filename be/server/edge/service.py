@@ -73,6 +73,7 @@ class EdgeService:
     @staticmethod
     def get_edges(vertex, graph_id, db) -> List[Edge]:
 
+        # TODO no need to fetch the  vertex from DB maybe?
         vertex_object = VertexService.get_by_eths(graph_id, [vertex], db)[0]
 
         result = []

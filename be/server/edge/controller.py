@@ -23,9 +23,10 @@ api = Namespace("Edge", description="Single namespace, single entity")  # noqa
 
 
 @api.route("/<string:graph_id>/<string:vertex>")
+@api.route('/upload')
 @api.param("graph_id", "Graph Id")
 @api.param("vertex", "The vertex to query")
-class GetEdges(Resource):
+class Edges(Resource):
 
     @responds(schema=EdgeSchemaConvertingPos(many=True))
     def get(self, graph_id: int, vertex: str) -> List[Edge]:
@@ -33,9 +34,6 @@ class GetEdges(Resource):
             edges = EdgeService.get_edges(vertex, graph_id, db)
             return edges
         
-@api.route('/upload')
-class UploadEdges(Resource):
-
     def post(self):
      
         count = 0
@@ -60,4 +58,3 @@ class UploadEdges(Resource):
         print("Added", count, "edges")
 
         return Response(status=200)
-
