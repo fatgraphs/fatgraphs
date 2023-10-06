@@ -15,7 +15,6 @@ from be.server import configs
 
 from .. import (
     Base,
-    engine,
 )
 from ..utils import (
     to_pd_frame,

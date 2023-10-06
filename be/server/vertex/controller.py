@@ -34,10 +34,10 @@ class GetVerticesByType(Resource):
                                  'type': 'int'}})
     @responds(schema=VertexSchemaPointConversion(many=True))
     def get(self, type: str) -> Vertex:
-        with SessionLocal() as db:
+        with SessionLocal() as ses:
             graph_id = request.args.get('graphId')
-            vertices = VertexService.get_by_type(graph_id, type, db)
-            vertices = VertexService.attach_metadata(vertices, db)
+            vertices = VertexService.get_by_type(graph_id, type, ses)
+            vertices = VertexService.attach_metadata(vertices, ses)
             return vertices
 
 
