@@ -1,25 +1,19 @@
-import random
-from typing import List
 
-from graph_tool import Edge
 from sqlalchemy import (
     Column,
     Float,
     ForeignKey,
+    ForeignKeyConstraint,
     Integer,
     String,
-    select,
 )
 from sqlalchemy.orm import (
-    joinedload,
     relationship,
 )
 
-from be.configuration import CONFIGURATIONS
 
 from .. import (
     Base,
-    SessionLocal,
 )
 from ..vertex import Vertex
 
@@ -31,7 +25,27 @@ class Edge(Base):
     graph_id = Column(Integer(), ForeignKey('tg_graphs.id'), primary_key=True)
     src_id = Column(String(), ForeignKey(Vertex.vertex), primary_key=True)
     trg_id = Column(String(), ForeignKey(Vertex.vertex), primary_key=True)
-    src = relationship("Vertex", foreign_keys=[src_id], backref='outgoing_edges')
-    trg = relationship("Vertex", foreign_keys=[trg_id], backref='incoming_edges')
+    src = relationship(
+        "Vertex", 
+        backref='outgoing_edges', 
+        foreign_keys=[src_id, graph_id]
+    )
+    trg = relationship(
+        "Vertex", 
+        backref='incoming_edges', 
+        foreign_keys=[trg_id, graph_id]
+    )
+
+    # composite FKs needs the ForeignKeyConstraint to work properly
+    __table_args__ = (
+        ForeignKeyConstraint(
+            [src_id, graph_id],
+            [Vertex.vertex, Vertex.graph_id]
+        ),
+        ForeignKeyConstraint(
+            [trg_id, graph_id],
+            [Vertex.vertex, Vertex.graph_id]
+        ),
+    )
 
     amount = Column(Float(precision=8))
