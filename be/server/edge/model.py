@@ -27,12 +27,12 @@ class Edge(Base):
     trg_id = Column(String(), ForeignKey(Vertex.vertex), primary_key=True)
     src = relationship(
         "Vertex", 
-        backref='outgoing_edges', 
+        viewonly=True, 
         foreign_keys=[src_id, graph_id]
     )
     trg = relationship(
         "Vertex", 
-        backref='incoming_edges', 
+        viewonly=True, 
         foreign_keys=[trg_id, graph_id]
     )
 
