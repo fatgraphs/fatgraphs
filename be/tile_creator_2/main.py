@@ -131,10 +131,13 @@ def main(configurations):
 
         code = math.nan
         
-        if row['type'] is not None:
-            code = (row['type'] * 2) + 1
+        if row['account_type'] is not None:
+            code = (row['account_type'] * 2) + 1
             code += 1 if row['label'] else 0
-            code = row['icon'] if row['icon'] is not None else int_to_icon[code]
+            code = int_to_icon[code]
+
+        if row['icon'] is not None:
+            code = row['icon']
 
         vertex_metadata_subset.append(
             dict(vertex=row['vertex'], code=code)

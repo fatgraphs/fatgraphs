@@ -29,15 +29,10 @@ PGPASSWORD=$postgres_password psql -U postgres -h 127.0.0.1 -d tg_main -c "CREAT
 # create tables
 PGPASSWORD=$tokengallerist_password psql -U tokengallerist -h 127.0.0.1 -d tg_main -f scripts/create_tables.sql
 
-# load labels
-LABELS_HOME=$(python ./scripts/print_labels_home.py)
-stringPaths=($(python ./scripts/print_account_type_home.py))
-eval "ACCOUNT_TYPE_HOMES=($stringPaths)"
+metadateInitFile=($(python ./scripts/print_vertex_metadata_home.py))
+eval "METADATA_VERTEX_INIT_HOME=($metadateInitFile)"
 
-echo "Loading labels located at: $LABELS_HOME ..."
-PGPASSWORD=$tokengallerist_password psql -U tokengallerist -h 127.0.0.1 -d tg_main -v v1="'$LABELS_HOME'" -f scripts/load_labels.sql
-
-echo "Loading account types located at ${ACCOUNT_TYPE_HOMES[1]} and ${ACCOUNT_TYPE_HOMES[2]}..."
-PGPASSWORD=$tokengallerist_password psql -U tokengallerist -h 127.0.0.1 -d tg_main -v v1=\'${ACCOUNT_TYPE_HOMES[1]}\' -v v2=\'"${ACCOUNT_TYPE_HOMES[2]}"\' -f scripts/load_account_types.sql
+echo "Loading vertex metadata initialisation CSV located at ${METADATA_VERTEX_INIT_HOME}."
+PGPASSWORD=$tokengallerist_password psql -U tokengallerist -h 127.0.0.1 -d tg_main -v v1=\'${METADATA_VERTEX_INIT_HOME}\' -f scripts/load_vertex_metadata_init.sql
 
 echo 'Done'

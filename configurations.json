@@ -26,11 +26,7 @@
       "edges_fetched_limit": 100
     }
   },
-  "labelsHome": "data/labels.csv",
-  "account_type_home": {
-    "eoa": "data/account_types/EOA.csv",
-    "ca": "data/account_types/contracts.csv"
-  },
+  "vertex_metadata_init": "data/metadata_vertex_init.csv",
   "graphsHome": "graph-tiles",
   "verticesMetadataFileName": "vertices_metadata.csv",
   "corner_vertices": {

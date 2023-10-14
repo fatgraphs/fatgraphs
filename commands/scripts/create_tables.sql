@@ -65,41 +65,6 @@ CREATE TABLE IF NOT EXISTS tg_vertex
 
 ) PARTITION BY LIST (graph_id);
 
-
-
-CREATE TABLE IF NOT EXISTS tg_vertex_metadata
-(
-    id          SERIAL UNIQUE PRIMARY KEY,
-    graph_id    int,
-    vertex      text not null,
-    type        text,
-    account_type    int,
-    label       text,
-    description text,
-    icon        text,
-    CONSTRAINT fk_vertex
-        FOREIGN KEY (graph_id, vertex)
-            REFERENCES tg_vertex (graph_id, vertex)
-);
-CREATE INDEX IF NOT EXISTS eth_index ON tg_vertex_metadata (vertex);
-
-insert into tg_vertex_metadata (vertex, type, label) VALUES ('0xd48ae76be7ff70be6fc2d7a3fa07734f7b73d7af', 'testing  icons', 'iconic smart contract');
-
-insert into tg_vertex_metadata (vertex, type, label, icon) VALUES ('0x6e71c6d41aed31b18dc37c27dc3309bcdb11e893', 'testing  icons', 'iconic smart contract', 'testicon-ca.png');
-
-insert into tg_vertex_metadata (vertex, type, label, icon) VALUES ('0x9947ea09a045ed3fc427df736463d1b588c06476', 'testing  icons', 'iconic', 'testicon-eoa.png');
-
-insert into tg_vertex_metadata (vertex, type, label, account_type) VALUES 
-    ('0xe9c1a41b0ba27e80b138c0e17e7cc681b26099cf', 'test_type', 'some_label', 1);
-insert into tg_vertex_metadata (vertex, type, label) VALUES ('0x5719e1bc888efa00dc5b2d992ca364889129a869', 'test_type', 'some_label');
-insert into tg_vertex_metadata (vertex, type, label) VALUES ('0xe9ff7df19b57f182efacaa3eab73a4bdccff46df', 'test_type', 'not_that_label');
-
-insert into tg_vertex_metadata (vertex, account_type) VALUES ('0x62243a732a77b0c6483ae7ed1b6377da0668b205', 1);
-insert into tg_vertex_metadata (vertex, account_type, label) VALUES ('0x0ea9b6713849d92ce71bd4beeedc08bdaf3d51d1', 1, 'one_label');
-insert into tg_vertex_metadata (vertex, account_type) VALUES ('0x4cd846d65092f2b80ce07e799db4def99dd43e74', 0);
-insert into tg_vertex_metadata (vertex, account_type, label) VALUES ('0x8533a0bd9310eb63e7cc8e1116c18a3d67b1976a', 0, 'more_labelss');
-
-
 CREATE TABLE IF NOT EXISTS tg_edge
 (
     graph_id        int not null,

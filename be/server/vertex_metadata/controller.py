@@ -26,7 +26,6 @@ class MetadataVerticesGraphResource(Resource):
 
         with SessionLocal() as db:
             df_vertex_metadata = VertexMetadataService.get_all_by_graph(graph_id, db)
-            df_vertex_metadata = df_vertex_metadata.rename(columns={"type_x": "type"})
             json_string = df_vertex_metadata.to_json(orient="records")
             json_obj = json.loads(json_string)
 

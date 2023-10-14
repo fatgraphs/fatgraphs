@@ -6,4 +6,4 @@ if os.getcwd().split(os.sep)[-1] == "commands":
     os.chdir(os.path.abspath(".."))
 sys.path.append(os.path.abspath('.'))
 from be.configuration import CONFIGURATIONS
-print(os.path.abspath(CONFIGURATIONS['account_type_home']['eoa']),os.path.abspath(CONFIGURATIONS['account_type_home']['ca']))
+print(os.path.abspath(CONFIGURATIONS['vertex_metadata_init']))
