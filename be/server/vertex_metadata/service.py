@@ -23,19 +23,22 @@ class VertexMetadataService:
         return account_types.merge(vertex_metadatas, on='vertex', how='outer')[['vertex', 'type_x', 'label', 'icon']]
 
     @staticmethod
-    def get_by_eth(vertex: str, db) -> List[VertexMetadata]:
-        result = VertexMetadata.filter_by(db, vertex=vertex )
-        return result
+    def get_by_vertex(vertex: str, db) -> List[VertexMetadata]:
+        query = select(VertexMetadata).filter(VertexMetadata.vertex == vertex)
+        result = db.execute(query)
+        return [e[0] for e in result.fetchall()]
 
     @staticmethod
     def get_by_label(label: str, db) -> List[VertexMetadata]:
-        result = VertexMetadata.filter_by(db, label=label)
-        return result
-
+        query = select(VertexMetadata).filter(VertexMetadata.label == label)
+        result = db.execute(query)
+        return [e[0] for e in result.fetchall()]
+    
     @staticmethod
     def get_by_type(type: str, db) -> List[VertexMetadata]:
-        result = VertexMetadata.filter_by(db, type=type)
-        return result
+        query = select(VertexMetadata).filter(VertexMetadata.type == type)
+        result = db.execute(query)
+        return [e[0] for e in result.fetchall()]
 
     @staticmethod
     def create(metadata_to_insert: VertexMetadataInterface, db: object):

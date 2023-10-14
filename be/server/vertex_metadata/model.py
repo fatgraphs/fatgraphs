@@ -1,33 +1,47 @@
 import pandas as pd
 from psycopg2._psycopg import AsIs
+from sqlalchemy import (
+    Column,
+    Integer,
+    String,
+)
 
 from be.server import engine
 from be.server.utils import to_pd_frame
 from sqlalchemy.sql import text
 
+from .. import (
+    Base,
+)
 
-class VertexMetadata:
+class VertexMetadata(Base):
     """
     Vertex (e.g. eth address) not usd as primary key as there could be diplicates
     """
 
-    __type_labels__ = "tg_vertex_metadata"
+    __tablename__ = "tg_vertex_metadata"
     __account_type__ = "tg_account_type"
 
-    def __init__(self,
-        vertex: str,
-        type: str = None,
-        label: str = None,
-        account_type: int = None,
-        description: str = None,
-        id: int = None,):
-
-        self.id = id
-        self.vertex = vertex
-        self.type = type
-        self.label = label
-        self.account_type = account_type
-        self.description = description
+    graph_id = Column(
+        Integer(), 
+        primary_key=True,
+    )
+    vertex = Column(
+        String(), 
+        primary_key=True,
+    )
+    type = Column(
+        String(), 
+    )
+    label = Column(
+        String(), 
+    )
+    account_type = Column(
+        Integer(), 
+    )
+    description = Column(
+        String(), 
+    )
 
 
     @staticmethod
@@ -47,12 +61,12 @@ class VertexMetadata:
                 'tg_account_type': 'tg_account_type'
                 })
 
-
+    # TODO get rid of this shit
     @staticmethod
     def filter_by(db: object, vertex=None, type=None, label=None):
         query = """SELECT * FROM  :type_label_table """
 
-        substitution = {'type_label_table': AsIs(VertexMetadata.__type_labels__)}
+        substitution = {'type_label_table': AsIs(VertexMetadata.__tablename__)}
 
         if vertex != None:
             query = query + """WHERE vertex = :vertex """
@@ -103,53 +117,6 @@ class VertexMetadata:
             result = list(map(VertexMetadata.from_row, from_type_label_table.iterrows()))
 
             return result
-
-    def add(self, db):
-        query = text(
-            """
-            INSERT INTO :type_label_table
-            (vertex, type, label, description) 
-            VALUES (
-                :vertex,
-                :type,
-                :label,
-                :description);
-            """
-        )
-        
-        with engine.connect() as conn:
-            result = conn.execute(
-                query, 
-                {
-                'type_label_table': AsIs(VertexMetadata.__type_labels__),
-                'vertex': self.vertex,
-                'type': self.type,
-                'label': self.label,
-                'description': self.description
-                }
-            )
-
-            if self.account_type != None:
-                query = text(
-                    """
-                    INSERT INTO :account_table 
-                    (vertex, type) 
-                    VALUES (
-                        :vertex,
-                        :account_type
-                    ) ON CONFLICT (vertex) DO UPDATE SET type = EXCLUDED.type;
-                    """
-                )
-
-                with engine.connect() as conn:
-                    result = conn.execute(
-                        query, 
-                        {
-                            'account_table': AsIs(VertexMetadata.__account_type__),
-                            'vertex': self.vertex,
-                            'account_type': self.account_type
-                        }
-                    )
                 
     @staticmethod
     def delete(vertex, typee, value, db):
@@ -165,7 +132,7 @@ class VertexMetadata:
             result = conn.execute(
                 query, 
                 {
-                    'type_label_table': AsIs(VertexMetadata.__type_labels__),
+                    'type_label_table': AsIs(VertexMetadata.__tablename__),
                     'type_or_label': AsIs(typee),
                     'vertex': vertex,
                     'value': value
@@ -180,7 +147,8 @@ class VertexMetadata:
             label=row[1]['label'],
             account_type=int(row[1]['account_type']),
             description=row[1]['description'],
-            id = row[1]['id'])
+            # id = row[1]['id'],
+        )
         return result
 
     def __eq__(self, other):
