@@ -2,6 +2,7 @@ import pandas as pd
 from psycopg2._psycopg import AsIs
 from sqlalchemy import (
     Column,
+    ForeignKeyConstraint,
     Integer,
     String,
 )
@@ -9,6 +10,9 @@ from sqlalchemy import (
 from be.server import engine
 from be.server.utils import to_pd_frame
 from sqlalchemy.sql import text
+from sqlalchemy.orm import relationship
+
+from be.server.vertex.model import Vertex
 
 from .. import (
     Base,
@@ -16,19 +20,20 @@ from .. import (
 
 class VertexMetadata(Base):
     """
-    Vertex (e.g. eth address) not usd as primary key as there could be diplicates
+    Vertex (e.g. eth address) not usd as primary key as there could be duplicates
     """
 
     __tablename__ = "tg_vertex_metadata"
-    __account_type__ = "tg_account_type"
 
-    graph_id = Column(
+    id = Column(
         Integer(), 
         primary_key=True,
     )
+    graph_id = Column(
+        Integer(), 
+    )
     vertex = Column(
         String(), 
-        primary_key=True,
     )
     type = Column(
         String(), 
@@ -43,81 +48,19 @@ class VertexMetadata(Base):
         String(), 
     )
 
+    vertex_obj = relationship(
+        "Vertex", 
+        backref='metadata_objs', 
+        foreign_keys=[vertex, graph_id]
+    )
 
-    @staticmethod
-    def merge_for_account_types(graph_vertex_table_name: str):
-        query = text(
-            """
-            SELECT * FROM :graph_vertex_table_name 
-            INNER JOIN :tg_account_type 
-            ON :tg_account_type.vertex = :graph_vertex_table_name.vertex
-            """
-        )
-
-        with engine.connect() as conn:
-
-            raw_result = conn.execute(query, {
-                'graph_vertex_table_name': AsIs(graph_vertex_table_name),
-                'tg_account_type': 'tg_account_type'
-                })
-
-    # TODO get rid of this shit
-    @staticmethod
-    def filter_by(db: object, vertex=None, type=None, label=None):
-        query = """SELECT * FROM  :type_label_table """
-
-        substitution = {'type_label_table': AsIs(VertexMetadata.__tablename__)}
-
-        if vertex != None:
-            query = query + """WHERE vertex = :vertex """
-            substitution['vertex'] = vertex
-
-        if type != None:
-            query = query + """WHERE type = :type """
-            substitution['type'] = type
-
-        if label != None:
-            query = query + """WHERE label = :label """
-            substitution['label'] = label
-
-        query = query + ';'
-        query = text(query)
-
-        with engine.connect() as conn:
-
-            result = conn.execute(query, substitution)
-
-            from_type_label_table = to_pd_frame(result)
-            if from_type_label_table.empty:
-                return []
-            # so it doesn't break if account_types is empty
-            account_types = pd.DataFrame(columns=["vertex"])
-            for vertex_ in list(set(from_type_label_table['vertex'].values)):
-                query = text(
-                    """
-                    SELECT * FROM :account_table WHERE :account_table.vertex = :vertex
-                    """
-                )
-
-                result = conn.execute(query, {
-                    'account_table': AsIs(VertexMetadata.__account_type__),
-                    'vertex': vertex_})
-                frame = to_pd_frame(result)
-                account_types = account_types.append(frame)
-
-            accounts = account_types.rename(
-                columns={'type': 'account_type'}
-            )
-
-            from_type_label_table = from_type_label_table.merge(
-                accounts, 
-                left_on='vertex', right_on='vertex'
-            )
-
-            result = list(map(VertexMetadata.from_row, from_type_label_table.iterrows()))
-
-            return result
-                
+    __table_args__ = (
+        ForeignKeyConstraint(
+            [vertex, graph_id],
+            [Vertex.vertex, Vertex.graph_id]
+        ),
+    )
+        
     @staticmethod
     def delete(vertex, typee, value, db):
         query = text(
