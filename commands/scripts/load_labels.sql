@@ -1,4 +1,4 @@
-COPY tg_vertex_metadata(type, vertex, label, icon)
+COPY tg_vertex_metadata(type, vertex, label)
 FROM :v1
 DELIMITER ','
 CSV HEADER;
