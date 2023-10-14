@@ -3,14 +3,14 @@ from typing import List
 
 from psycopg2._psycopg import AsIs
 from sqlalchemy import func
+from sqlalchemy.sql import text
 
 from be.configuration import VERTEX_GLOBAL_TABLE
 from be.server.utils import wkt_to_x_y_list
-from .model import Vertex
+
 from .. import engine
 from ..vertex_metadata.service import VertexMetadataService
-from sqlalchemy.sql import text
-from sqlalchemy.orm import aliased
+from .model import Vertex
 
 warnings.simplefilter(action='ignore', category=UserWarning)
 
@@ -45,7 +45,7 @@ class VertexService:
            
 
     @staticmethod
-    def get_by_eths(graph_id: int, eths: List[str], session) -> List[Vertex]:
+    def get_by_ext_id(graph_id: int, eths: List[str], session) -> List[Vertex]:
 
         query = (
             session.query(
@@ -97,8 +97,7 @@ class VertexService:
         if not isinstance(vertices, list):
             vertices = [vertices]
         for v in vertices:
-            print("verteex metdataaa", v)
-            metadata = VertexMetadataService.get_by_eth(v.vertex, db)
+            metadata = VertexMetadataService.get_by_vertex(v.vertex, db)
             for m in metadata:
                 for attr in ['types', 'labels']:
                     existing = getattr(v, attr, [])
@@ -107,20 +106,18 @@ class VertexService:
         return vertices
 
     @staticmethod
-    def get_by_type(graph_id, type, db):
-        global_matches = VertexMetadataService.get_by_type(type, db)
-        if graph_id is not None:
-            global_eths = list(map(lambda e: e.vertex, global_matches))
-            this_graph_matches = VertexService.get_by_eths(graph_id, global_eths, db)
-            return this_graph_matches
-        return global_matches
+    def get_by_type(graph_id, type, ses):
+        vertes_metadatas = VertexMetadataService.get_by_type(type, ses)
+        external_id_vertices = [e.vertex for e in vertes_metadatas]
+        this_graph_matches = VertexService.get_by_ext_id(graph_id, external_id_vertices, ses)
+        return this_graph_matches
 
     @staticmethod
     def get_by_label(graph_id, label, db):
         global_matches = VertexMetadataService.get_by_label(label, db)
         if graph_id is not None:
             global_eths = list(map(lambda e: e.vertex, global_matches))
-            this_graph_matches = VertexService.get_by_eths(graph_id, global_eths, db)
+            this_graph_matches = VertexService.get_by_ext_id(graph_id, global_eths, db)
             return this_graph_matches
         return global_matches
 

@@ -4,6 +4,7 @@ from typing import List
 
 from psycopg2._psycopg import AsIs
 from sqlalchemy import select
+from sqlalchemy.orm import joinedload
 from sqlalchemy.sql import text
 
 from be.configuration import (
@@ -15,10 +16,6 @@ from be.server.vertex.model import Vertex
 
 from ..vertex.service import VertexService
 from . import Edge
-
-from sqlalchemy.orm import (
-    joinedload,
-)
 
 warnings.simplefilter(action='ignore', category=UserWarning)
 
@@ -74,7 +71,7 @@ class EdgeService:
     def get_edges(vertex, graph_id, db) -> List[Edge]:
 
         # TODO no need to fetch the  vertex from DB maybe?
-        vertex_object = VertexService.get_by_eths(graph_id, [vertex], db)[0]
+        vertex_object = VertexService.get_by_ext_id(graph_id, [vertex], db)[0]
 
         result = []
         result_in = EdgeService.get_edges_with_probability('in', vertex_object, graph_id, db)

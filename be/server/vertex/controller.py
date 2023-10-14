@@ -1,14 +1,20 @@
-from flask import Response, request
+from flask import (
+    Response,
+    request,
+)
 from flask_accepts import responds
-from flask_restx import Namespace, Resource
+from flask_restx import (
+    Namespace,
+    Resource,
+)
 
 from be.configuration import SRID
 from be.server.utils import iterate_stream
 
+from .. import SessionLocal
 from .model import Vertex
 from .schema import VertexSchemaPointConversion
 from .service import VertexService
-from .. import SessionLocal
 
 api = Namespace("Vertex", description="Single namespace, single entity")  # noqa
 
@@ -65,7 +71,7 @@ class GetVerticesByEth(Resource):
     def get(self, vertex: str) -> Vertex:
         with SessionLocal() as db:
             graph_id = request.args.get('graphId')
-            vertices = VertexService.get_by_eths(graph_id, [vertex], db)
+            vertices = VertexService.get_by_ext_id(graph_id, [vertex], db)
             vertices = VertexService.attach_metadata(vertices, db)
             return vertices
 
