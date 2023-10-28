@@ -44,6 +44,9 @@ class VertexMetadata(Base):
     description = Column(
         String(), 
     )
+    icon = Column(
+        String(), 
+    )
 
     vertex_obj = relationship(
         "Vertex", 
