@@ -68,47 +68,43 @@ class EdgeService:
 
 
     @staticmethod
-    def get_edges(vertex, graph_id, db) -> List[Edge]:
-
-        # TODO no need to fetch the  vertex from DB maybe?
-        vertex_object = VertexService.get_by_ext_id(graph_id, [vertex], db)[0]
+    def get_edges(vertex_ext_id, graph_id, db) -> List[Edge]:
 
         result = []
-        result_in = EdgeService.get_edges_with_probability('in', vertex_object, graph_id, db)
-        result_out = EdgeService.get_edges_with_probability('out', vertex_object, graph_id, db)
+        result_in = EdgeService.get_edges_with_probability('in', vertex_ext_id, graph_id, db)
+        result_out = EdgeService.get_edges_with_probability('out', vertex_ext_id, graph_id, db)
 
         half_edge_count = CONFIGURATIONS['endpoints']['parameters']['edges_fetched_limit'] // 2
 
+        count_in = min(half_edge_count, len(result_in))
+
         result.extend(
-            random.sample(result_in,
-                      min(half_edge_count, len(result_in))
+            random.sample(
+                result_in,
+                count_in
             )
         )
 
         result.extend(
             random.sample(
                 result_out,
-                min(half_edge_count*2 - len(result), len(result_out))
+                min(half_edge_count*2 - count_in, len(result_out))
             )
         )
 
         return result
     
     @staticmethod
-    def get_edges_with_probability(in_out, vertex: Vertex, graph_id, ses) -> List[Edge]:
+    def get_edges_with_probability(in_out, vertex_ext_id: str, graph_id, ses) -> List[Edge]:
         limit = CONFIGURATIONS['endpoints']['parameters']['edges_fetched_limit']
 
-        edge_count = (
-            ses.query(Edge)
-            .filter(EdgeService.in_out_map[in_out] == vertex.vertex)
-            .count()
-        )
+        edge_count = EdgeService.get_edge_count(in_out, vertex_ext_id, graph_id,ses)
 
         fetch_edges_query = (
             select(Edge)
             .options(joinedload(Edge.src))
             .options(joinedload(Edge.trg))
-            .where(EdgeService.in_out_map[in_out] == vertex.vertex)
+            .where(EdgeService.in_out_map[in_out] == vertex_ext_id)
             .where(Edge.graph_id == graph_id)
         )
 
@@ -122,3 +118,12 @@ class EdgeService:
         res = ses.execute(fetch_edges_query)
         res = res.fetchall()
         return [e[0] for e in res]
+    
+    @staticmethod
+    def get_edge_count(in_out, vertex_ext_id: str, graph_id: int, ses) -> int:
+        return (
+            ses.query(Edge)
+            .filter(EdgeService.in_out_map[in_out] == vertex_ext_id)
+            .filter(Edge.graph_id == graph_id)
+            .count()
+        )
