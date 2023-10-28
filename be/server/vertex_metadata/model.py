@@ -1,5 +1,3 @@
-import pandas as pd
-from psycopg2._psycopg import AsIs
 from sqlalchemy import (
     Column,
     ForeignKeyConstraint,
@@ -7,14 +5,11 @@ from sqlalchemy import (
     String,
 )
 
-from be.server import engine
-from be.server.utils import to_pd_frame
-from sqlalchemy.sql import text
 from sqlalchemy.orm import relationship
 
 from be.server.vertex.model import Vertex
 
-from .. import (
+from be.server import (
     Base,
 )
 

@@ -1,19 +1,11 @@
 from typing import List
 
-import numpy as np
-import pandas as pd
-from psycopg2._psycopg import AsIs
 from sqlalchemy import select
-from sqlalchemy.orm import joinedload
-from sqlalchemy.sql import text
 
-from be.server import configs
 from be.server.vertex.model import Vertex
 
-from .. import engine
-from ..utils import to_pd_frame
-from .interface import VertexMetadataInterface
-from .model import VertexMetadata
+from be.server.vertex_metadata.interface import VertexMetadataInterface
+from be.server.vertex_metadata.model import VertexMetadata
 
 
 class VertexMetadataService:

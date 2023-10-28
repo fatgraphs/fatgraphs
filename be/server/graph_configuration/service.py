@@ -1,5 +1,5 @@
-from .interface import GraphConfigurationInterface
-from .model import Graph, GraphConfiguration
+from be.server.graph_configuration.interface import GraphConfigurationInterface
+from be.server.graph_configuration.model import Graph, GraphConfiguration
 from sqlalchemy import inspect
 
 

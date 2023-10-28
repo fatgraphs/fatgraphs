@@ -1,7 +1,4 @@
-from typing import List
-
 from geoalchemy2 import Geometry
-from psycopg2._psycopg import AsIs
 from sqlalchemy import (
     Column,
     Float,
@@ -9,15 +6,11 @@ from sqlalchemy import (
     Integer,
     String,
 )
-from sqlalchemy.sql import text
 
-from be.server import configs
-
-from .. import (
+from be.server import (
     Base,
 )
-from ..utils import (
-    to_pd_frame,
+from be.server.utils import (
     wkt_to_x_y_list,
 )
 

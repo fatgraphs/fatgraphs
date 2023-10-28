@@ -6,11 +6,9 @@ from sqlalchemy import func
 from sqlalchemy.sql import text
 
 from be.configuration import VERTEX_GLOBAL_TABLE
-from be.server.utils import wkt_to_x_y_list
 
-from .. import engine
-from ..vertex_metadata.service import VertexMetadataService
-from .model import Vertex
+from be.server.vertex_metadata.service import VertexMetadataService
+from be.server.vertex.model import Vertex
 
 warnings.simplefilter(action='ignore', category=UserWarning)
 
