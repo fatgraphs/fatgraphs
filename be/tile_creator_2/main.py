@@ -146,6 +146,9 @@ def main(configurations):
     vertex_metadata_subset = pd.DataFrame.from_records(vertex_metadata_subset)
     vertex_metadata_subset = cudf.DataFrame.from_pandas(vertex_metadata_subset)
 
+    if vertex_metadata_subset.empty:
+        vertex_metadata_subset = cudf.DataFrame(columns=['vertex', 'code'])
+
     vertex_df_augmented = vertex_data.cudf_frame.merge(
         vertex_metadata_subset, 
         on='vertex', 
