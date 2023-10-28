@@ -1,20 +1,20 @@
 from typing import List
 
-from . import SearchTerm
 from ..vertex_metadata.service import VertexMetadataService
+from . import SearchTerm
 
 
 class SearchTermService:
 
     @staticmethod
     def get_autocomplete_terms(graph_id, db) -> List[SearchTerm]:
-        metadata = VertexMetadataService.merge_graph_vertices_with_metadata(graph_id, db)
+        metadata = VertexMetadataService.get_all_by_graph_id(graph_id, db)
+        types = {m.type for m in metadata}
+        labels = {m.label for m in metadata}
 
         result = []
-        if(not metadata.empty):
-            types = metadata.type.unique()
-            labels = metadata.label.unique()
-            result.extend(list(map(lambda e: SearchTerm(type='type', value=e), types)))
-            result.extend(list(map(lambda e: SearchTerm(type='label', value=e), labels)))
+
+        result.extend([SearchTerm(type='type', value=e) for e in types])
+        result.extend([SearchTerm(type='label', value=e) for e in labels])
 
         return result

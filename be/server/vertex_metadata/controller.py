@@ -34,11 +34,9 @@ class MetadataVerticesGraphResource(Resource):
                 yield json.dumps(row) + "\n"
 
         with SessionLocal() as db:
-            df_vertex_metadata = VertexMetadataService.get_all_by_graph(graph_id, db)
-            json_string = df_vertex_metadata.to_json(orient="records")
-            json_obj = json.loads(json_string)
-
-            return Response(stream(json_obj))
+            vertex_metadatas = VertexMetadataService.get_all_by_graph(graph_id, db)
+            vertex_metadatas = [e.as_dict() for e in vertex_metadatas]
+            return Response(stream(vertex_metadatas))
 
 @api.route("/vertex/<string:eth>")
 @api.param("eth", "Ethereum address")
