@@ -57,7 +57,7 @@ class VertexMetadataService:
 
         fetch_edges_query = (
             select(VertexMetadata)
-            .where(Vertex.vertex.in_(vertices))
+            .where(VertexMetadata.vertex.in_(vertices))
         )
 
         res = conn.execute(fetch_edges_query)
