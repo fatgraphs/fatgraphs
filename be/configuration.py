@@ -10,9 +10,9 @@ def load_configurations(this_file_dir):
     configs = open(join, "r")
     r = configs.read()
     return json.loads(r)
-
-
 CONFIGURATIONS = load_configurations(this_file_dir)
+
+
 
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 data_folder = os.path.join(this_file_dir, '../data')
@@ -21,13 +21,6 @@ AVAILABLE_CORES = multiprocessing.cpu_count()
 # print(f'{AVAILABLE_CORES} cores were detected on your system')
 MAX_CORES = AVAILABLE_CORES - 2  # the parallelization will use at most (AVAILABLE_CORES - CORES_UNUSED) cores
 
-# DB CONFIGURATIONS
-DB_USER_NAME = 'tokengallerist'
-DB_PASSWORD = '1234'
-DB_URL = '127.0.0.1'
-DB_NAME = 'tg_main'
-VERTEX_GLOBAL_TABLE = 'tg_vertex'
-EDGE_GLOBAL_TABLE = 'tg_edge'
 
 TILE_FOLDER_NAME = lambda graph_id: f'tiles_graph_{graph_id}'
 USER_TABLE = 'tg_user'
