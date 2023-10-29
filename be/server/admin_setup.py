@@ -13,13 +13,10 @@ from be.configuration import (
     CONFIGURATIONS,
     TILE_FOLDER_NAME,
 )
-from be.server import (
-    SessionLocal,
-)
+
 from be.server.gallery_categories import GalleryCategory
 from be.server.gallery_categories.service import GalleryCategoryService
 from be.server.graph import Graph
-from be.server import configs
 
 
 class GraphAdminView(ModelView):
@@ -28,6 +25,7 @@ class GraphAdminView(ModelView):
     column_list = ('id', 'graph_name', 'vertices', 'edges', 'graph_category')
 
     def delete_model(self, graph):
+        from be.server.server import app
 
         try:
 
@@ -41,8 +39,8 @@ class GraphAdminView(ModelView):
             """
             self.session.bind.engine.execute(delete_vertex_edge_configs, {
                 'graph_id': AsIs(graph.id),
-                'vertex_table': AsIs(configs.VERTEX_TABLE_NAME(graph.id)),
-                'edge_table': AsIs(configs.EDGE_TABLE_NAME(graph.id))
+                'vertex_table': AsIs(app.config.VERTEX_TABLE_NAME(graph.id)),
+                'edge_table': AsIs(app.config.EDGE_TABLE_NAME(graph.id))
             })
 
         except Exception as e:
@@ -61,11 +59,12 @@ class GraphAdminView(ModelView):
 
     def _user_formatter(view, context, model, name):
         if model.graph_category:
-            with SessionLocal() as db:
-                categories = GalleryCategoryService.get_all(db)
-                category_title = next(filter(lambda cat: cat.id == model.graph_category, categories)).title
-                markupstring = category_title
-                return Markup(markupstring)
+            # from be.server.server import SessionLocal
+            # with SessionLocal() as db:
+            categories = GalleryCategoryService.get_all(view.session)
+            category_title = next(filter(lambda cat: cat.id == model.graph_category, categories)).title
+            markupstring = category_title
+            return Markup(markupstring)
         else:
             return ""
 
@@ -131,10 +130,6 @@ class GraphCategoryView(ModelView):
         return model
 
 
-def do_setup():
-    from be.server import (
-        SessionLocal,
-        admin,
-    )
+def do_setup(admin, SessionLocal):
     admin.add_view(GraphCategoryView(GalleryCategory, SessionLocal()))
     admin.add_view(GraphAdminView(Graph, SessionLocal()))

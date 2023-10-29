@@ -9,9 +9,9 @@ from flask_restx import (
 )
 
 from be.configuration import SRID
+from be.server.server import SessionLocal
 from be.server.utils import iterate_stream
 
-from .. import SessionLocal
 from .model import Vertex
 from .schema import VertexSchemaPointConversion
 from .service import VertexService

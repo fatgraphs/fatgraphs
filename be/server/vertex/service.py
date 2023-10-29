@@ -2,13 +2,13 @@ import warnings
 from typing import List
 
 from psycopg2._psycopg import AsIs
-from sqlalchemy import func
+from sqlalchemy import func, inspect
 from sqlalchemy.sql import text
-
-from be.configuration import VERTEX_GLOBAL_TABLE
 
 from be.server.vertex_metadata.service import VertexMetadataService
 from be.server.vertex.model import Vertex
+
+from be.server.server import app
 
 warnings.simplefilter(action='ignore', category=UserWarning)
 
@@ -83,7 +83,7 @@ class VertexService:
                 query, 
                 {
                     'table_name': AsIs(table_name),
-                    'vertex_table': AsIs(VERTEX_GLOBAL_TABLE),
+                    'vertex_table': AsIs(app.config['VERTEX_GLOBAL_TABLE']),
                     'graph_id': tuple([str(graph_id)])
                 }
             )

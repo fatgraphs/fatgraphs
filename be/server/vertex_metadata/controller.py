@@ -14,8 +14,9 @@ from flask_restx import (
     Resource,
 )
 
+from be.server.server import SessionLocal
+
 from ...configuration import CONFIGURATIONS
-from .. import SessionLocal
 from . import VertexMetadataSchema
 from .model import VertexMetadata
 from .service import VertexMetadataService

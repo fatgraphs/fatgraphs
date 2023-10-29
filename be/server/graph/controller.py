@@ -10,15 +10,14 @@ from flask_restx import (
     Resource,
 )
 
-from be.server import configs
 from be.server.edge.service import EdgeService
 
-from .. import SessionLocal
-from ..gallery_categories.service import GalleryCategoryService
-from ..vertex.service import VertexService
-from .model import Graph
-from .schema import GraphSchema
-from .service import GraphService
+from be.server.server import SessionLocal, app
+from be.server.gallery_categories.service import GalleryCategoryService
+from be.server.vertex.service import VertexService
+from be.server.graph.model import Graph
+from be.server.graph.schema import GraphSchema
+from be.server.graph.service import GraphService
 
 api = Namespace("Graph", description="Graphs are saved with their metadata, but the actual vertices and edges are in the vertex and edge endpoints")
 
@@ -37,8 +36,8 @@ class GraphResource(Resource):
         with SessionLocal() as db:
             created = GraphService.create(new_graph, db) 
             graph_id = created.id
-            VertexService.ensure_vertex_table_exists(configs.VERTEX_TABLE_NAME(graph_id), graph_id, db)
-            EdgeService.ensure_edge_table_exists(configs.EDGE_TABLE_NAME(graph_id), graph_id, db)
+            VertexService.ensure_vertex_table_exists(app.config['VERTEX_TABLE_NAME'](graph_id), graph_id, db)
+            EdgeService.ensure_edge_table_exists(app.config['EDGE_TABLE_NAME'](graph_id), graph_id, db)
             return created
 
 @api.route("/<string:gallery_category>")

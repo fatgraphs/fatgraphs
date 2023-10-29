@@ -10,13 +10,11 @@ from flask_restx import (
     Resource,
 )
 
+from be.server.server import SessionLocal
 from be.server.utils import iterate_stream
 
-from .. import SessionLocal
 from .model import Edge
-from .schema import (
-    EdgeSchemaConvertingPos,
-)
+from .schema import EdgeSchemaConvertingPos
 from .service import EdgeService
 
 api = Namespace("Edge", description="Single namespace, single entity")  # noqa

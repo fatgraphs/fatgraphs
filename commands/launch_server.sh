@@ -14,7 +14,7 @@ trap "cleanup" INT SIGTERM SIGQUIT
 
 # run server
 export FLASK_APP=../be/server/server.py
-FLASK_ENV='development' FLASK_DEBUG=1 flask run --no-reload --debug &
+FLASK_ENV='development' FLASK_DEBUG=1 YOURAPPLICATION_SETTINGS='dev_config_flask.cfg' flask run --no-reload --debug &
 pids+=("$!")
 echo $pids
 wait

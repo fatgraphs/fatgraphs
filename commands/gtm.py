@@ -5,7 +5,6 @@ os.environ["FLASK_ENV"] = "development"
 sys.path.append(os.path.abspath('..'))
 from be.tile_creator_2.main import main
 from be.configuration import CONFIGURATIONS, data_folder
-from be.server import SessionLocal
 from be.server.gallery_categories.service import GalleryCategoryService
 from be.tile_creator_2.api.api import ApiLayer
 

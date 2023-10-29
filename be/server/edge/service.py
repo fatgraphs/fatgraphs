@@ -9,13 +9,14 @@ from sqlalchemy.sql import text
 
 from be.configuration import (
     CONFIGURATIONS,
-    EDGE_GLOBAL_TABLE,
 )
-from be.server import configs
+
 from be.server.vertex.model import Vertex
 
 from ..vertex.service import VertexService
 from . import Edge
+from be.server.server import app
+
 
 warnings.simplefilter(action='ignore', category=UserWarning)
 
@@ -51,7 +52,7 @@ class EdgeService:
                 query, 
                 {
                     'table_name': AsIs(table_name),
-                    'edge_table': AsIs(EDGE_GLOBAL_TABLE),
+                    'edge_table': AsIs(app.config['EDGE_GLOBAL_TABLE']),
                     'graph_id': tuple([str(graph_id)]),
                 }
             )

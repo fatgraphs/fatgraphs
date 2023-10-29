@@ -1,12 +1,16 @@
 from typing import List
 
 from flask_accepts import responds
-from flask_restx import Namespace, Resource
+from flask_restx import (
+    Namespace,
+    Resource,
+)
+
+from be.server.server import SessionLocal
 
 from . import SearchTerm
 from .schema import SearchTermSchema
 from .service import SearchTermService
-from .. import SessionLocal
 
 api = Namespace("Searches", description="Search terms that can be used while exploring the graph")  # noqa
 

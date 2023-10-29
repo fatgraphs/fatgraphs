@@ -1,12 +1,19 @@
 import os
 
 from flask import send_from_directory
-from flask_restx import Namespace, Resource
+from flask_restx import (
+    Namespace,
+    Resource,
+)
 
-from .service import TileService
-from .. import SessionLocal
+from be.server.server import SessionLocal
+
+from ...configuration import (
+    CONFIGURATIONS,
+    TILE_FOLDER_NAME,
+)
 from ..graph.service import GraphService
-from ...configuration import TILE_FOLDER_NAME, CONFIGURATIONS
+from .service import TileService
 
 api = Namespace("Tile", description="Single namespace, single entity")  # noqa
 

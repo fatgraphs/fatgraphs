@@ -1,10 +1,20 @@
 from flask import request
-from flask_accepts import responds, accepts
-from flask_restx import Namespace, Resource
+from flask_accepts import (
+    accepts,
+    responds,
+)
+from flask_restx import (
+    Namespace,
+    Resource,
+)
 
-from . import GraphConfigurationSchema, GraphConfiguration
+from be.server.server import SessionLocal
+
+from . import (
+    GraphConfiguration,
+    GraphConfigurationSchema,
+)
 from .service import GraphConfigurationService
-from .. import SessionLocal
 
 api = Namespace("GraphConfiguration", description="Configurations are the gtm.py paramters used to create the graph map")
 
