@@ -16,22 +16,12 @@ CONFIGURATIONS = load_configurations(this_file_dir)
 
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 data_folder = os.path.join(this_file_dir, '../data')
-graphs_home = os.path.join(PROJECT_ROOT, CONFIGURATIONS['graphsHome'])
 AVAILABLE_CORES = multiprocessing.cpu_count()
 # print(f'{AVAILABLE_CORES} cores were detected on your system')
 MAX_CORES = AVAILABLE_CORES - 2  # the parallelization will use at most (AVAILABLE_CORES - CORES_UNUSED) cores
 
 
-TILE_FOLDER_NAME = lambda graph_id: f'tiles_graph_{graph_id}'
-USER_TABLE = 'tg_user'
-VERTEX_METADATA_TABLE = "tg_vertex_metadata"
-
-LABELS_TABLE = 'tg_labels'
-LABELS_TABLE_ETH = 'eth'
-LABELS_TABLE_LABEL = 'label'
-LABELS_TABLE_TYPE = 'type'
-
-# GIS CONFIGURATIONS
+# only tile creator
 SRID = 3857
 
 FA2_OPTIONS = {'max_iter': 500,
@@ -40,7 +30,6 @@ FA2_OPTIONS = {'max_iter': 500,
                'outbound_attraction_distribution': False,
                'gravity': 1,
                'scaling_ratio': 1}
-
 
 def internal_id(source_or_target):
     if source_or_target == "source":

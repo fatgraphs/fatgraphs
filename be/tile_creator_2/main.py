@@ -10,10 +10,8 @@ from geoalchemy2 import (
 
 from be.configuration import (
     SRID,
-    TILE_FOLDER_NAME,
     data_folder,
     external_id,
-    graphs_home,
     internal_id,
 )
 

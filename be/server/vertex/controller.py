@@ -8,7 +8,6 @@ from flask_restx import (
     Resource,
 )
 
-from be.configuration import SRID
 from be.server.server import SessionLocal
 from be.server.utils import iterate_stream
 

@@ -7,6 +7,7 @@ from sqlalchemy import (
     String,
 )
 
+from be.server.server import app
 from be.server import (
     Base,
 )
@@ -29,7 +30,7 @@ class Vertex(Base):
         primary_key=True,
     )
     size = Column(Float(precision=8))
-    pos = Column(Geometry('Point', 3857))
+    pos = Column(Geometry('Point', app.config['SRID']))
 
     @staticmethod
     def from_dict(obj):

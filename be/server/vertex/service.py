@@ -20,7 +20,7 @@ class VertexService:
 
         query_point = func.ST_SetSRID(
             func.ST_MakePoint(x, y),
-            3857
+            app.config['SRID']
         )
     
         closest_vertex = (
@@ -31,7 +31,7 @@ class VertexService:
                 func.ST_PointFromWKB(Vertex.pos).label('pos'),
                 func.ST_Distance(
                     query_point,
-                    func.ST_Transform(Vertex.pos, 3857)
+                    func.ST_Transform(Vertex.pos, app.config['SRID'])
                 ).label('distance')
             )
             .filter(Vertex.graph_id == graph_id)

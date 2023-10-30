@@ -6,14 +6,13 @@ from flask_restx import (
     Resource,
 )
 
-from be.server.server import SessionLocal
+from be.server.server import SessionLocal, app
 
-from ...configuration import (
+from be.configuration import (
     CONFIGURATIONS,
-    TILE_FOLDER_NAME,
 )
-from ..graph.service import GraphService
-from .service import TileService
+from be.server.graph.service import GraphService
+from be.server.tile.service import TileService
 
 api = Namespace("Tile", description="Single namespace, single entity")  # noqa
 

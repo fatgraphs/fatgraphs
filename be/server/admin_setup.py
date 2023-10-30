@@ -11,8 +11,9 @@ from psycopg2._psycopg import AsIs
 
 from be.configuration import (
     CONFIGURATIONS,
-    TILE_FOLDER_NAME,
 )
+
+from sqlalchemy.sql import text
 
 from be.server.gallery_categories import GalleryCategory
 from be.server.gallery_categories.service import GalleryCategoryService
@@ -31,16 +32,16 @@ class GraphAdminView(ModelView):
 
             delete_vertex_edge_configs = """
             BEGIN;
-                DROP TABLE %(vertex_table)s;
-                DROP TABLE %(edge_table)s;
-                DELETE FROM tg_graph_configs WHERE tg_graph_configs.graph = %(graph_id)s;
-                DELETE FROM tg_graphs WHERE tg_graphs.id = %(graph_id)s;
+                DROP TABLE :vertex_table;
+                DROP TABLE :edge_table;
+                DELETE FROM tg_graph_configs WHERE tg_graph_configs.graph = :graph_id;
+                DELETE FROM tg_graphs WHERE tg_graphs.id = :graph_id;
             COMMIT;
             """
-            self.session.bind.engine.execute(delete_vertex_edge_configs, {
+            self.session.execute(text(delete_vertex_edge_configs), {
                 'graph_id': AsIs(graph.id),
-                'vertex_table': AsIs(app.config.VERTEX_TABLE_NAME(graph.id)),
-                'edge_table': AsIs(app.config.EDGE_TABLE_NAME(graph.id))
+                'vertex_table': AsIs(app.config['VERTEX_TABLE_NAME'](graph.id)),
+                'edge_table': AsIs(app.config['EDGE_TABLE_NAME'](graph.id))
             })
 
         except Exception as e:
@@ -48,7 +49,7 @@ class GraphAdminView(ModelView):
             return False
 
         try:
-            shutil.rmtree(os.path.join(CONFIGURATIONS['graphsHome'], TILE_FOLDER_NAME(graph.id)))
+            shutil.rmtree(app.config['TILE_FOLDER_NAME'](graph.id))
         except Exception as e:
             flash(gettext('The graph was deleted in the db but the tiles deletion failed: %(error)s', error=str(e)),
                   'error')
