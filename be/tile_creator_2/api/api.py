@@ -94,6 +94,26 @@ class GraphCategory(ResourceApi):
     def __init__(self):
         super().__init__("/gallery_categories")
 
+class TileApi(ResourceApi):
+    def __init__(self):
+        super().__init__("/tile")
+
+    def post_tile(self, img_data, z, x, y, graph_id):
+        response = requests.post(
+            self.url + f"/{graph_id}/{z}/{x}/{y}.png",
+            files={"image": img_data}
+        )
+        self.check_status_code(response)
+        return response
+    
+    def post_plot(self, img_data, z, graph_id):
+        response = requests.post(
+            self.url + f"/plot/{graph_id}/{z}",
+            files={"image": img_data}
+        )
+        self.check_status_code(response)
+        return response
+    
 
 class ApiLayer():
 
@@ -104,3 +124,4 @@ class ApiLayer():
     vertices = VerticesApi()
     vertex_metadata = VertexMetadataApi()
     edges = EdgesApi()
+    tile = TileApi()

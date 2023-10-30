@@ -24,11 +24,16 @@ class EdgeTransparencyPlots:
         self.step = math.ceil((self.maxLength - self.minLength) / EdgeTransparencyPlots.BIN_FREQUENCY)
         self.tileSize = gtm_args.get_tile_size()
 
-    def render(self, outputFolder):
-        for zl in range(0, self.zoomLevels):
-            self.generateDistributionImg(zl, outputFolder)
 
-    def generateDistributionImg(self, zoomLevel, outputFolder):
+    def render(self):
+        return [
+            self.generateDistributionImg(zl)
+            for zl 
+            in range(0, self.zoomLevels)
+        ]
+            
+
+    def generateDistributionImg(self, zoomLevel):
         longestTheoreticalEdgePx = calculate_diagonal_square_of_side(self.tileSize)
         longestTheoreticalEdgeGraph = calculate_diagonal_square_of_side(self.sideGraphSpace)
         color = 'tab:red'
@@ -43,9 +48,11 @@ class EdgeTransparencyPlots:
             ax1.set_xlim(0, longestTheoreticalEdgeGraph)
             return max(list(map(lambda a : a.get_height(), hist[2])))
 
+
         def doLeftY():
             y_title = "Count ( tot: " + str(len(self.edgeLengths)) + " )"
             ax1.set_ylabel(y_title, color=color)
+
 
         def doUpperX(height_highest_bar):
             xPixelDistance = ax1.twiny()
@@ -62,6 +69,7 @@ class EdgeTransparencyPlots:
             xPixelDistance.set_xlim([0, longestTheoreticalEdgePx * (2 ** zoomLevel)])
             xPixelDistance.tick_params(axis='x', labelcolor=color)
 
+
         def doRightY():
             yyy = ax1.twinx()  # instantiate a second axes that shares the same x-axis
             color = 'tab:blue'
@@ -77,9 +85,8 @@ class EdgeTransparencyPlots:
         doRightY()
 
         fig.tight_layout()  # otherwise the right y-label is slightly clipped
-        name = "z_" + str(zoomLevel) + "_distribution" + ".png"
-        join = os.path.join(outputFolder, name)
-        plt.savefig(join)
+
+        return {"fig": fig, "z":zoomLevel}
 
 
 

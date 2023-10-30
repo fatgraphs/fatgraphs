@@ -1,12 +1,12 @@
+import io
 import json
 import math
 import os
+
 import cudf
-import pandas as pd
 import geopandas as gpd
-from geoalchemy2 import (
-    WKTElement,
-)
+import pandas as pd
+from geoalchemy2 import WKTElement
 
 from be.configuration import (
     SRID,
@@ -14,7 +14,6 @@ from be.configuration import (
     external_id,
     internal_id,
 )
-
 from be.tile_creator_2.api.api import ApiLayer
 from be.tile_creator_2.cudf_graph import CudfGraph
 from be.tile_creator_2.datasource import DataSource
@@ -29,18 +28,6 @@ from be.tile_creator_2.vertex_data import VertexData
 from be.utils import timeit
 
 
-def mkdir_for_graph(graph_id: int):
-    def ensure_directory_exists(path):
-        if not os.path.exists(path):
-            os.mkdir(path)
-
-    ensure_directory_exists(graphs_home)
-    graph_folder = TILE_FOLDER_NAME(graph_id)
-    path = os.path.join(graphs_home, graph_folder)
-    ensure_directory_exists(path)
-    return path
-
-
 def make_geoframe(frame):
     geo_frame = gpd.GeoDataFrame(frame, geometry=gpd.points_from_xy(frame.x, frame.y))
     geo_frame = geo_frame.drop(columns=['x', 'y'])
@@ -48,11 +35,12 @@ def make_geoframe(frame):
     geo_frame['pos'] = geo_frame['pos'].apply(lambda x: WKTElement(x.wkt, srid=SRID))
     return geo_frame
 
+
 def main(configurations):
     args = GtmArgs(configurations)
     gtm_args = args
 
-    # just reeads the csv
+    # just reads the csv
     source = DataSource(os.path.join(data_folder, gtm_args.get_source_file()))
 
     vertex_data = VertexData()
@@ -98,11 +86,12 @@ def main(configurations):
 
     # save the configuration to db
     # TODO save bound in graph_data: need to change FE code!
-    config_obj = gtm_args.to_json_camel_case(graph_data, persisted_graph['id'])
+    graph_id = persisted_graph['id']
+    config_obj = gtm_args.to_json_camel_case(graph_data, graph_id)
     ApiLayer.configs.post(config_obj)
 
     df_edges = vertex_data.cudf_frame.to_pandas()
-    df_edges['graph_id'] = persisted_graph['id']
+    df_edges['graph_id'] = graph_id
     geo_frame = make_geoframe(df_edges)
 
     ApiLayer.vertices.post_stream(
@@ -110,7 +99,7 @@ def main(configurations):
     )
 
     # fetch all the vertices metadata
-    res = ApiLayer.vertex_metadata.get_all_for_graph(persisted_graph['id'])
+    res = ApiLayer.vertex_metadata.get_all_for_graph(graph_id)
 
     int_to_icon = {
             0: 'inactive_fake',
@@ -159,7 +148,7 @@ def main(configurations):
 
     # save edges to db
     df_edges = edge_data.cudf_frame.to_pandas()
-    df_edges['graph_id'] = persisted_graph['id']
+    df_edges['graph_id'] = graph_id
     df_edges = df_edges.rename(columns={external_id('source'): 'src',
                             external_id('target'): 'trg'})
     
@@ -169,13 +158,20 @@ def main(configurations):
 
     gt_graph = make_gt_graph(edge_data, gtm_args, vertex_data)
 
-    # as soon as we have the id we can make the graph folder
-    output_folder = mkdir_for_graph(persisted_graph['id'])
-
     plotter = EdgeTransparencyPlots(graph_data, gtm_args, edge_data)
-    plotter.render(output_folder)
+    transparency_plots_for_debug = plotter.render()
+    for p in transparency_plots_for_debug:
+        buf = io.BytesIO()
+        p['fig'].savefig(buf, format='png')
+        buf.seek(0)
+        ApiLayer.tile.post_plot(buf, p['z'], graph_id)
 
-    tr = TilesRenderer(gt_graph, output_folder, graph_data.get_graph_bound(), graph_data.get_pixel_bound())
+    tr = TilesRenderer(
+        gt_graph, 
+        graph_data.get_graph_bound(), 
+        graph_data.get_pixel_bound(), 
+        graph_id,
+    )
     tr.render_graph()
 
 @timeit("Constructing the graph_tool graph")
