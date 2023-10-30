@@ -16,10 +16,10 @@ from flask_restx import (
 
 from be.server.server import SessionLocal
 
-from ...configuration import CONFIGURATIONS
-from . import VertexMetadataSchema
-from .model import VertexMetadata
-from .service import VertexMetadataService
+from be.server.vertex_metadata import VertexMetadataSchema
+from be.server.vertex_metadata.model import VertexMetadata
+from be.server.vertex_metadata.service import VertexMetadataService
+from be.server.server import app
 
 api = Namespace("VertexMetadata", description="Global metadata related to eth addresses")
 
@@ -55,7 +55,7 @@ class MetadataResource(Resource):
     @accepts(schema=VertexMetadataSchema, api=api)
     @responds(schema=VertexMetadataSchema)
     def post(self) -> VertexMetadata:
-        if CONFIGURATIONS['is_labelling_enabled'] != 'true':
+        if not app.config['IS_LABELLING_ENABLED']:
             print("\tLabelling is disabled in config, this endpoint is not active")
             return {}
         with SessionLocal() as db:
@@ -70,7 +70,7 @@ class MetadataResource(Resource):
 
     @responds(schema=VertexMetadataSchema)
     def delete(self, vertex_ext_id: str) -> VertexMetadata:
-        if CONFIGURATIONS['is_labelling_enabled'] != 'true':
+        if not app.config['IS_LABELLING_ENABLED']:
             return Response(
                 "Labelling is disabled in config, this endpoint is not active",
                 400,

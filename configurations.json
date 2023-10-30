@@ -21,10 +21,7 @@
     "deleteVertexMetadata": "vertex-metadata/{vertex}/{type}/{value}",
     "edges": "edge/{graphId}/{vertex}",
     "galleryCategories": "gallery_categories/",
-    "graphConfiguration": "graph_configuration/{graphId}",
-    "parameters": {
-      "edges_fetched_limit": 100
-    }
+    "graphConfiguration": "graph_configuration/{graphId}"
   },
   "vertex_metadata_init": "data/metadata_vertex_init.csv",
   "verticesMetadataFileName": "vertices_metadata.csv",

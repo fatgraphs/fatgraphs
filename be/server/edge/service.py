@@ -7,14 +7,8 @@ from sqlalchemy import select
 from sqlalchemy.orm import joinedload
 from sqlalchemy.sql import text
 
-from be.configuration import (
-    CONFIGURATIONS,
-)
 
-from be.server.vertex.model import Vertex
-
-from ..vertex.service import VertexService
-from . import Edge
+from be.server.edge import Edge
 from be.server.server import app
 
 
@@ -75,7 +69,7 @@ class EdgeService:
         result_in = EdgeService.get_edges_with_probability('in', vertex_ext_id, graph_id, db)
         result_out = EdgeService.get_edges_with_probability('out', vertex_ext_id, graph_id, db)
 
-        half_edge_count = CONFIGURATIONS['endpoints']['parameters']['edges_fetched_limit'] // 2
+        half_edge_count = app.config['MAX_EDGES_DISPLAY'] // 2
 
         count_in = min(half_edge_count, len(result_in))
 
@@ -97,7 +91,7 @@ class EdgeService:
     
     @staticmethod
     def get_edges_with_probability(in_out, vertex_ext_id: str, graph_id, ses) -> List[Edge]:
-        limit = CONFIGURATIONS['endpoints']['parameters']['edges_fetched_limit']
+        limit = app.config['MAX_EDGES_DISPLAY']
 
         edge_count = EdgeService.get_edge_count(in_out, vertex_ext_id, graph_id,ses)
 

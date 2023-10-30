@@ -1,5 +1,3 @@
-from be.configuration import CONFIGURATIONS
-
 class Tile:
 
     def __init__(self, z: int, x: int, y: int):

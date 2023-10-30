@@ -2,6 +2,8 @@ import json
 import multiprocessing
 import os
 
+# ALL below are only used by tile creator or some commands
+
 this_file_dir = os.path.dirname(os.path.realpath(__file__))
 
 
@@ -10,6 +12,7 @@ def load_configurations(this_file_dir):
     configs = open(join, "r")
     r = configs.read()
     return json.loads(r)
+
 CONFIGURATIONS = load_configurations(this_file_dir)
 
 
@@ -17,11 +20,9 @@ CONFIGURATIONS = load_configurations(this_file_dir)
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 data_folder = os.path.join(this_file_dir, '../data')
 AVAILABLE_CORES = multiprocessing.cpu_count()
-# print(f'{AVAILABLE_CORES} cores were detected on your system')
 MAX_CORES = AVAILABLE_CORES - 2  # the parallelization will use at most (AVAILABLE_CORES - CORES_UNUSED) cores
 
 
-# only tile creator
 SRID = 3857
 
 FA2_OPTIONS = {'max_iter': 500,
